@@ -1,26 +1,61 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #f4f4f1;
+  --foreground: #090a0b;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+
+  --font-display: var(--font-archivo-black);
+  --font-sans: var(--font-geist);
+  --font-mono: var(--font-jetbrains-mono);
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --background: #090a0b;
+    --foreground: #f4f4f1;
   }
 }
 
+* {
+  box-sizing: border-box;
+}
+
+html {
+  min-height: 100%;
+  background: var(--background);
+}
+
 body {
+  min-height: 100vh;
+  margin: 0;
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-geist), Arial, Helvetica, sans-serif;
+}
+
+/* Títulos grandes */
+.font-display {
+  font-family: var(--font-archivo-black), Impact, sans-serif;
+}
+
+/* Texto normal */
+.font-body {
+  font-family: var(--font-geist), Arial, Helvetica, sans-serif;
+}
+
+/* Numeraciones y elementos técnicos */
+.font-technical {
+  font-family: var(--font-jetbrains-mono), Consolas, monospace;
+}
+
+/* Variante delineada de los títulos */
+.text-outline {
+  color: transparent;
+  -webkit-text-stroke: 1.5px var(--foreground);
+  paint-order: stroke fill;
 }
