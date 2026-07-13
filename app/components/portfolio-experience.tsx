@@ -5,19 +5,30 @@ import { useCallback, useEffect, useState } from "react";
 import { CustomCursor } from "./custom-cursor";
 import { HomeScreen } from "./home-screen";
 import { LoadingScreen } from "./loading-screen";
-import { ThemeSelector } from "./theme-selector";
 
 export type ThemeMode = "light" | "dark";
-type ExperiencePhase = "loading" | "theme" | "home";
+type ExperiencePhase = "loading" | "home";
+
+const THEME_STORAGE_KEY = "portfolio-theme";
+
+function isThemeMode(value: string | null | undefined): value is ThemeMode {
+  return value === "light" || value === "dark";
+}
 
 function getInitialTheme(): ThemeMode {
   if (typeof window === "undefined") {
     return "light";
   }
 
-  const storedTheme = window.localStorage.getItem("portfolio-theme");
+  const documentTheme = document.documentElement.dataset.theme;
 
-  if (storedTheme === "light" || storedTheme === "dark") {
+  if (isThemeMode(documentTheme)) {
+    return documentTheme;
+  }
+
+  const storedTheme = window.localStorage.getItem(THEME_STORAGE_KEY);
+
+  if (isThemeMode(storedTheme)) {
     return storedTheme;
   }
 
@@ -36,19 +47,13 @@ export function PortfolioExperience() {
   }, [theme]);
 
   const finishLoading = useCallback(() => {
-    setPhase("theme");
-  }, []);
-
-  const selectTheme = useCallback((nextTheme: ThemeMode) => {
-    setTheme(nextTheme);
-    window.localStorage.setItem("portfolio-theme", nextTheme);
     setPhase("home");
   }, []);
 
   const toggleTheme = useCallback(() => {
     setTheme((currentTheme) => {
       const nextTheme = currentTheme === "light" ? "dark" : "light";
-      window.localStorage.setItem("portfolio-theme", nextTheme);
+      window.localStorage.setItem(THEME_STORAGE_KEY, nextTheme);
       return nextTheme;
     });
   }, []);
@@ -56,19 +61,9 @@ export function PortfolioExperience() {
   return (
     <main className="portfolio-root">
       <AnimatePresence mode="wait" initial={false}>
-        {phase === "loading" && (
+        {phase === "loading" ? (
           <LoadingScreen key="loading" onComplete={finishLoading} />
-        )}
-
-        {phase === "theme" && (
-          <ThemeSelector
-            key="theme-selector"
-            currentTheme={theme}
-            onSelect={selectTheme}
-          />
-        )}
-
-        {phase === "home" && (
+        ) : (
           <HomeScreen
             key="home"
             theme={theme}

@@ -175,34 +175,31 @@ export function HomeScreen({ theme, onToggleTheme }: HomeScreenProps) {
           </motion.div>
         </aside>
 
-        <motion.nav
-          className="hero-menu"
-          aria-label="Navegación principal"
-          variants={shouldReduceMotion ? undefined : menuContainer}
-          initial={shouldReduceMotion ? undefined : "hidden"}
-          animate={shouldReduceMotion ? undefined : "visible"}
-        >
-          {MENU_ITEMS.map((item) => (
-            <motion.button
-              key={item.label}
-              type="button"
-              className={`hero-menu-item ${
-                activeItem === item.label ? "is-active" : ""
-              }`}
-              variants={shouldReduceMotion ? undefined : menuItem}
-              onClick={() => setActiveItem(item.label)}
-              data-cursor="action"
-              whileHover={shouldReduceMotion ? undefined : { x: -8 }}
-              whileTap={{ scale: 0.99 }}
-              aria-current={activeItem === item.label ? "page" : undefined}
-            >
-              <span className="hero-menu-depth">
+        <nav className="hero-menu" aria-label="Navegación principal">
+          <motion.div
+            className="hero-menu-plane"
+            variants={shouldReduceMotion ? undefined : menuContainer}
+            initial={shouldReduceMotion ? undefined : "hidden"}
+            animate={shouldReduceMotion ? undefined : "visible"}
+          >
+            {MENU_ITEMS.map((item) => (
+              <motion.button
+                key={item.label}
+                type="button"
+                className={`hero-menu-item ${
+                  activeItem === item.label ? "is-active" : ""
+                }`}
+                variants={shouldReduceMotion ? undefined : menuItem}
+                onClick={() => setActiveItem(item.label)}
+                data-cursor="action"
+                aria-current={activeItem === item.label ? "page" : undefined}
+              >
                 <span className="hero-menu-number font-mono">{item.number}</span>
                 <span className="hero-menu-label font-display">{item.label}</span>
-              </span>
-            </motion.button>
-          ))}
-        </motion.nav>
+              </motion.button>
+            ))}
+          </motion.div>
+        </nav>
       </div>
 
       <motion.nav
