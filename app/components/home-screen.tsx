@@ -1,7 +1,7 @@
 "use client";
 
 import { motion, useReducedMotion } from "motion/react";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   FiArrowDown,
   FiCode,
@@ -23,7 +23,7 @@ type MenuItem = {
 };
 
 const MENU_ITEMS: MenuItem[] = [
-  { number: "01/", label: "Inicio" },
+  { number: "01/", label: "Sobre mí" },
   { number: "02/", label: "Proyectos" },
   { number: "03/", label: "Tecnologías" },
   { number: "04/", label: "Experiencia" },
@@ -59,10 +59,33 @@ const menuItem = {
 
 export function HomeScreen({ theme, onToggleTheme }: HomeScreenProps) {
   const shouldReduceMotion = useReducedMotion();
-  const [activeItem, setActiveItem] = useState("Inicio");
+  const [activeItem, setActiveItem] = useState<string | null>(null);
+  const sectionRef = useRef<HTMLElement>(null);
+
+  useEffect(() => {
+    const section = sectionRef.current;
+
+    if (!section) {
+      return;
+    }
+
+    const enablePointerHover = () => {
+      section.classList.add("is-pointer-ready");
+    };
+
+    window.addEventListener("pointermove", enablePointerHover, {
+      once: true,
+      passive: true,
+    });
+
+    return () => {
+      window.removeEventListener("pointermove", enablePointerHover);
+    };
+  }, []);
 
   return (
     <motion.section
+      ref={sectionRef}
       id="inicio"
       className="portfolio-home"
       initial={{ opacity: 0, scale: 0.985 }}
@@ -194,11 +217,18 @@ export function HomeScreen({ theme, onToggleTheme }: HomeScreenProps) {
                 data-cursor="action"
                 aria-current={activeItem === item.label ? "page" : undefined}
               >
-                <span className="hero-menu-number font-mono">{item.number}</span>
-                <span className="hero-menu-label font-display">
-                  <span className="hero-menu-label-fill">{item.label}</span>
-                  <span className="hero-menu-label-outline" aria-hidden="true">
-                    {item.label}
+                <span className="hero-menu-hover-layer">
+                  <span className="hero-menu-number font-mono">
+                    {item.number}
+                  </span>
+                  <span className="hero-menu-label font-display">
+                    <span className="hero-menu-label-fill">{item.label}</span>
+                    <span
+                      className="hero-menu-label-outline"
+                      aria-hidden="true"
+                    >
+                      {item.label}
+                    </span>
                   </span>
                 </span>
               </motion.button>
