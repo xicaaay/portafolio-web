@@ -16,15 +16,10 @@ export default function RootLayout({
   return (
     <html
       lang="es"
-      className={`
-        ${archivoBlack.variable}
-        ${geist.variable}
-        ${jetBrainsMono.variable}
-        h-full
-        antialiased
-      `}
+      suppressHydrationWarning
+      className={`${archivoBlack.variable} ${geist.variable} ${jetBrainsMono.variable}`}
     >
-      <body className="flex min-h-full flex-col">{children}</body>
+      <body>{children}</body>
     </html>
   );
 }
