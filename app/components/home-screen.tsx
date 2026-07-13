@@ -195,7 +195,12 @@ export function HomeScreen({ theme, onToggleTheme }: HomeScreenProps) {
                 aria-current={activeItem === item.label ? "page" : undefined}
               >
                 <span className="hero-menu-number font-mono">{item.number}</span>
-                <span className="hero-menu-label font-display">{item.label}</span>
+                <span className="hero-menu-label font-display">
+                  <span className="hero-menu-label-fill">{item.label}</span>
+                  <span className="hero-menu-label-outline" aria-hidden="true">
+                    {item.label}
+                  </span>
+                </span>
               </motion.button>
             ))}
           </motion.div>
@@ -216,9 +221,12 @@ export function HomeScreen({ theme, onToggleTheme }: HomeScreenProps) {
             className={activeItem === item.label ? "is-active" : ""}
             onClick={() => setActiveItem(item.label)}
             data-cursor="action"
+            aria-current={activeItem === item.label ? "page" : undefined}
           >
-            <span className="font-mono">{item.number.slice(0, 2)}</span>
-            <span>{item.label}</span>
+            <span className="bottom-navigation-number font-mono">
+              {item.number.slice(0, 2)}
+            </span>
+            <span className="bottom-navigation-label">{item.label}</span>
           </button>
         ))}
       </motion.nav>
