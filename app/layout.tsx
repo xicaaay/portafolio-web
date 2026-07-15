@@ -1,4 +1,6 @@
 import type { Metadata } from "next";
+import Script from "next/script";
+import { PortfolioShell } from "./components/portfolio-shell";
 import { archivoBlack, geist, jetBrainsMono } from "./fonts";
 import "./globals.css";
 
@@ -33,11 +35,7 @@ const themeInitializationScript = `
 })();
 `;
 
-export default function RootLayout({
-  children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html
       lang="es"
@@ -46,9 +44,15 @@ export default function RootLayout({
       className={`${archivoBlack.variable} ${geist.variable} ${jetBrainsMono.variable}`}
     >
       <head>
-        <script dangerouslySetInnerHTML={{ __html: themeInitializationScript }} />
+        <Script
+          id="theme-initialization"
+          strategy="beforeInteractive"
+          dangerouslySetInnerHTML={{ __html: themeInitializationScript }}
+        />
       </head>
-      <body>{children}</body>
+      <body>
+        <PortfolioShell>{children}</PortfolioShell>
+      </body>
     </html>
   );
 }
