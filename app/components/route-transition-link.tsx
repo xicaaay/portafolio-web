@@ -36,11 +36,7 @@ export function RouteTransitionLink({
     }
 
     event.preventDefault();
-    const rect = event.currentTarget.getBoundingClientRect();
-    navigate(href, {
-      x: rect.left + rect.width / 2,
-      y: rect.top + rect.height / 2,
-    });
+    navigate(href);
   };
 
   return (
