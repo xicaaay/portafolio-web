@@ -431,13 +431,30 @@ a:focus-visible {
 
 .animated-letter {
   display: inline-block;
+  color: var(--foreground);
+  -webkit-text-fill-color: currentColor;
+  -webkit-text-stroke-color: transparent;
+  -webkit-text-stroke-width: 0;
   transform-origin: 50% 70%;
-  transition: transform 260ms cubic-bezier(0.2, 0.75, 0.25, 1), color 260ms ease;
+  transition:
+    transform 260ms cubic-bezier(0.2, 0.75, 0.25, 1),
+    color 260ms ease,
+    opacity 260ms ease,
+    -webkit-text-stroke-color 260ms ease;
 }
 
 .wordmark:hover .animated-letter:hover {
-  color: var(--accent);
+  color: color-mix(in srgb, var(--foreground) 18%, transparent);
   transform: scale(1.18) translateY(-2px);
+}
+
+@supports (-webkit-text-stroke: 1px currentColor) {
+  .wordmark:hover .animated-letter:hover {
+    color: var(--foreground);
+    -webkit-text-fill-color: transparent;
+    -webkit-text-stroke-color: var(--foreground);
+    -webkit-text-stroke-width: clamp(1px, 0.012em, 1.5px);
+  }
 }
 
 .identity-role {
