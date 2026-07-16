@@ -1,6 +1,15 @@
-import { InternalPage } from "../components/internal-page";
-import { SECTION_ITEMS } from "../components/navigation-config";
+import type { Metadata } from "next";
+import { AboutMeView } from "./about-me-view";
+import { getPublicProfile } from "./profile-data";
 
-export default function Page() {
-  return <InternalPage section={SECTION_ITEMS[0]} />;
+export const metadata: Metadata = {
+  title: "Sobre mí — Amilcar",
+  description: "Perfil profesional, biografía y enlaces públicos de Amilcar.",
+};
+
+export const dynamic = "force-dynamic";
+
+export default async function Page() {
+  const result = await getPublicProfile();
+  return <AboutMeView result={result} />;
 }
