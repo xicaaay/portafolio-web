@@ -45,22 +45,26 @@ export function PortfolioShell({ children }: { children: React.ReactNode }) {
   const isTransitioning = targetPath !== null;
 
   useEffect(() => {
-    const documentTheme = document.documentElement.dataset.theme;
-    const storedTheme = window.localStorage.getItem(THEME_STORAGE_KEY);
-    const systemTheme: ThemeMode = window.matchMedia(
-      "(prefers-color-scheme: dark)",
-    ).matches
-      ? "dark"
-      : "light";
+    const frameId = window.requestAnimationFrame(() => {
+      const documentTheme = document.documentElement.dataset.theme;
+      const storedTheme = window.localStorage.getItem(THEME_STORAGE_KEY);
+      const systemTheme: ThemeMode = window.matchMedia(
+        "(prefers-color-scheme: dark)",
+      ).matches
+        ? "dark"
+        : "light";
 
-    const initialTheme = isThemeMode(documentTheme)
-      ? documentTheme
-      : isThemeMode(storedTheme)
-        ? storedTheme
-        : systemTheme;
+      const initialTheme = isThemeMode(documentTheme)
+        ? documentTheme
+        : isThemeMode(storedTheme)
+          ? storedTheme
+          : systemTheme;
 
-    setTheme(initialTheme);
-    setIsThemeReady(true);
+      setTheme(initialTheme);
+      setIsThemeReady(true);
+    });
+
+    return () => window.cancelAnimationFrame(frameId);
   }, []);
 
   useEffect(() => {
@@ -73,7 +77,7 @@ export function PortfolioShell({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     if (!targetPath || pathname !== targetPath) return;
 
-    setIsCoverVisible(false);
+    coverTimeoutRef.current = setTimeout(() => setIsCoverVisible(false), 0);
     finishTimeoutRef.current = setTimeout(
       () => setTargetPath(null),
       shouldReduceMotion ? 120 : 520,

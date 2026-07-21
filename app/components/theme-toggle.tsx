@@ -10,7 +10,8 @@ export function ThemeToggle() {
   const [isMounted, setIsMounted] = useState(false);
 
   useEffect(() => {
-    setIsMounted(true);
+    const frameId = window.requestAnimationFrame(() => setIsMounted(true));
+    return () => window.cancelAnimationFrame(frameId);
   }, []);
 
   const effectiveTheme = isMounted ? theme : "light";

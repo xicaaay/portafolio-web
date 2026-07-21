@@ -1,6 +1,16 @@
-import { InternalPage } from "../components/internal-page";
-import { SECTION_ITEMS } from "../components/navigation-config";
+import type { Metadata } from "next";
+import { getPublicProfile } from "../about-me/profile-data";
+import { ContactView } from "./contact-view";
 
-export default function Page() {
-  return <InternalPage section={SECTION_ITEMS[4]} />;
+export const metadata: Metadata = {
+  title: "Contacto — Amilcar",
+  description:
+    "Formulario de contacto directo por correo en navegador o WhatsApp.",
+};
+
+export const dynamic = "force-dynamic";
+
+export default async function Page() {
+  const result = await getPublicProfile();
+  return <ContactView result={result} />;
 }

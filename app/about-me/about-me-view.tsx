@@ -163,7 +163,7 @@ function PageHeader() {
       <RouteTransitionLink href="/" className="internal-brand font-display">
         AX
       </RouteTransitionLink>
-      <span className="internal-header-meta font-mono">PORTFOLIO / 2026</span>
+      <span className="internal-header-meta font-mono">PORTFOLIO</span>
     </header>
   );
 }

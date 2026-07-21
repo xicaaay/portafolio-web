@@ -128,7 +128,7 @@ export function HomeScreen() {
               </h1>
 
               <div className="identity-role">
-                <FiCode className="identity-code-icon" aria-hidden="true" />
+                <FiCode className="identity-code-icon" aria-hidden="true" data-blue-icon />
                 <span className="identity-role-line" aria-hidden="true" />
                 <p className="font-body">
                   DESARROLLADOR
@@ -236,7 +236,7 @@ type InfoRowProps = {
 function InfoRow({ icon, children }: InfoRowProps) {
   return (
     <div className="identity-detail-row">
-      <span className="identity-detail-icon">{icon}</span>
+      <span className="identity-detail-icon" data-blue-icon>{icon}</span>
       <p className="font-body">{children}</p>
     </div>
   );

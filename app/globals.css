@@ -1486,3 +1486,57 @@ a:focus-visible {
     display: none;
   }
 }
+
+/* Mejoras compartidas para iconos y navegación interna */
+[data-blue-icon] {
+  transform-origin: center;
+  transition: transform 280ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+[data-blue-icon]:hover,
+a:hover [data-blue-icon],
+a:focus-visible [data-blue-icon],
+button:hover [data-blue-icon],
+button:focus-visible [data-blue-icon] {
+  transform: scale(1.14);
+}
+
+.section-navigation a > span:last-child {
+  position: relative;
+}
+
+.section-navigation a > span:last-child::after {
+  position: absolute;
+  right: 0;
+  bottom: -0.4em;
+  left: 0;
+  height: 0.0625rem;
+  background: currentColor;
+  content: "";
+  transform: scaleX(0);
+  transform-origin: right center;
+  transition: transform 320ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.section-navigation a:hover > span:last-child::after,
+.section-navigation a:focus-visible > span:last-child::after,
+.section-navigation a.is-active > span:last-child::after,
+.section-navigation a[data-transition-selected="true"] > span:last-child::after {
+  transform: scaleX(1);
+  transform-origin: left center;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-blue-icon],
+  .section-navigation a > span:last-child::after {
+    transition: none;
+  }
+
+  [data-blue-icon]:hover,
+  a:hover [data-blue-icon],
+  a:focus-visible [data-blue-icon],
+  button:hover [data-blue-icon],
+  button:focus-visible [data-blue-icon] {
+    transform: none;
+  }
+}

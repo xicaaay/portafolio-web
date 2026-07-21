@@ -55,7 +55,7 @@ export function LoadingScreen({ onComplete }: LoadingScreenProps) {
 
       <header className="loader-header font-mono">
         <span>A/ PORTFOLIO</span>
-        <span>FULL STACK / GT</span>
+        <span>FULL STACK</span>
       </header>
 
       <div className="loader-stage">
