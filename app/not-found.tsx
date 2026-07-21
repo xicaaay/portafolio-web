@@ -4,6 +4,7 @@ import { motion, useReducedMotion } from "motion/react";
 import { FiArrowLeft, FiCompass } from "react-icons/fi";
 import { RouteTransitionLink } from "./components/route-transition-link";
 import { SectionNavigation } from "./components/section-navigation";
+import { PortfolioLogo } from "./components/portfolio-logo";
 
 const DIGITS = ["4", "0", "4"];
 
@@ -18,8 +19,8 @@ export default function NotFound() {
       />
 
       <header className="internal-header relative z-10">
-        <RouteTransitionLink href="/" className="internal-brand font-display">
-          AX
+        <RouteTransitionLink href="/" className="internal-brand" aria-label="Ir al inicio">
+          <PortfolioLogo />
         </RouteTransitionLink>
         <span className="internal-header-meta font-mono">ERROR / 404</span>
       </header>

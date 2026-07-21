@@ -439,6 +439,40 @@ export async function getPublicProjects(): Promise<PublicProjectsLoadResult> {
   }
 }
 
+export async function getPublicProject(
+  slug: string,
+): Promise<PublicApiLoadResult<PublicProject>> {
+  const apiBaseUrl = getPublicApiBaseUrl();
+
+  if (!apiBaseUrl) {
+    return {
+      status: "error",
+      message: "El proyecto no está disponible porque falta configurar NEXT_PUBLIC_API_URL.",
+    };
+  }
+
+  try {
+    const data = await requestPublicData(
+      `/public/projects/${encodeURIComponent(slug)}`,
+    );
+    const project = parsePublicProject(data, apiBaseUrl);
+
+    if (!project) {
+      return {
+        status: "error",
+        message: "La API no devolvió un proyecto válido.",
+      };
+    }
+
+    return { status: "success", data: project };
+  } catch {
+    return {
+      status: "error",
+      message: "No fue posible cargar el proyecto solicitado.",
+    };
+  }
+}
+
 export async function getPublicTechnologies(): Promise<
   PublicApiLoadResult<PublicTechnology[]>
 > {

@@ -1,5 +1,6 @@
 import { FiArrowLeft, FiArrowUpRight } from "react-icons/fi";
 import type { SectionItem } from "./navigation-config";
+import { PortfolioLogo } from "./portfolio-logo";
 import { RouteTransitionLink } from "./route-transition-link";
 import { SectionNavigation } from "./section-navigation";
 
@@ -7,10 +8,10 @@ export function InternalPage({ section }: { section: SectionItem }) {
   return (
     <main className="internal-page">
       <header className="internal-header">
-        <RouteTransitionLink href="/" className="internal-brand font-display">
-          AX
+        <RouteTransitionLink href="/" className="internal-brand" aria-label="Ir al inicio">
+          <PortfolioLogo />
         </RouteTransitionLink>
-        <span className="internal-header-meta font-mono">PORTFOLIO / 2026</span>
+        <span className="internal-header-meta font-mono">PORTFOLIO</span>
       </header>
 
       <section className="internal-hero" aria-labelledby="section-title">

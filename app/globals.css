@@ -303,7 +303,7 @@ a:focus-visible {
 .portfolio-home {
   position: relative;
   display: grid;
-  grid-template-rows: auto 1fr auto;
+  grid-template-rows: 1fr auto;
   min-height: 100svh;
   overflow-x: hidden;
   overflow-y: auto;
@@ -372,7 +372,7 @@ a:focus-visible {
   display: flex;
   min-height: 0;
   flex-direction: column;
-  justify-content: space-between;
+  justify-content: flex-end;
   padding-top: clamp(14px, 2vw, 32px);
 }
 
@@ -1287,11 +1287,31 @@ a:focus-visible {
 }
 
 .internal-brand {
+  display: inline-flex;
+  align-items: center;
   color: var(--foreground);
-  font-size: clamp(2rem, 3vw, 3.2rem);
   line-height: 1;
-  letter-spacing: -0.08em;
   text-decoration: none;
+}
+
+.portfolio-logo {
+  display: block;
+  width: clamp(4.5rem, 7vw, 7.5rem);
+  height: clamp(2.25rem, 3.5vw, 3.75rem);
+  background-image: url("https://firebasestorage.googleapis.com/v0/b/portafolio-web-d35eb.firebasestorage.app/o/dark-logo.png?alt=media&token=840c02d7-8cd8-4fb4-8617-6a26364fdec4");
+  background-position: left center;
+  background-repeat: no-repeat;
+  background-size: contain;
+}
+
+:root[data-theme="dark"] .portfolio-logo {
+  background-image: url("https://firebasestorage.googleapis.com/v0/b/portafolio-web-d35eb.firebasestorage.app/o/light-logo.png?alt=media&token=4cac5249-09a2-4ce9-8e07-43a2b8f0b1f7");
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme]) .portfolio-logo {
+    background-image: url("https://firebasestorage.googleapis.com/v0/b/portafolio-web-d35eb.firebasestorage.app/o/light-logo.png?alt=media&token=4cac5249-09a2-4ce9-8e07-43a2b8f0b1f7");
+  }
 }
 
 .internal-header-meta,

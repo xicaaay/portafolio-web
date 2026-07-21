@@ -2,7 +2,7 @@
 
 import { motion, useReducedMotion } from "motion/react";
 import { useEffect, useRef } from "react";
-import { FiArrowDown, FiCode, FiMapPin, FiMonitor } from "react-icons/fi";
+import { FiCode, FiMapPin, FiMonitor } from "react-icons/fi";
 import { SECTION_ITEMS } from "./navigation-config";
 import { RouteTransitionLink } from "./route-transition-link";
 
@@ -71,45 +71,8 @@ export function HomeScreen() {
         ease: [0.76, 0, 0.24, 1],
       }}
     >
-      <header className="home-topbar">
-        <motion.div
-          className="interactive-label font-mono"
-          initial={{ opacity: 0, y: -14 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: shouldReduceMotion ? 0 : 0.2, duration: 0.55 }}
-        >
-          <span aria-hidden="true" />
-          MENÚ INTERACTIVO
-        </motion.div>
-
-
-      </header>
-
       <div className="home-content">
         <aside className="home-sidebar">
-          <motion.div
-            className="navigation-cue"
-            initial={{ opacity: 0, y: -16 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: shouldReduceMotion ? 0 : 0.38, duration: 0.65 }}
-          >
-            <span className="navigation-cue-line" aria-hidden="true" />
-            <p className="font-body">
-              DESPLAZA
-              <br />
-              PARA
-              <br />
-              NAVEGAR
-            </p>
-            <motion.span
-              className="navigation-cue-arrow"
-              animate={shouldReduceMotion ? undefined : { y: [0, 8, 0] }}
-              transition={{ duration: 1.7, repeat: Infinity, ease: "easeInOut" }}
-            >
-              <FiArrowDown aria-hidden="true" />
-            </motion.span>
-          </motion.div>
-
           <motion.div
             className="identity-block"
             initial={{ opacity: 0, x: -52 }}

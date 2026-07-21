@@ -1,5 +1,6 @@
 import { RouteTransitionLink } from "../components/route-transition-link";
 import { SectionNavigation } from "../components/section-navigation";
+import { PortfolioLogo } from "../components/portfolio-logo";
 
 export default function Loading() {
   return (
@@ -9,10 +10,10 @@ export default function Loading() {
       aria-label="Cargando perfil"
     >
       <header className="internal-header">
-        <RouteTransitionLink href="/" className="internal-brand font-display">
-          AX
+        <RouteTransitionLink href="/" className="internal-brand" aria-label="Ir al inicio">
+          <PortfolioLogo />
         </RouteTransitionLink>
-        <span className="internal-header-meta font-mono">PORTFOLIO / 2026</span>
+        <span className="internal-header-meta font-mono">PORTFOLIO</span>
       </header>
 
       <div

@@ -32,7 +32,9 @@ import {
   SiX,
   SiYoutube,
 } from "react-icons/si";
+import { InteractiveSectionTitle } from "../components/interactive-section-title";
 import { RouteTransitionLink } from "../components/route-transition-link";
+import { PortfolioLogo } from "../components/portfolio-logo";
 import { SectionNavigation } from "../components/section-navigation";
 import type {
   ProfileLoadResult,
@@ -120,48 +122,12 @@ function getInitials(name: string | null) {
   return `${first}${last}`.toUpperCase();
 }
 
-function HoverLetters({
-  text,
-  className,
-}: {
-  text: string;
-  className?: string;
-}) {
-  return (
-    <span className={`${styles.hoverText} ${className ?? ""}`} aria-label={text}>
-      {Array.from(text).map((character, index) => {
-        if (character === " ") {
-          return (
-            <span
-              className={styles.hoverSpace}
-              aria-hidden="true"
-              key={`space-${index}`}
-            >
-              &nbsp;
-            </span>
-          );
-        }
-
-        return (
-          <span
-            className={styles.hoverCharacter}
-            aria-hidden="true"
-            key={`${character}-${index}`}
-          >
-            <span className={styles.characterFill}>{character}</span>
-            <span className={styles.characterOutline}>{character}</span>
-          </span>
-        );
-      })}
-    </span>
-  );
-}
 
 function PageHeader() {
   return (
     <header className="internal-header">
-      <RouteTransitionLink href="/" className="internal-brand font-display">
-        AX
+      <RouteTransitionLink href="/" className="internal-brand" aria-label="Ir al inicio">
+        <PortfolioLogo />
       </RouteTransitionLink>
       <span className="internal-header-meta font-mono">PORTFOLIO</span>
     </header>
@@ -327,12 +293,12 @@ function ProfileContent({
           transition={{ duration: 0.68, ease: easing }}
         >
           {profile.publicName && (
-            <h1
+            <InteractiveSectionTitle
               id="profile-name"
-              className="m-0 max-w-[12ch] [overflow-wrap:anywhere] font-display text-[clamp(4rem,9vw,10rem)] leading-[0.82] font-normal tracking-[-0.075em]"
-            >
-              <HoverLetters text={profile.publicName} />
-            </h1>
+              text={profile.publicName}
+              size="profile"
+              preserveCase
+            />
           )}
 
           {profile.headline && (
@@ -342,10 +308,10 @@ function ProfileContent({
           )}
         </motion.div>
 
-        <div className="grid min-w-0 items-stretch gap-[clamp(1.5rem,3.2vw,3.25rem)] lg:grid-cols-[minmax(0,1.35fr)_minmax(15rem,0.65fr)]">
+        <div className="grid min-w-0 items-stretch gap-[clamp(1.5rem,3.2vw,3.25rem)] xl:grid-cols-[minmax(0,1.35fr)_minmax(15rem,0.65fr)]">
           {profile.shortBio && (
             <motion.article
-              className={`${styles.bioCard} relative grid min-h-[clamp(16rem,28vw,26rem)] min-w-0 content-between gap-[clamp(1.75rem,4vw,3.75rem)] border border-[var(--line)] bg-[var(--surface)] p-[clamp(1.5rem,3.2vw,3rem)] outline-none transition duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] hover:-translate-y-[0.6rem] hover:scale-[1.012] hover:border-[color-mix(in_srgb,var(--foreground)_44%,var(--line))] hover:bg-[color-mix(in_srgb,var(--surface)_86%,var(--foreground)_14%)] hover:shadow-[0_1.75rem_4.5rem_color-mix(in_srgb,var(--background)_56%,transparent)] focus-visible:-translate-y-[0.6rem] focus-visible:scale-[1.012] focus-visible:border-[color-mix(in_srgb,var(--foreground)_44%,var(--line))] focus-visible:bg-[color-mix(in_srgb,var(--surface)_86%,var(--foreground)_14%)] focus-visible:shadow-[0_1.75rem_4.5rem_color-mix(in_srgb,var(--background)_56%,transparent)] motion-reduce:transform-none motion-reduce:transition-none`}
+              className={`${styles.bioCard} soft-panel soft-panel-interactive relative grid min-h-[clamp(16rem,28vw,26rem)] min-w-0 content-between gap-[clamp(1.75rem,4vw,3.75rem)] p-[clamp(1.5rem,3.2vw,3rem)] outline-none motion-reduce:transform-none motion-reduce:transition-none`}
               variants={reveal}
               transition={{ duration: 0.72, ease: easing }}
               tabIndex={0}
@@ -361,7 +327,7 @@ function ProfileContent({
           )}
 
           <motion.figure
-            className={`${styles.sceneSecondary} m-0 w-full min-w-0 max-w-[28rem] justify-self-end overflow-hidden bg-[var(--surface)] sm:max-w-[26rem] lg:max-w-none`}
+            className={`${styles.sceneSecondary} soft-media m-0 w-full min-w-0 max-w-[28rem] justify-self-end overflow-hidden rounded-[clamp(1rem,2vw,1.5rem)] bg-[var(--surface)] sm:max-w-[26rem] xl:max-w-none`}
             variants={reveal}
             transition={{ duration: 0.72, delay: 0.04, ease: easing }}
           >
@@ -380,7 +346,7 @@ function ProfileContent({
               />
             ) : (
               <div
-                className="grid aspect-[4/5] h-full w-full select-none place-items-center border border-[var(--line)] font-display text-[clamp(4rem,8vw,9rem)] tracking-[-0.08em] text-[color-mix(in_srgb,var(--foreground)_14%,transparent)]"
+                className="soft-panel grid aspect-[4/5] h-full w-full select-none place-items-center font-display text-[clamp(4rem,8vw,9rem)] tracking-[-0.08em] text-[color-mix(in_srgb,var(--foreground)_14%,transparent)]"
                 aria-label="Espacio reservado para fotografía de perfil"
               >
                 <span aria-hidden="true">{getInitials(profile.publicName)}</span>
@@ -400,7 +366,7 @@ function ProfileContent({
           <div
             className={`grid min-w-0 gap-[clamp(2.5rem,5vw,5rem)] ${
               hasSocialConnections && profile.resumeUrl
-                ? "lg:grid-cols-[minmax(0,1fr)_minmax(18rem,0.42fr)]"
+                ? "xl:grid-cols-[minmax(0,1fr)_minmax(18rem,0.42fr)]"
                 : "grid-cols-1"
             }`}
           >
@@ -448,7 +414,7 @@ function ProfileContent({
 
             {profile.resumeUrl && (
               <motion.aside
-                className="group/resume grid min-w-0 content-between gap-[clamp(2rem,4vw,3.5rem)] border border-[var(--line)] bg-[var(--surface)] p-[clamp(1.4rem,2.5vw,2.5rem)] transition duration-300 ease-out hover:-translate-y-[0.3rem] hover:border-foreground focus-within:-translate-y-[0.3rem] focus-within:border-foreground motion-reduce:transform-none motion-reduce:transition-none"
+                className="soft-panel soft-panel-interactive group/resume grid min-w-0 content-between gap-[clamp(2rem,4vw,3.5rem)] p-[clamp(1.4rem,2.5vw,2.5rem)] motion-reduce:transform-none motion-reduce:transition-none"
                 variants={reveal}
                 transition={{ duration: 0.62, ease: easing }}
                 aria-label="Currículum"
@@ -464,7 +430,7 @@ function ProfileContent({
                 </div>
 
                 <a
-                  className="inline-flex w-fit max-w-full items-center gap-3 bg-foreground px-[clamp(1rem,1.5vw,1.25rem)] py-[clamp(0.8rem,1vw,1rem)] text-[clamp(0.78rem,0.85vw,0.9rem)] text-background no-underline transition duration-200 hover:-translate-y-[0.15rem] hover:bg-[var(--accent)] focus-visible:-translate-y-[0.15rem] focus-visible:bg-[var(--accent)]"
+                  className="ui-button-primary inline-flex w-fit max-w-full items-center gap-3 px-[clamp(1rem,1.5vw,1.25rem)] py-[clamp(0.8rem,1vw,1rem)] text-[clamp(0.78rem,0.85vw,0.9rem)] no-underline"
                   href={profile.resumeUrl}
                   target="_blank"
                   rel="noopener noreferrer"

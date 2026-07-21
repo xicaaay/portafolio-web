@@ -1,7 +1,5 @@
 "use client";
 
-/* eslint-disable @next/next/no-img-element */
-
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import { useMemo, useState } from "react";
 import {
@@ -27,6 +25,7 @@ function formatPeriod(experience: PublicExperience) {
   const formatter = new Intl.DateTimeFormat("es-GT", {
     month: "short",
     year: "numeric",
+    timeZone: "UTC",
   });
   const start = formatter.format(new Date(experience.startDate)).replace(".", "");
   const end = experience.isCurrent
@@ -39,16 +38,19 @@ function formatPeriod(experience: PublicExperience) {
 }
 
 function formatYear(value: string) {
-  return new Intl.DateTimeFormat("es-GT", { year: "numeric" }).format(
-    new Date(value),
-  );
+  return new Intl.DateTimeFormat("es-GT", {
+    year: "numeric",
+    timeZone: "UTC",
+  }).format(new Date(value));
 }
 
 function ExperienceDetail({ experience }: { experience: PublicExperience }) {
+  const shouldReduceMotion = useReducedMotion();
+
   return (
     <motion.article
       key={experience.id}
-      className="grid min-w-0 content-start gap-[clamp(2rem,4vw,4rem)] border border-[var(--line)] bg-[var(--surface)] p-[clamp(1.25rem,3vw,3rem)] lg:sticky lg:top-[clamp(1.25rem,3vw,3rem)]"
+      className="soft-panel grid min-w-0 content-start gap-[clamp(2rem,4vw,4rem)] p-[clamp(1.25rem,3vw,3rem)] xl:sticky xl:top-[clamp(1.25rem,3vw,3rem)]"
       initial={{ opacity: 0, y: "1rem" }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: "-0.7rem" }}
@@ -59,37 +61,74 @@ function ExperienceDetail({ experience }: { experience: PublicExperience }) {
           <span className="font-mono text-[clamp(0.58rem,0.68vw,0.74rem)] tracking-[0.1em] text-[var(--muted)] uppercase">
             EXPERIENCIA ACTIVA
           </span>
-          <h2 className="m-0 max-w-[15ch] text-[clamp(2rem,4vw,4.6rem)] leading-[0.92] tracking-[-0.055em]">
+          <h2 className="m-0 max-w-[15ch] [overflow-wrap:anywhere] text-[clamp(2rem,4vw,4.6rem)] leading-[0.92] tracking-[-0.055em]">
             {experience.positionTitle}
           </h2>
         </div>
 
         {experience.organizationLogoUrl ? (
-          <img
+          <motion.img
             src={experience.organizationLogoUrl}
             alt={`Logo de ${experience.organizationName}`}
-            className="size-[clamp(3.5rem,6vw,5.5rem)] border border-[var(--line)] bg-background object-contain p-3 grayscale transition duration-300 hover:scale-105 hover:grayscale-0"
+            className="soft-icon-surface size-[clamp(3.5rem,6vw,5.5rem)] rounded-[clamp(0.75rem,1.2vw,1rem)] object-contain p-3 grayscale transition-[filter] duration-500 hover:grayscale-0"
             loading="lazy"
             decoding="async"
+            animate={
+              shouldReduceMotion
+                ? undefined
+                : { y: [0, -4, 0], rotate: [0, 1.5, 0, -1.5, 0] }
+            }
+            whileHover={shouldReduceMotion ? undefined : { scale: 1.08, y: -5 }}
+            transition={{
+              duration: 5.2,
+              repeat: Number.POSITIVE_INFINITY,
+              ease: "easeInOut",
+            }}
           />
         ) : (
-          <span
-            className="grid size-[clamp(3.5rem,6vw,5.5rem)] place-items-center border border-[var(--line)] bg-background text-[var(--accent)] transition-transform duration-300 hover:scale-110"
+          <motion.span
+            className="soft-icon-surface grid size-[clamp(3.5rem,6vw,5.5rem)] place-items-center rounded-[clamp(0.75rem,1.2vw,1rem)] text-[var(--accent)]"
             data-blue-icon
+            animate={
+              shouldReduceMotion
+                ? undefined
+                : { y: [0, -4, 0], rotate: [0, 2, 0, -2, 0] }
+            }
+            whileHover={shouldReduceMotion ? undefined : { scale: 1.1, y: -5 }}
+            transition={{
+              duration: 5.2,
+              repeat: Number.POSITIVE_INFINITY,
+              ease: "easeInOut",
+            }}
           >
             <FiBriefcase className="size-[clamp(1.3rem,2vw,2rem)]" aria-hidden="true" />
-          </span>
+          </motion.span>
         )}
       </div>
 
-      <div className="grid gap-3 border-y border-[var(--line)] py-[clamp(1.1rem,2vw,1.6rem)] font-mono text-[clamp(0.62rem,0.75vw,0.82rem)] tracking-[0.05em] uppercase sm:grid-cols-2">
+      <div className="soft-strip grid gap-3 px-[clamp(1rem,1.8vw,1.4rem)] py-[clamp(1.1rem,2vw,1.6rem)] font-mono text-[clamp(0.62rem,0.75vw,0.82rem)] tracking-[0.05em] uppercase sm:grid-cols-2">
         <span>{experience.organizationName}</span>
         <span className="text-[var(--muted)] sm:text-right">
           {formatPeriod(experience)}
         </span>
         {experience.location && (
           <span className="inline-flex items-center gap-2 text-[var(--muted)] sm:col-span-2">
-            <FiMapPin className="text-[var(--accent)] transition-transform duration-300 hover:scale-125" aria-hidden="true" data-blue-icon />
+            <motion.span
+              className="inline-flex text-[var(--accent)]"
+              animate={
+                shouldReduceMotion
+                  ? undefined
+                  : { y: [0, -2, 0], rotate: [0, -4, 4, 0] }
+              }
+              transition={{
+                duration: 3.6,
+                repeat: Number.POSITIVE_INFINITY,
+                ease: "easeInOut",
+              }}
+              data-blue-icon
+            >
+              <FiMapPin aria-hidden="true" />
+            </motion.span>
             {experience.location}
           </span>
         )}
@@ -112,17 +151,26 @@ function ExperienceDetail({ experience }: { experience: PublicExperience }) {
             RESPONSABILIDADES / 02
           </span>
           <ul className="m-0 grid list-none gap-4 p-0">
-            {experience.responsibilities.map((responsibility) => (
+            {experience.responsibilities.map((responsibility, index) => (
               <li
                 className="grid grid-cols-[auto_1fr] items-start gap-3 text-[clamp(0.88rem,1vw,1rem)] leading-[1.65] text-[var(--muted)]"
                 key={responsibility.id}
               >
-                <span
-                  className="mt-[0.2em] grid size-[1.35rem] place-items-center rounded-full border border-[var(--line)] text-[var(--accent)] transition-transform duration-300 hover:scale-115"
+                <motion.span
+                  className="soft-icon-surface mt-[0.2em] grid size-[1.35rem] place-items-center rounded-full text-[var(--accent)]"
                   data-blue-icon
+                  initial={shouldReduceMotion ? false : { opacity: 0, scale: 0.55, rotate: -20 }}
+                  whileInView={{ opacity: 1, scale: 1, rotate: 0 }}
+                  whileHover={shouldReduceMotion ? undefined : { scale: 1.18, rotate: 8 }}
+                  viewport={{ once: true, amount: 0.7 }}
+                  transition={{
+                    duration: 0.48,
+                    delay: shouldReduceMotion ? 0 : index * 0.07,
+                    ease: [0.22, 1, 0.36, 1],
+                  }}
                 >
                   <FiCheck className="size-[0.72rem]" aria-hidden="true" />
-                </span>
+                </motion.span>
                 <span>{responsibility.description}</span>
               </li>
             ))}
@@ -136,21 +184,40 @@ function ExperienceDetail({ experience }: { experience: PublicExperience }) {
             TECNOLOGÍAS / 03
           </span>
           <div className="flex flex-wrap gap-3">
-            {experience.technologies.map((technology) => (
+            {experience.technologies.map((technology, index) => (
               <span
-                className="group/experience-tech inline-flex items-center gap-3 border border-[var(--line)] bg-background px-4 py-3 font-mono text-[clamp(0.58rem,0.68vw,0.74rem)] tracking-[0.06em] uppercase transition duration-300 hover:-translate-y-[0.2rem] hover:border-foreground"
+                className="soft-chip group/experience-tech inline-flex items-center gap-3 px-4 py-3 font-mono text-[clamp(0.58rem,0.68vw,0.74rem)] tracking-[0.06em] uppercase hover:-translate-y-[0.2rem]"
                 key={technology.id}
               >
-                <span
-                  className="text-[var(--accent)] transition-transform duration-300 group-hover/experience-tech:scale-125"
+                <motion.span
+                  className="text-[var(--accent)]"
                   data-blue-icon
+                  animate={
+                    shouldReduceMotion
+                      ? undefined
+                      : {
+                          y: [0, -2.5, 0],
+                          rotate: [0, index % 2 === 0 ? 3 : -3, 0],
+                        }
+                  }
+                  whileHover={
+                    shouldReduceMotion
+                      ? undefined
+                      : { scale: 1.22, rotate: index % 2 === 0 ? 8 : -8 }
+                  }
+                  transition={{
+                    duration: 3.4 + (index % 3) * 0.45,
+                    delay: index * 0.12,
+                    repeat: Number.POSITIVE_INFINITY,
+                    ease: "easeInOut",
+                  }}
                 >
                   <TechnologyGlyph
                     name={technology.name}
                     iconKey={technology.iconKey}
                     className="size-[clamp(0.9rem,1.2vw,1.1rem)]"
                   />
-                </span>
+                </motion.span>
                 {technology.name}
               </span>
             ))}
@@ -194,12 +261,12 @@ function ExperienceTimeline({
 
   return (
     <>
-      <div className="mb-[clamp(1.5rem,3vw,3rem)] flex flex-wrap items-center justify-between gap-5 border-y border-[var(--line)] py-[clamp(1rem,2vw,1.5rem)] font-mono text-[clamp(0.6rem,0.72vw,0.78rem)] tracking-[0.09em] text-[var(--muted)] uppercase">
+      <div className="soft-strip mb-[clamp(1.5rem,3vw,3rem)] flex flex-wrap items-center justify-between gap-5 px-[clamp(1rem,2vw,1.5rem)] py-[clamp(1rem,2vw,1.5rem)] font-mono text-[clamp(0.6rem,0.72vw,0.78rem)] tracking-[0.09em] text-[var(--muted)] uppercase">
         <span>{experiences.length} etapas profesionales</span>
         <span>Selecciona una para ampliar</span>
       </div>
 
-      <section className="grid min-w-0 gap-[clamp(1.25rem,3vw,3rem)] lg:grid-cols-[minmax(18rem,0.74fr)_minmax(0,1.26fr)] lg:items-start" aria-label="Línea de tiempo profesional">
+      <section className="grid min-w-0 gap-[clamp(1.25rem,3vw,3rem)] xl:grid-cols-[minmax(18rem,0.74fr)_minmax(0,1.26fr)] xl:items-start" aria-label="Línea de tiempo profesional">
         <div className="relative grid min-w-0">
           <span className="absolute top-0 bottom-0 left-[clamp(1.05rem,2vw,1.5rem)] w-[0.0625rem] bg-[var(--line)]" aria-hidden="true" />
 
@@ -225,12 +292,25 @@ function ExperienceTimeline({
                 data-cursor="action"
               >
                 <span className="relative z-10 grid size-[clamp(2.1rem,4vw,3rem)] place-items-center">
-                  <span
+                  <motion.span
                     className={`block size-[clamp(0.65rem,1vw,0.9rem)] rounded-full border transition duration-300 ${
                       isActive
-                        ? "scale-125 border-[var(--accent)] bg-[var(--accent)] shadow-[0_0_0_0.4rem_color-mix(in_srgb,var(--accent)_14%,transparent)]"
+                        ? "border-[var(--accent)] bg-[var(--accent)] shadow-[0_0_0_0.4rem_color-mix(in_srgb,var(--accent)_14%,transparent)]"
                         : "border-[var(--muted)] bg-background group-hover/timeline:border-[var(--accent)] group-focus-visible/timeline:border-[var(--accent)]"
                     }`}
+                    animate={
+                      isActive && !shouldReduceMotion
+                        ? { scale: [1.12, 1.32, 1.12] }
+                        : { scale: 1 }
+                    }
+                    transition={{
+                      duration: 2.2,
+                      repeat:
+                        isActive && !shouldReduceMotion
+                          ? Number.POSITIVE_INFINITY
+                          : 0,
+                      ease: "easeInOut",
+                    }}
                     data-blue-icon
                   />
                 </span>

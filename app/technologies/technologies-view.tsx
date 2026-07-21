@@ -133,7 +133,7 @@ function TechnologiesCollage({
 
   return (
     <>
-      <div className="mb-[clamp(1.5rem,3vw,3rem)] flex flex-wrap items-center justify-between gap-5 border-y border-[var(--line)] py-[clamp(1rem,2vw,1.5rem)]">
+      <div className="soft-strip mb-[clamp(1.5rem,3vw,3rem)] flex flex-wrap items-center justify-between gap-5 px-[clamp(1rem,2vw,1.5rem)] py-[clamp(1rem,2vw,1.5rem)]">
         <div className="flex flex-wrap gap-x-[clamp(1rem,2vw,2rem)] gap-y-3 font-mono text-[clamp(0.58rem,0.68vw,0.74rem)] tracking-[0.08em] text-[var(--muted)] uppercase">
           {categories.map(([category, count]) => (
             <span key={category}>
@@ -154,7 +154,7 @@ function TechnologiesCollage({
 
       <section
         ref={containerRef}
-        className="relative isolate overflow-hidden border border-[var(--line)] bg-[var(--surface)] p-[clamp(1rem,3vw,3rem)]"
+        className="soft-panel relative isolate overflow-hidden p-[clamp(0.9rem,3vw,3rem)]"
         aria-label="Collage interactivo de tecnologías"
         onPointerDown={triggerWave}
       >
@@ -173,82 +173,92 @@ function TechnologiesCollage({
           )}
         </AnimatePresence>
 
-        <div className="relative z-10 grid grid-cols-2 gap-[clamp(0.65rem,1.3vw,1.1rem)] sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
-          {technologies.map((technology, index) => {
-            const offset = offsets[technology.id] ?? {
-              x: "0rem",
-              y: "0rem",
-              rotate: 0,
-            };
-            const isActive = technology.id === activeTechnology?.id;
+        <div className="relative z-10 grid min-w-0 gap-[clamp(1.5rem,3vw,2.5rem)]">
+          {categories.map(([category, count]) => (
+            <section className="grid gap-3" key={category}>
+              <div className="flex items-center justify-between gap-4 border-b border-[var(--line)] pb-3 font-mono text-[clamp(0.56rem,0.66vw,0.72rem)] tracking-[0.08em] text-[var(--muted)] uppercase">
+                <span>{getCategoryLabel(category)}</span>
+                <span>{String(count).padStart(2, "0")}</span>
+              </div>
 
-            return (
-              <motion.button
-                ref={(element) => {
-                  if (element) itemRefs.current.set(technology.id, element);
-                  else itemRefs.current.delete(technology.id);
-                }}
-                type="button"
-                className={`group/tech relative grid min-h-[clamp(8.5rem,14vw,12rem)] cursor-pointer content-between overflow-hidden border p-[clamp(0.9rem,1.7vw,1.4rem)] text-left transition-colors duration-300 ${
-                  isActive
-                    ? "border-foreground bg-foreground text-background"
-                    : "border-[var(--line)] bg-background text-foreground hover:border-foreground focus-visible:border-foreground"
-                }`}
-                key={technology.id}
-                animate={{ x: offset.x, y: offset.y, rotate: offset.rotate }}
-                transition={{ type: "spring", stiffness: 190, damping: 14, mass: 0.72 }}
-                onPointerEnter={() => setActiveTechnologyId(technology.id)}
-                onFocus={() => setActiveTechnologyId(technology.id)}
-                onClick={() => setActiveTechnologyId(technology.id)}
-                data-cursor="action"
-              >
-                <span className="flex items-start justify-between gap-4">
-                  <span
-                    className={`grid size-[clamp(2.4rem,4vw,3.4rem)] place-items-center rounded-full border transition duration-300 group-hover/tech:scale-115 group-focus-visible/tech:scale-115 ${
-                      isActive
-                        ? "border-[color-mix(in_srgb,var(--background)_24%,transparent)] text-background"
-                        : "border-[var(--line)] text-[var(--accent)]"
-                    }`}
-                    data-blue-icon={!isActive ? true : undefined}
-                  >
-                    <TechnologyGlyph
-                      name={technology.name}
-                      iconKey={technology.iconKey}
-                      className="size-[clamp(1rem,1.8vw,1.45rem)]"
-                    />
-                  </span>
+              <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+                {technologies
+                  .filter((technology) => technology.category === category)
+                  .map((technology) => {
+                    const offset = offsets[technology.id] ?? {
+                      x: "0rem",
+                      y: "0rem",
+                      rotate: 0,
+                    };
+                    const isActive = technology.id === activeTechnology?.id;
 
-                  <span
-                    className={`font-mono text-[clamp(0.54rem,0.62vw,0.68rem)] tracking-[0.08em] uppercase ${
-                      isActive
-                        ? "text-[color-mix(in_srgb,var(--background)_68%,transparent)]"
-                        : "text-[var(--muted)]"
-                    }`}
-                  >
-                    {String(index + 1).padStart(2, "0")}
-                  </span>
-                </span>
+                    return (
+                      <motion.button
+                        ref={(element) => {
+                          if (element) itemRefs.current.set(technology.id, element);
+                          else itemRefs.current.delete(technology.id);
+                        }}
+                        type="button"
+                        className={`group/tech grid min-w-0 cursor-pointer grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-4 rounded-[1.15rem] border p-3 text-left transition-[border-color,background-color,box-shadow] duration-300 ${
+                          isActive
+                            ? "border-foreground bg-foreground text-background shadow-[0_1.25rem_2.5rem_-1.6rem_color-mix(in_srgb,var(--foreground)_60%,transparent)]"
+                            : "border-[var(--line)] bg-[color-mix(in_srgb,var(--surface-raised)_54%,transparent)] text-foreground hover:border-foreground focus-visible:border-foreground"
+                        }`}
+                        key={technology.id}
+                        animate={{ x: offset.x, y: offset.y, rotate: offset.rotate }}
+                        whileHover={shouldReduceMotion ? undefined : { scale: 1.018 }}
+                        whileTap={shouldReduceMotion ? undefined : { scale: 0.96 }}
+                        transition={{
+                          type: "spring",
+                          stiffness: 190,
+                          damping: 14,
+                          mass: 0.72,
+                        }}
+                        onFocus={() => setActiveTechnologyId(technology.id)}
+                        onClick={() => setActiveTechnologyId(technology.id)}
+                        aria-pressed={isActive}
+                        data-cursor="action"
+                      >
+                        <span
+                          className={`grid size-[3rem] shrink-0 place-items-center rounded-full transition-transform duration-300 group-hover/tech:scale-110 ${
+                            isActive
+                              ? "bg-background text-foreground"
+                              : "soft-icon-surface text-[var(--accent)]"
+                          }`}
+                          data-blue-icon={!isActive ? true : undefined}
+                        >
+                          <TechnologyGlyph
+                            name={technology.name}
+                            iconKey={technology.iconKey}
+                            className="size-[1.3rem]"
+                          />
+                        </span>
 
-                <span className="grid gap-2">
-                  <strong className="text-[clamp(0.95rem,1.2vw,1.2rem)] leading-tight font-medium">
-                    {technology.name}
-                  </strong>
-                  <span
-                    className={`font-mono text-[clamp(0.52rem,0.6vw,0.66rem)] tracking-[0.07em] uppercase ${
-                      isActive
-                        ? "text-[color-mix(in_srgb,var(--background)_68%,transparent)]"
-                        : "text-[var(--muted)]"
-                    }`}
-                  >
-                    {getCategoryLabel(technology.category)}
-                  </span>
-                </span>
-              </motion.button>
-            );
-          })}
+                        <strong
+                          className={`min-w-0 truncate text-[clamp(0.9rem,1vw,1.05rem)] font-medium ${
+                            isActive ? "text-background" : "text-foreground"
+                          }`}
+                        >
+                          {technology.name}
+                        </strong>
+
+                        <span
+                          className={`size-2 rounded-full border ${
+                            isActive
+                              ? "border-background bg-background"
+                              : "border-[var(--muted)] bg-transparent group-hover/tech:border-foreground"
+                          }`}
+                          aria-hidden="true"
+                        />
+                      </motion.button>
+                    );
+                  })}
+              </div>
+            </section>
+          ))}
         </div>
 
-        <div className="relative z-10 mt-[clamp(1rem,2vw,1.5rem)] grid min-h-[clamp(8rem,16vw,12rem)] content-between gap-6 border border-[var(--line)] bg-background p-[clamp(1.25rem,2.5vw,2.25rem)] md:grid-cols-[auto_minmax(0,1fr)] md:items-center">
+        <div className="soft-panel-raised relative z-10 mt-[clamp(1rem,2vw,1.5rem)] grid min-h-[clamp(8rem,16vw,12rem)] content-between gap-6 p-[clamp(1.25rem,2.5vw,2.25rem)] md:grid-cols-[auto_minmax(0,1fr)] md:items-center">
           <AnimatePresence mode="wait">
             {activeTechnology && (
               <motion.div
@@ -260,7 +270,7 @@ function TechnologiesCollage({
                 transition={{ duration: 0.28 }}
               >
                 <span
-                  className="grid size-[clamp(3.5rem,7vw,6rem)] place-items-center rounded-full border border-[var(--line)] text-[var(--accent)] transition-transform duration-300 hover:scale-110"
+                  className="soft-icon-surface grid size-[clamp(3.5rem,7vw,6rem)] place-items-center rounded-full text-[var(--accent)] transition-transform duration-300 hover:scale-110"
                   data-blue-icon
                 >
                   <TechnologyGlyph

@@ -1,24 +1,43 @@
 .title {
   display: flex;
+  width: 100%;
+  min-width: 0;
   max-width: 100%;
   flex-wrap: wrap;
   align-items: baseline;
   column-gap: 0.2em;
   color: var(--foreground);
-  font-size: clamp(4.4rem, 13vw, 13rem);
-  line-height: 0.78;
   letter-spacing: -0.072em;
+}
+
+.sectionTitle {
+  font-size: clamp(2.4rem, var(--title-fluid-size), 13rem);
+  line-height: 0.78;
   text-transform: uppercase;
+}
+
+.profileTitle {
+  max-width: 100%;
+  font-size: clamp(2.8rem, var(--title-fluid-size), 10rem);
+  line-height: 0.82;
+  text-transform: uppercase;
+}
+
+.preserveCase {
+  text-transform: none;
 }
 
 .word {
   display: inline-flex;
+  min-width: 0;
+  max-width: 100%;
   white-space: nowrap;
 }
 
 .character {
   position: relative;
   display: inline-grid;
+  min-width: 0;
   transform-origin: bottom center;
 }
 
@@ -62,8 +81,23 @@
 
 @media (max-width: 42rem) {
   .title {
-    font-size: clamp(3.5rem, 18vw, 7rem);
-    line-height: 0.82;
+    column-gap: 0.16em;
+    letter-spacing: -0.065em;
+  }
+
+  .sectionTitle {
+    line-height: 0.83;
+  }
+
+  .profileTitle {
+    line-height: 0.86;
+  }
+}
+
+@media (max-width: 25rem) {
+  .sectionTitle,
+  .profileTitle {
+    letter-spacing: -0.058em;
   }
 }
 
