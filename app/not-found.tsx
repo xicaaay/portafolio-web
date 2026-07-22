@@ -3,8 +3,6 @@
 import { motion, useReducedMotion } from "motion/react";
 import { FiArrowLeft, FiCompass } from "react-icons/fi";
 import { RouteTransitionLink } from "./components/route-transition-link";
-import { SectionNavigation } from "./components/section-navigation";
-import { PortfolioLogo } from "./components/portfolio-logo";
 
 const DIGITS = ["4", "0", "4"];
 
@@ -12,18 +10,11 @@ export default function NotFound() {
   const shouldReduceMotion = useReducedMotion();
 
   return (
-    <main className="relative grid min-h-svh grid-rows-[auto_1fr_auto] overflow-hidden bg-background p-[clamp(1.25rem,3vw,3rem)] text-foreground">
+    <main className="site-page relative grid min-h-svh overflow-hidden bg-background p-[clamp(1.25rem,3vw,3rem)] text-foreground">
       <span
         className="pointer-events-none absolute inset-0 bg-[linear-gradient(var(--line-soft)_0.0625rem,transparent_0.0625rem),linear-gradient(90deg,var(--line-soft)_0.0625rem,transparent_0.0625rem)] bg-[size:clamp(3rem,6vw,6rem)_clamp(3rem,6vw,6rem)] opacity-60"
         aria-hidden="true"
       />
-
-      <header className="internal-header relative z-10">
-        <RouteTransitionLink href="/" className="internal-brand" aria-label="Ir al inicio">
-          <PortfolioLogo />
-        </RouteTransitionLink>
-        <span className="internal-header-meta font-mono">ERROR / 404</span>
-      </header>
 
       <section className="relative z-10 grid content-center gap-[clamp(2rem,4vw,4rem)] py-[clamp(4rem,9vh,8rem)]">
         <div className="grid justify-items-center">
@@ -116,10 +107,6 @@ export default function NotFound() {
           </motion.div>
         </div>
       </section>
-
-      <div className="relative z-10">
-        <SectionNavigation />
-      </div>
     </main>
   );
 }

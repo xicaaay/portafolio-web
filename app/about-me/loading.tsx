@@ -1,21 +1,10 @@
-import { RouteTransitionLink } from "../components/route-transition-link";
-import { SectionNavigation } from "../components/section-navigation";
-import { PortfolioLogo } from "../components/portfolio-logo";
-
 export default function Loading() {
   return (
     <main
-      className="grid min-h-svh grid-rows-[auto_1fr_auto] overflow-x-clip bg-background p-[clamp(1.25rem,3vw,3rem)] text-foreground"
+      className="site-page grid min-h-svh overflow-x-clip bg-background p-[clamp(1.25rem,3vw,3rem)] text-foreground"
       aria-busy="true"
       aria-label="Cargando perfil"
     >
-      <header className="internal-header">
-        <RouteTransitionLink href="/" className="internal-brand" aria-label="Ir al inicio">
-          <PortfolioLogo />
-        </RouteTransitionLink>
-        <span className="internal-header-meta font-mono">PORTFOLIO</span>
-      </header>
-
       <div
         className="mx-auto grid w-full max-w-[96rem] animate-pulse gap-[clamp(2.75rem,5vw,5.75rem)] py-[clamp(4rem,8vh,7rem)]"
         aria-hidden="true"
@@ -59,8 +48,6 @@ export default function Loading() {
           <div className="min-h-[12rem] border border-[var(--line)] bg-[var(--surface)]" />
         </section>
       </div>
-
-      <SectionNavigation />
     </main>
   );
 }

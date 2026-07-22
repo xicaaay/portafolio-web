@@ -8,7 +8,6 @@ import type { IconType } from "react-icons";
 import {
   FiArrowLeft,
   FiArrowUpRight,
-  FiDownload,
   FiLink,
   FiRefreshCw,
 } from "react-icons/fi";
@@ -32,10 +31,9 @@ import {
   SiX,
   SiYoutube,
 } from "react-icons/si";
+import { FaLink } from "react-icons/fa6";
 import { InteractiveSectionTitle } from "../components/interactive-section-title";
 import { RouteTransitionLink } from "../components/route-transition-link";
-import { PortfolioLogo } from "../components/portfolio-logo";
-import { SectionNavigation } from "../components/section-navigation";
 import type {
   ProfileLoadResult,
   PublicProfile,
@@ -122,17 +120,6 @@ function getInitials(name: string | null) {
   return `${first}${last}`.toUpperCase();
 }
 
-
-function PageHeader() {
-  return (
-    <header className="internal-header">
-      <RouteTransitionLink href="/" className="internal-brand" aria-label="Ir al inicio">
-        <PortfolioLogo />
-      </RouteTransitionLink>
-      <span className="internal-header-meta font-mono">PORTFOLIO</span>
-    </header>
-  );
-}
 
 function EmptyState() {
   return (
@@ -430,15 +417,24 @@ function ProfileContent({
                 </div>
 
                 <a
-                  className="ui-button-primary inline-flex w-fit max-w-full items-center gap-3 px-[clamp(1rem,1.5vw,1.25rem)] py-[clamp(0.8rem,1vw,1rem)] text-[clamp(0.78rem,0.85vw,0.9rem)] no-underline"
+                  className="ui-button-primary group/resume-button inline-flex w-fit max-w-full items-center gap-3 px-[clamp(1rem,1.5vw,1.25rem)] py-[clamp(0.8rem,1vw,1rem)] text-[clamp(0.78rem,0.85vw,0.9rem)] no-underline transition duration-300 ease-out hover:-translate-y-[0.2rem] hover:text-[var(--accent)] focus-visible:-translate-y-[0.2rem] focus-visible:text-[var(--accent)] motion-reduce:transform-none motion-reduce:transition-none"
                   href={profile.resumeUrl}
                   target="_blank"
                   rel="noopener noreferrer"
                   aria-label="Abrir currículum en una nueva pestaña"
                   data-cursor="action"
                 >
-                  <FiDownload aria-hidden="true" />
-                  Ver currículum
+                  <span className="grid size-[clamp(2rem,2.5vw,2.3rem)] shrink-0 place-items-center rounded-full bg-[var(--surface)] text-foreground transition duration-300 ease-out group-hover/resume-button:-rotate-6 group-hover/resume-button:scale-105 group-hover/resume-button:bg-foreground group-hover/resume-button:text-background group-focus-visible/resume-button:-rotate-6 group-focus-visible/resume-button:scale-105 group-focus-visible/resume-button:bg-foreground group-focus-visible/resume-button:text-background motion-reduce:transform-none motion-reduce:transition-none">
+                    <FaLink
+                      className="size-[clamp(0.85rem,1vw,1rem)]"
+                      aria-hidden="true"
+                    />
+                  </span>
+                  <strong className="font-medium">Ver currículum</strong>
+                  <FiArrowUpRight
+                    className="size-[clamp(0.8rem,1vw,0.95rem)] shrink-0 translate-x-[-0.375rem] translate-y-[0.375rem] opacity-0 transition duration-300 ease-out group-hover/resume-button:translate-x-[0.125rem] group-hover/resume-button:translate-y-[-0.125rem] group-hover/resume-button:opacity-100 group-focus-visible/resume-button:translate-x-[0.125rem] group-focus-visible/resume-button:translate-y-[-0.125rem] group-focus-visible/resume-button:opacity-100 motion-reduce:transform-none motion-reduce:transition-none"
+                    aria-hidden="true"
+                  />
                 </a>
               </motion.aside>
             )}
@@ -454,11 +450,9 @@ export function AboutMeView({ result }: { result: ProfileLoadResult }) {
 
   return (
     <main
-      className="grid min-h-svh grid-rows-[auto_1fr_auto] overflow-x-clip bg-background p-[clamp(1.25rem,3vw,3rem)] text-foreground"
+      className="site-page grid min-h-svh overflow-x-clip bg-background p-[clamp(1.25rem,3vw,3rem)] text-foreground"
       aria-label="Sobre mí"
     >
-      <PageHeader />
-
       <div className="w-full py-[clamp(4rem,8vh,7rem)]">
         {result.status === "success" && (
           <ProfileContent
@@ -469,8 +463,6 @@ export function AboutMeView({ result }: { result: ProfileLoadResult }) {
         {result.status === "empty" && <EmptyState />}
         {result.status === "error" && <ErrorState message={result.message} />}
       </div>
-
-      <SectionNavigation />
     </main>
   );
 }

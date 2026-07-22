@@ -4,9 +4,6 @@ import { motion, useReducedMotion } from "motion/react";
 import type { ReactNode } from "react";
 import { InteractiveSectionTitle } from "./interactive-section-title";
 import type { SectionItem } from "./navigation-config";
-import { PortfolioLogo } from "./portfolio-logo";
-import { RouteTransitionLink } from "./route-transition-link";
-import { SectionNavigation } from "./section-navigation";
 
 type SectionPageShellProps = {
   section: SectionItem;
@@ -24,14 +21,7 @@ export function SectionPageShell({
   const shouldReduceMotion = useReducedMotion();
 
   return (
-    <main className="section-page-shell grid min-h-svh min-w-0 grid-rows-[auto_auto_1fr_auto] overflow-x-clip bg-background p-[clamp(1rem,3vw,3rem)] text-foreground">
-      <header className="internal-header">
-        <RouteTransitionLink href="/" className="internal-brand" aria-label="Ir al inicio">
-          <PortfolioLogo />
-        </RouteTransitionLink>
-        <span className="internal-header-meta font-mono">PORTFOLIO</span>
-      </header>
-
+    <main className="section-page-shell grid min-h-svh min-w-0 grid-rows-[auto_1fr] overflow-x-clip bg-background p-[clamp(1rem,3vw,3rem)] text-foreground">
       <motion.section
         className="section-page-hero grid min-w-0 w-full gap-[clamp(1.25rem,3vw,3rem)] py-[clamp(3.25rem,9vh,8rem)]"
         aria-labelledby="section-page-title"
@@ -57,7 +47,6 @@ export function SectionPageShell({
 
       <div className="section-page-content min-w-0 w-full pb-[clamp(3.5rem,8vw,8rem)]">{children}</div>
 
-      <SectionNavigation />
     </main>
   );
 }

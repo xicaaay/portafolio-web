@@ -1,44 +1,34 @@
 "use client";
 
-import { motion } from "motion/react";
+import { motion, useReducedMotion } from "motion/react";
 
 export function ProjectDetailLoader({ title }: { title: string }) {
+  const shouldReduceMotion = useReducedMotion();
+
   return (
     <motion.div
-      className="fixed inset-0 z-[260] grid place-items-center bg-[color-mix(in_srgb,var(--background)_88%,transparent)] p-5 backdrop-blur-xl"
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      aria-live="polite"
-      aria-label={`Cargando detalles de ${title}`}
+      className="fixed inset-0 z-[450] grid grid-rows-[auto_1fr_auto] bg-[#090a0b] p-[clamp(1.25rem,3vw,3rem)] text-[#f4f4f0]"
+      initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+      transition={{ duration: shouldReduceMotion ? 0.08 : 0.3 }}
+      role="status" aria-live="polite" aria-label={`Cargando ${title}`}
     >
-      <div className="soft-panel grid w-full max-w-[32rem] gap-6 p-[clamp(1.5rem,4vw,3rem)]">
-        <div className="flex items-center justify-between gap-5 font-mono text-[clamp(0.6rem,0.72vw,0.78rem)] tracking-[0.1em] text-[var(--muted)] uppercase">
-          <span>ABRIENDO PROYECTO</span>
-          <span>AX / CASE</span>
-        </div>
-
-        <h2 className="m-0 text-[clamp(1.8rem,4vw,3.75rem)] leading-[0.95] tracking-[-0.055em]">
-          {title}
-        </h2>
-
-        <div className="grid gap-2" aria-hidden="true">
-          {[0, 1, 2].map((line) => (
-            <motion.span
-              key={line}
-              className="block h-[0.125rem] origin-left bg-foreground"
-              initial={{ scaleX: 0, opacity: 0.22 }}
-              animate={{ scaleX: [0, 1, 0], opacity: [0.22, 1, 0.22] }}
-              transition={{
-                duration: 1.15,
-                delay: line * 0.12,
-                repeat: Number.POSITIVE_INFINITY,
-                ease: [0.76, 0, 0.24, 1],
-              }}
-            />
-          ))}
+      <div className="flex items-center justify-between font-mono text-[clamp(0.58rem,0.68vw,0.72rem)] tracking-[0.1em] text-white/50 uppercase">
+        <span>Amilcar Xicay</span><span>Cargando caso</span>
+      </div>
+      <div className="grid place-items-center">
+        <div className="grid w-full max-w-[64rem] gap-6 text-center">
+          <span className="font-mono text-[clamp(0.6rem,0.75vw,0.78rem)] tracking-[0.12em] text-white/50 uppercase">Abriendo proyecto</span>
+          <motion.h2
+            className="m-0 text-[clamp(2.5rem,8vw,8rem)] leading-[0.88] font-medium tracking-[-0.065em]"
+            initial={shouldReduceMotion ? false : { opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
+          >{title}</motion.h2>
+          <div className="mx-auto mt-4 h-px w-full max-w-[22rem] overflow-hidden bg-white/15" aria-hidden="true">
+            <motion.span className="block h-full bg-white" animate={{ x: ["-100%", "100%"] }} transition={{ duration: 0.9, repeat: Number.POSITIVE_INFINITY, ease: [0.76, 0, 0.24, 1] }} />
+          </div>
         </div>
       </div>
+      <span className="font-mono text-[clamp(0.56rem,0.65vw,0.7rem)] tracking-[0.1em] text-white/40 uppercase">Preparando imágenes y detalles</span>
     </motion.div>
   );
 }

@@ -12,6 +12,7 @@ import {
   useState,
 } from "react";
 import { CustomCursor } from "./custom-cursor";
+import { SiteHeader } from "./site-header";
 import { ThemeToggle } from "./theme-toggle";
 
 export type ThemeMode = "light" | "dark";
@@ -138,6 +139,7 @@ export function PortfolioShell({ children }: { children: React.ReactNode }) {
   return (
     <PortfolioContext.Provider value={value}>
       <div className="portfolio-shell" aria-busy={isTransitioning}>
+        <SiteHeader />
         <AnimatePresence mode="wait" initial={false}>
           <motion.div
             key={pathname}

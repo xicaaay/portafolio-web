@@ -1,206 +1,205 @@
 "use client";
 
 import { motion, useReducedMotion } from "motion/react";
-import { useEffect, useRef } from "react";
-import { FiCode, FiMapPin, FiMonitor } from "react-icons/fi";
-import { SECTION_ITEMS } from "./navigation-config";
+import { useEffect, useState } from "react";
+import { FiArrowUpRight } from "react-icons/fi";
 import { RouteTransitionLink } from "./route-transition-link";
 
-const menuContainer = {
-  hidden: {},
-  visible: {
-    transition: {
-      staggerChildren: 0.075,
-      delayChildren: 0.24,
-    },
-  },
+type HomeScreenProps = {
+  profileImageUrl: string | null;
+  publicName: string;
 };
 
-const menuItem = {
-  hidden: {
-    opacity: 0,
-    x: 130,
-    filter: "blur(10px)",
-  },
-  visible: {
-    opacity: 1,
-    x: 0,
-    filter: "blur(0px)",
-    transition: {
-      duration: 0.82,
-      ease: [0.22, 1, 0.36, 1] as const,
-    },
-  },
-};
+const easing = [0.22, 1, 0.36, 1] as const;
 
-export function HomeScreen() {
-  const shouldReduceMotion = useReducedMotion();
-  const sectionRef = useRef<HTMLElement>(null);
-
-  useEffect(() => {
-    const section = sectionRef.current;
-
-    if (!section) {
-      return;
-    }
-
-    const enablePointerHover = () => {
-      section.classList.add("is-pointer-ready");
-    };
-
-    window.addEventListener("pointermove", enablePointerHover, {
-      once: true,
-      passive: true,
-    });
-
-    return () => {
-      window.removeEventListener("pointermove", enablePointerHover);
-    };
-  }, []);
+export function HomeScreen({ profileImageUrl, publicName }: HomeScreenProps) {
+  const shouldReduceMotion = useReducedMotion() ?? false;
+  const [imageFailed, setImageFailed] = useState(false);
+  const showImage = Boolean(profileImageUrl) && !imageFailed;
 
   return (
     <motion.section
-      ref={sectionRef}
-      id="inicio"
-      className="portfolio-home"
-      initial={{ opacity: 0, scale: 0.985 }}
-      animate={{ opacity: 1, scale: 1 }}
+      className="home-hero"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      transition={{
-        duration: shouldReduceMotion ? 0.15 : 0.85,
-        ease: [0.76, 0, 0.24, 1],
-      }}
+      transition={{ duration: shouldReduceMotion ? 0.15 : 0.72, ease: easing }}
+      aria-labelledby="home-title"
     >
-      <div className="home-content">
-        <aside className="home-sidebar">
+      <div className="home-hero-grid" aria-hidden="true" />
+
+      <div className="home-hero-layout">
+        <div className="home-hero-copy">
+          <motion.p
+            className="home-hero-kicker font-mono"
+            initial={shouldReduceMotion ? false : { opacity: 0, y: 14 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.12, duration: 0.55, ease: easing }}
+          >
+            <span>00 / PORTADA</span>
+          </motion.p>
+
+          <motion.h1
+            id="home-title"
+            className="home-role-title font-display"
+            initial={shouldReduceMotion ? false : { opacity: 0, y: 48 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2, duration: 0.85, ease: easing }}
+          >
+            <span>FULL STACK</span>
+            <span className="home-role-accent">DEVELOPER</span>
+          </motion.h1>
+
           <motion.div
-            className="identity-block"
-            initial={{ opacity: 0, x: -52 }}
+            className="home-name-row"
+            initial={shouldReduceMotion ? false : { opacity: 0, x: -24 }}
             animate={{ opacity: 1, x: 0 }}
-            transition={{
-              delay: shouldReduceMotion ? 0 : 0.46,
-              duration: 0.78,
-              ease: [0.22, 1, 0.36, 1],
-            }}
+            transition={{ delay: 0.38, duration: 0.68, ease: easing }}
           >
-            <div className="identity-heading">
-              <h1 className="wordmark font-display" data-cursor="grow">
-                <AnimatedWord word="AMILCAR" />
-                <br />
-                <AnimatedWord word="DEV" />
-              </h1>
-
-              <div className="identity-role">
-                <FiCode className="identity-code-icon" aria-hidden="true" data-blue-icon />
-                <span className="identity-role-line" aria-hidden="true" />
-                <p className="font-body">
-                  DESARROLLADOR
-                  <br />
-                  FULL STACK
-                </p>
-              </div>
-            </div>
-
-            <div className="identity-divider" aria-hidden="true" />
-
-            <div className="identity-details">
-              <InfoRow icon={<FiMonitor aria-hidden="true" />}>
-                Desarrollador full stack
-              </InfoRow>
-              <InfoRow icon={<FiMapPin aria-hidden="true" />}>
-                Guatemala / Remoto
-              </InfoRow>
-              <InfoRow icon={<FiCode aria-hidden="true" />}>
-                Construyo sistemas, interfaces, APIs e integraciones.
-              </InfoRow>
-            </div>
+            <span aria-hidden="true" />
+            <p>{publicName}</p>
           </motion.div>
-        </aside>
 
-        <nav className="hero-menu" aria-label="Navegación principal">
+          <motion.p
+            className="home-hero-description"
+            initial={shouldReduceMotion ? false : { opacity: 0, y: 18 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.48, duration: 0.65, ease: easing }}
+          >
+            Diseño y construyo productos digitales completos: interfaces claras,
+            sistemas sólidos, APIs e integraciones que convierten ideas en
+            experiencias útiles.
+          </motion.p>
+
           <motion.div
-            className="hero-menu-plane"
-            variants={shouldReduceMotion ? undefined : menuContainer}
-            initial={shouldReduceMotion ? undefined : "hidden"}
-            animate={shouldReduceMotion ? undefined : "visible"}
+            className="home-code-panel font-mono"
+            initial={shouldReduceMotion ? false : { opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.56, duration: 0.65, ease: easing }}
+            aria-label="Presentación profesional en formato de código"
           >
-            {SECTION_ITEMS.map((item) => (
-              <motion.div
-                key={item.label}
-                className="hero-menu-item-wrapper"
-                variants={shouldReduceMotion ? undefined : menuItem}
-              >
-                <RouteTransitionLink href={item.href} className="hero-menu-item">
-                <span className="hero-menu-hover-layer">
-                  <span className="hero-menu-number font-mono">
-                    {item.number}
-                  </span>
-                  <span className="hero-menu-label font-display">
-                    <span className="hero-menu-label-fill">{item.label}</span>
-                    <span
-                      className="hero-menu-label-outline"
-                      aria-hidden="true"
-                    >
-                      {item.label}
-                    </span>
-                  </span>
-                </span>
-                </RouteTransitionLink>
-              </motion.div>
-            ))}
+            <div className="home-code-header">
+              <span><i /><i /><i /></span>
+              <span>portfolio.ts</span>
+              <span>UTF-8</span>
+            </div>
+            <div className="home-code-body">
+              <TypingLine
+                number="01"
+                text={`const developer = "${publicName}";`}
+                delay={shouldReduceMotion ? 0 : 250}
+                reducedMotion={shouldReduceMotion}
+              />
+              <TypingLine
+                number="02"
+                text={'stack.build(["front-end", "back-end", "APIs"]);'}
+                delay={shouldReduceMotion ? 0 : 900}
+                reducedMotion={shouldReduceMotion}
+              />
+              <TypingLine
+                number="03"
+                text={'status = "listo para crear";'}
+                delay={shouldReduceMotion ? 0 : 1750}
+                reducedMotion={shouldReduceMotion}
+              />
+            </div>
           </motion.div>
-        </nav>
+
+          <motion.div
+            className="home-hero-actions"
+            initial={shouldReduceMotion ? false : { opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.72, duration: 0.6, ease: easing }}
+          >
+            <RouteTransitionLink href="/projects" className="home-primary-link">
+              Explorar proyectos
+              <FiArrowUpRight aria-hidden="true" />
+            </RouteTransitionLink>
+            <RouteTransitionLink href="/about-me" className="home-secondary-link">
+              Conocer mi perfil
+            </RouteTransitionLink>
+          </motion.div>
+        </div>
+
+        <motion.figure
+          className="home-portrait"
+          initial={
+            shouldReduceMotion
+              ? false
+              : { opacity: 0, x: 40, clipPath: "inset(0 0 100% 0 round 1.5rem)" }
+          }
+          animate={{ opacity: 1, x: 0, clipPath: "inset(0 0 0% 0 round 1.5rem)" }}
+          transition={{ delay: 0.3, duration: 1.05, ease: easing }}
+        >
+          <div className="home-portrait-frame">
+            {showImage && profileImageUrl ? (
+              <motion.img
+                src={profileImageUrl}
+                alt={`Fotografía de ${publicName}`}
+                loading="eager"
+                decoding="async"
+                onError={() => setImageFailed(true)}
+                initial={shouldReduceMotion ? false : { scale: 1.1 }}
+                animate={{ scale: 1 }}
+                transition={{ delay: 0.42, duration: 1.2, ease: easing }}
+              />
+            ) : (
+              <div className="home-portrait-fallback font-display" aria-label="Espacio para fotografía">
+                <span aria-hidden="true">AX</span>
+              </div>
+            )}
+            <span className="home-portrait-corner home-portrait-corner-top" aria-hidden="true" />
+            <span className="home-portrait-corner home-portrait-corner-bottom" aria-hidden="true" />
+          </div>
+      
+        </motion.figure>
       </div>
 
-      <motion.nav
-        className="bottom-navigation font-body"
-        aria-label="Navegación secundaria"
-        initial={{ opacity: 0, y: 18 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: shouldReduceMotion ? 0 : 0.8, duration: 0.6 }}
-      >
-        {SECTION_ITEMS.map((item) => (
-          <RouteTransitionLink
-            key={item.label}
-            href={item.href}
-          >
-            <span className="bottom-navigation-number font-mono">
-              {item.number.slice(0, 2)}
-            </span>
-            <span className="bottom-navigation-label">{item.label}</span>
-          </RouteTransitionLink>
-        ))}
-      </motion.nav>
     </motion.section>
   );
 }
 
-type AnimatedWordProps = {
-  word: string;
+type TypingLineProps = {
+  number: string;
+  text: string;
+  delay: number;
+  reducedMotion: boolean;
 };
 
-function AnimatedWord({ word }: AnimatedWordProps) {
-  return (
-    <span className="animated-word">
-      {Array.from(word).map((letter, index) => (
-        <span key={`${letter}-${index}`} className="animated-letter">
-          {letter}
-        </span>
-      ))}
-    </span>
-  );
-}
+function TypingLine({ number, text, delay, reducedMotion }: TypingLineProps) {
+  const [visibleCharacters, setVisibleCharacters] = useState(0);
 
-type InfoRowProps = {
-  icon: React.ReactNode;
-  children: React.ReactNode;
-};
+  useEffect(() => {
+    if (reducedMotion) return;
 
-function InfoRow({ icon, children }: InfoRowProps) {
+    let intervalId = 0;
+    const startTimer = window.setTimeout(() => {
+      setVisibleCharacters(0);
+      intervalId = window.setInterval(() => {
+        setVisibleCharacters((current) => {
+          if (current >= text.length) {
+            window.clearInterval(intervalId);
+            return current;
+          }
+          return current + 1;
+        });
+      }, 24);
+    }, delay);
+
+    return () => {
+      window.clearTimeout(startTimer);
+      window.clearInterval(intervalId);
+    };
+  }, [delay, reducedMotion, text]);
+
+  const renderedCharacters = reducedMotion ? text.length : visibleCharacters;
+  const isTyping = renderedCharacters < text.length;
+
   return (
-    <div className="identity-detail-row">
-      <span className="identity-detail-icon" data-blue-icon>{icon}</span>
-      <p className="font-body">{children}</p>
-    </div>
+    <p aria-label={text}>
+      <span aria-hidden="true">{number}</span>
+      <code aria-hidden="true">{text.slice(0, renderedCharacters)}</code>
+      <i className={isTyping ? "is-typing" : undefined} aria-hidden="true" />
+    </p>
   );
 }

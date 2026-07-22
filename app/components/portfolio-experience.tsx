@@ -7,7 +7,15 @@ import { LoadingScreen } from "./loading-screen";
 
 type ExperiencePhase = "loading" | "home";
 
-export function PortfolioExperience() {
+type PortfolioExperienceProps = {
+  profileImageUrl: string | null;
+  publicName: string;
+};
+
+export function PortfolioExperience({
+  profileImageUrl,
+  publicName,
+}: PortfolioExperienceProps) {
   const [phase, setPhase] = useState<ExperiencePhase>("loading");
   const finishLoading = useCallback(() => setPhase("home"), []);
 
@@ -17,7 +25,11 @@ export function PortfolioExperience() {
         {phase === "loading" ? (
           <LoadingScreen key="loading" onComplete={finishLoading} />
         ) : (
-          <HomeScreen key="home" />
+          <HomeScreen
+            key="home"
+            profileImageUrl={profileImageUrl}
+            publicName={publicName}
+          />
         )}
       </AnimatePresence>
     </main>
