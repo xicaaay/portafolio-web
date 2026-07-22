@@ -11,72 +11,20 @@
 }
 
 .sectionTitle {
-  font-size: clamp(2.4rem, var(--title-fluid-size), 13rem);
-  line-height: 0.78;
+  font-size: clamp(2.15rem, var(--title-fluid-size), 8.5rem);
+  line-height: 0.82;
   text-transform: uppercase;
 }
 
 .profileTitle {
   max-width: 100%;
-  font-size: clamp(2.8rem, var(--title-fluid-size), 10rem);
-  line-height: 0.82;
+  font-size: clamp(2.2rem, var(--title-fluid-size), 7rem);
+  line-height: 0.86;
   text-transform: uppercase;
 }
 
 .preserveCase {
   text-transform: none;
-}
-
-.word {
-  display: inline-flex;
-  min-width: 0;
-  max-width: 100%;
-  white-space: nowrap;
-}
-
-.character {
-  position: relative;
-  display: inline-grid;
-  min-width: 0;
-  transform-origin: bottom center;
-}
-
-.fill,
-.outline {
-  grid-area: 1 / 1;
-  display: inline-block;
-  transition:
-    opacity 320ms cubic-bezier(0.22, 1, 0.36, 1),
-    transform 420ms cubic-bezier(0.22, 1, 0.36, 1);
-}
-
-.fill {
-  opacity: 1;
-}
-
-.outline {
-  color: currentColor;
-  pointer-events: none;
-  opacity: 0;
-  -webkit-text-fill-color: transparent;
-  -webkit-text-stroke-color: currentColor;
-  -webkit-text-stroke-width: clamp(0.0625rem, 0.012em, 0.09375rem);
-}
-
-@supports (-webkit-text-stroke: 0.0625rem currentColor) {
-  .title:hover .fill {
-    opacity: 0.24;
-  }
-
-  .character:hover .fill {
-    opacity: 0;
-    transform: translateY(-0.035em);
-  }
-
-  .character:hover .outline {
-    opacity: 0.94;
-    transform: translateY(-0.035em);
-  }
 }
 
 @media (max-width: 42rem) {
@@ -98,17 +46,5 @@
   .sectionTitle,
   .profileTitle {
     letter-spacing: -0.058em;
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .fill,
-  .outline {
-    transition: none;
-  }
-
-  .character:hover .fill,
-  .character:hover .outline {
-    transform: none;
   }
 }

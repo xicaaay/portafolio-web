@@ -1,0 +1,183 @@
+.frame {
+  position: relative;
+  isolation: isolate;
+  display: grid;
+  width: 100%;
+  min-width: 0;
+  place-items: center;
+  overflow: hidden;
+  border-radius: clamp(1rem, 2vw, 1.5rem);
+  background:
+    linear-gradient(118deg, transparent 54%, rgba(255, 255, 255, 0.055)),
+    #050606;
+  box-shadow: 0 2.25rem 5rem -3.25rem rgba(0, 0, 0, 0.78);
+}
+
+.frame::before,
+.frame::after {
+  position: absolute;
+  z-index: 2;
+  width: clamp(2rem, 4vw, 3.25rem);
+  height: clamp(2rem, 4vw, 3.25rem);
+  border-color: rgba(245, 246, 241, 0.76);
+  content: "";
+}
+
+.frame::before {
+  top: clamp(1rem, 2vw, 1.5rem);
+  left: clamp(1rem, 2vw, 1.5rem);
+  border-top-width: 1px;
+  border-top-style: solid;
+  border-left-width: 1px;
+  border-left-style: solid;
+}
+
+.frame::after {
+  right: clamp(1rem, 2vw, 1.5rem);
+  bottom: clamp(1rem, 2vw, 1.5rem);
+  border-right-width: 1px;
+  border-right-style: solid;
+  border-bottom-width: 1px;
+  border-bottom-style: solid;
+}
+
+.profile {
+  aspect-ratio: 4 / 5;
+}
+
+.contact {
+  min-height: clamp(19rem, 42vw, 34rem);
+  height: 100%;
+}
+
+.glow {
+  position: absolute;
+  z-index: -1;
+  width: 58%;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--accent) 17%, transparent);
+  filter: blur(clamp(2.4rem, 7vw, 5.5rem));
+  opacity: 0.55;
+  animation: eyes-glow 7.2s ease-in-out infinite;
+}
+
+.eyes {
+  display: flex;
+  width: min(58%, 20rem);
+  align-items: center;
+  justify-content: center;
+  gap: clamp(0.75rem, 1.5vw, 1.75rem);
+  transform: translateX(0);
+  will-change: transform;
+}
+
+.eye {
+  position: relative;
+  display: block;
+  flex: 1 1 0;
+  max-width: 9rem;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: #f5f6f1;
+  transform-origin: center;
+  clip-path: inset(0);
+  will-change: clip-path;
+}
+
+.eye::after {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 24%;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: #050606;
+  content: "";
+  opacity: 0;
+  transform: translate(-50%, -50%) scale(0.72);
+  will-change: opacity, transform;
+}
+
+.active .leftEye {
+  animation: left-eye-sequence 8.5s cubic-bezier(0.22, 1, 0.36, 1) infinite;
+}
+
+.active .rightEye {
+  animation: right-eye-sequence 8.5s cubic-bezier(0.22, 1, 0.36, 1) infinite;
+}
+
+.active .eye::after {
+  animation: suspicious-pupil 8.5s cubic-bezier(0.22, 1, 0.36, 1) infinite;
+}
+
+.active .eyes {
+  animation: suspicious-look 8.5s cubic-bezier(0.22, 1, 0.36, 1) infinite;
+}
+
+@keyframes left-eye-sequence {
+  0%, 12%, 32%, 52%, 72%, 100% {
+    clip-path: inset(0);
+  }
+  18%, 24%, 58%, 64% {
+    clip-path: inset(50% 0 0);
+  }
+}
+
+@keyframes right-eye-sequence {
+  0%, 12%, 32%, 100% {
+    clip-path: inset(0);
+  }
+  18%, 24% {
+    clip-path: inset(50% 0 0);
+  }
+}
+
+@keyframes suspicious-look {
+  0%, 68%, 100% {
+    transform: translateX(0);
+  }
+  74%, 81% {
+    transform: translateX(-12%);
+  }
+  87%, 94% {
+    transform: translateX(9%);
+  }
+}
+
+@keyframes suspicious-pupil {
+  0%, 64%, 100% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.72);
+  }
+  68% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+  74%, 81% {
+    opacity: 1;
+    transform: translate(-105%, -50%) scale(1);
+  }
+  87%, 94% {
+    opacity: 1;
+    transform: translate(5%, -50%) scale(1);
+  }
+  98% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.72);
+  }
+}
+
+@keyframes eyes-glow {
+  0%, 100% { opacity: 0.42; transform: scale(0.92); }
+  50% { opacity: 0.68; transform: scale(1.08); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .glow,
+  .eyes,
+  .eye,
+  .eye::after {
+    animation: none;
+  }
+}

@@ -13,6 +13,7 @@ export type PublicProfile = {
   publicName: string | null;
   headline: string | null;
   shortBio: string | null;
+  longBio: string | null;
   profileImageUrl: string | null;
   resumeUrl: string | null;
   publicEmail: string | null;

@@ -5,6 +5,12 @@ export type SectionItem = {
   description: string;
 };
 
+export const HOME_PATH = "/inicio";
+
+export function isHomePath(pathname: string) {
+  return pathname === "/" || pathname === HOME_PATH;
+}
+
 export const SECTION_ITEMS: SectionItem[] = [
   {
     number: "01/",

@@ -4,6 +4,78 @@
     transform 420ms cubic-bezier(0.22, 1, 0.36, 1);
 }
 
+.readMore {
+  position: relative;
+  display: inline-flex;
+  width: fit-content;
+  cursor: pointer;
+  align-items: center;
+  gap: 0.55rem;
+  padding: 0.2rem 0 0.38rem;
+  border: 0;
+  background: transparent;
+  color: var(--muted);
+  font-size: clamp(0.68rem, 0.73vw, 0.76rem);
+  font-weight: 520;
+  letter-spacing: -0.01em;
+  text-transform: none;
+  transition: color 260ms ease, transform 360ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.readMore::after {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  height: 1px;
+  background: currentColor;
+  content: "";
+  opacity: 0.42;
+  transform: scaleX(0.24);
+  transform-origin: left;
+  transition: opacity 260ms ease, transform 420ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.readMore:hover,
+.readMore:focus-visible {
+  color: var(--accent);
+  transform: translateX(0.18rem);
+}
+
+.readMore:hover::after,
+.readMore:focus-visible::after,
+.readMore[aria-expanded="true"]::after {
+  opacity: 0.8;
+  transform: scaleX(1);
+}
+
+.readMoreIcon {
+  display: grid;
+  width: 1.35rem;
+  height: 1.35rem;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--surface);
+  color: var(--foreground);
+  transition: background 300ms ease, color 300ms ease, transform 440ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.readMoreIcon svg {
+  width: 0.7rem;
+  height: 0.7rem;
+}
+
+.readMore:hover .readMoreIcon,
+.readMore:focus-visible .readMoreIcon {
+  background: var(--foreground);
+  color: var(--background);
+  transform: translateY(0.12rem) rotate(-8deg);
+}
+
+.readMore[aria-expanded="true"] .readMoreIcon {
+  transform: rotate(180deg);
+}
+
 @supports selector(:has(*)) {
   .profileScene:has(.bioCard:hover) .sceneSecondary,
   .profileScene:has(.bioCard:focus-visible) .sceneSecondary {

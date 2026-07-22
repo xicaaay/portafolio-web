@@ -1,4 +1,5 @@
 import type { CSSProperties } from "react";
+import { MagneticTitle } from "./magnetic-title";
 import styles from "./interactive-section-title.module.css";
 
 type InteractiveSectionTitleProps = {
@@ -6,6 +7,7 @@ type InteractiveSectionTitleProps = {
   id?: string;
   size?: "section" | "profile";
   preserveCase?: boolean;
+  appearance?: "solid" | "outline" | "last-outline";
 };
 
 type TitleStyle = CSSProperties & {
@@ -17,14 +19,15 @@ export function InteractiveSectionTitle({
   id,
   size = "section",
   preserveCase = false,
+  appearance = "solid",
 }: InteractiveSectionTitleProps) {
   const words = text.trim().split(/\s+/).filter(Boolean);
   const longestWordLength = Math.max(
     1,
     ...words.map((word) => Array.from(word).length),
   );
-  const maximumViewportSize = size === "profile" ? 9 : 13;
-  const availableViewportWidth = size === "profile" ? 88 : 92;
+  const maximumViewportSize = size === "profile" ? 6.4 : 8.5;
+  const availableViewportWidth = size === "profile" ? 72 : 82;
   const fittedViewportSize = Math.min(
     maximumViewportSize,
     availableViewportWidth / (longestWordLength * 0.58),
@@ -34,28 +37,16 @@ export function InteractiveSectionTitle({
   };
 
   return (
-    <h1
+    <MagneticTitle
+      as="h1"
+      text={text}
       id={id}
       className={`${styles.title} ${
         size === "profile" ? styles.profileTitle : styles.sectionTitle
       } ${preserveCase ? styles.preserveCase : ""} font-display`}
       style={titleStyle}
-      aria-label={text}
-    >
-      {words.map((word, wordIndex) => (
-        <span className={styles.word} key={`${word}-${wordIndex}`}>
-          {Array.from(word).map((character, characterIndex) => (
-            <span
-              className={styles.character}
-              key={`${character}-${characterIndex}`}
-              aria-hidden="true"
-            >
-              <span className={styles.fill}>{character}</span>
-              <span className={styles.outline}>{character}</span>
-            </span>
-          ))}
-        </span>
-      ))}
-    </h1>
+      fullWidth
+      appearance={appearance}
+    />
   );
 }

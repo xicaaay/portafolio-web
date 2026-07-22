@@ -10,6 +10,7 @@ type SectionPageShellProps = {
   eyebrow: string;
   intro: string;
   children: ReactNode;
+  showExploreHint?: boolean;
 };
 
 export function SectionPageShell({
@@ -17,13 +18,14 @@ export function SectionPageShell({
   eyebrow,
   intro,
   children,
+  showExploreHint = true,
 }: SectionPageShellProps) {
   const shouldReduceMotion = useReducedMotion();
 
   return (
-    <main className="section-page-shell grid min-h-svh min-w-0 grid-rows-[auto_1fr] overflow-x-clip bg-background p-[clamp(1rem,3vw,3rem)] text-foreground">
+    <main className="section-page-shell grid min-h-svh min-w-0 grid-rows-[auto_1fr] bg-background p-[clamp(1rem,3vw,3rem)] text-foreground">
       <motion.section
-        className="section-page-hero grid min-w-0 w-full gap-[clamp(1.25rem,3vw,3rem)] py-[clamp(3.25rem,9vh,8rem)]"
+        className="section-page-hero mx-auto grid min-w-0 w-full max-w-[96rem] gap-[clamp(1.25rem,3vw,3rem)] py-[clamp(3.25rem,9vh,8rem)]"
         aria-labelledby="section-page-title"
         initial={
           shouldReduceMotion ? false : { opacity: 0, y: "clamp(1rem,3vw,2.5rem)" }
@@ -35,7 +37,7 @@ export function SectionPageShell({
           <span>
             {section.number} {eyebrow}
           </span>
-          <span>DESPLAZA PARA EXPLORAR</span>
+          {showExploreHint && <span>DESPLAZA PARA EXPLORAR</span>}
         </div>
 
         <InteractiveSectionTitle id="section-page-title" text={section.label} />
@@ -45,7 +47,7 @@ export function SectionPageShell({
         </p>
       </motion.section>
 
-      <div className="section-page-content min-w-0 w-full pb-[clamp(3.5rem,8vw,8rem)]">{children}</div>
+      <div className="section-page-content mx-auto min-w-0 w-full max-w-[96rem] pb-[clamp(3.5rem,8vw,8rem)]">{children}</div>
 
     </main>
   );

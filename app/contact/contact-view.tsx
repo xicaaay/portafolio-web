@@ -3,12 +3,9 @@
 import {
   AnimatePresence,
   motion,
-  useMotionValue,
   useReducedMotion,
-  useSpring,
-  useTransform,
 } from "motion/react";
-import { type FormEvent, useEffect, useMemo, useRef, useState } from "react";
+import { type FormEvent, useEffect, useMemo, useState } from "react";
 import {
   FiArrowUpRight,
   FiCheck,
@@ -23,7 +20,9 @@ import type {
   PublicProfile,
   PublicSocialLink,
 } from "../about-me/about-me.types";
+import { ProfileBadge } from "../about-me/profile-badge";
 import { ContentState } from "../components/content-state";
+import { MagneticTitle } from "../components/magnetic-title";
 import { SECTION_ITEMS } from "../components/navigation-config";
 import { SectionPageShell } from "../components/section-page-shell";
 
@@ -161,127 +160,6 @@ function validateForm(formData: FormData) {
   }
 
   return errors;
-}
-
-function CursorFollower({ isWatching }: { isWatching: boolean }) {
-  const containerRef = useRef<HTMLDivElement>(null);
-  const shouldReduceMotion = useReducedMotion();
-  const pointerX = useMotionValue(0);
-  const pointerY = useMotionValue(0);
-  const smoothX = useSpring(pointerX, { stiffness: 105, damping: 17, mass: 0.55 });
-  const smoothY = useSpring(pointerY, { stiffness: 105, damping: 17, mass: 0.55 });
-  const headX = useTransform(smoothX, [-1, 1], [-13, 13]);
-  const headY = useTransform(smoothY, [-1, 1], [-9, 9]);
-  const headRotateX = useTransform(smoothY, [-1, 1], [10, -10]);
-  const headRotateY = useTransform(smoothX, [-1, 1], [-13, 13]);
-  const headRotateZ = useTransform(smoothX, [-1, 1], [-3, 3]);
-  const eyesX = useTransform(smoothX, [-1, 1], [-11, 11]);
-  const eyesY = useTransform(smoothY, [-1, 1], [-7, 7]);
-  const bodyX = useTransform(smoothX, [-1, 1], [-4, 4]);
-  const bodyRotate = useTransform(smoothX, [-1, 1], [-1.5, 1.5]);
-
-  useEffect(() => {
-    if (shouldReduceMotion) {
-      return;
-    }
-
-    const followPointer = (event: PointerEvent) => {
-      const container = containerRef.current;
-
-      if (!container) {
-        return;
-      }
-
-      const bounds = container.getBoundingClientRect();
-      const centerX = bounds.left + bounds.width / 2;
-      const centerY = bounds.top + bounds.height * 0.34;
-      const distanceX = event.clientX - centerX;
-      const distanceY = event.clientY - centerY;
-      const horizontalReach = Math.max(window.innerWidth * 0.34, 1);
-      const verticalReach = Math.max(window.innerHeight * 0.34, 1);
-      const normalizedX = Math.max(-1, Math.min(1, distanceX / horizontalReach));
-      const normalizedY = Math.max(-1, Math.min(1, distanceY / verticalReach));
-
-      pointerX.set(normalizedX);
-      pointerY.set(normalizedY);
-    };
-
-    window.addEventListener("pointermove", followPointer, { passive: true });
-    return () => window.removeEventListener("pointermove", followPointer);
-  }, [pointerX, pointerY, shouldReduceMotion]);
-
-  return (
-    <div
-      ref={containerRef}
-      className="relative grid min-h-[clamp(19rem,42vw,34rem)] place-items-center overflow-hidden rounded-[clamp(1.5rem,3vw,3rem)] bg-[color-mix(in_srgb,var(--surface-raised)_45%,transparent)]"
-      aria-hidden="true"
-    >
-      <div className="relative flex h-full w-full items-end justify-center">
-        <motion.div
-          className="absolute bottom-[43%] z-10 grid size-[clamp(6.25rem,10vw,8.5rem)] place-items-center rounded-full bg-[radial-gradient(circle_at_34%_24%,#414141_0%,#1a1a1a_45%,#070707_100%)] shadow-[inset_-1rem_-1.25rem_2.5rem_rgba(0,0,0,0.48),0_1.5rem_3rem_-1.4rem_rgba(0,0,0,0.75)] [transform-style:preserve-3d]"
-          style={
-            shouldReduceMotion
-              ? undefined
-              : {
-                  x: headX,
-                  y: headY,
-                  rotateX: headRotateX,
-                  rotateY: headRotateY,
-                  rotateZ: headRotateZ,
-                  transformPerspective: 650,
-                }
-          }
-          animate={{ scale: isWatching ? 1.055 : 1 }}
-          transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
-        >
-          <motion.div
-            className="flex gap-[clamp(0.8rem,1.5vw,1.15rem)]"
-            style={
-              shouldReduceMotion
-                ? { z: 18 }
-                : { x: eyesX, y: eyesY, z: 18 }
-            }
-            animate={
-              shouldReduceMotion
-                ? undefined
-                : {
-                    scaleX: isWatching ? 1.08 : 1,
-                    scaleY: isWatching
-                      ? [1.08, 1.08, 0.12, 1.08, 1.08]
-                      : [1, 1, 0.12, 1, 1],
-                  }
-            }
-            transition={{
-              duration: 4.8,
-              times: [0, 0.72, 0.755, 0.79, 1],
-              repeat: Number.POSITIVE_INFINITY,
-              ease: "easeInOut",
-            }}
-          >
-            {[0, 1].map((eye) => (
-              <span
-                className="block h-[clamp(1.35rem,2vw,1.75rem)] w-[clamp(1rem,1.5vw,1.3rem)] rounded-full bg-white shadow-[0_0.15rem_0.35rem_rgba(255,255,255,0.45),0_0_1.15rem_rgba(255,255,255,0.42)]"
-                key={eye}
-              />
-            ))}
-          </motion.div>
-        </motion.div>
-
-        <motion.div
-          className="h-[48%] w-[min(74%,18rem)] rounded-t-[50%] bg-[radial-gradient(circle_at_42%_8%,#303030_0%,#161616_48%,#070707_100%)] shadow-[inset_-2rem_-2rem_4rem_rgba(0,0,0,0.42),0_2rem_5rem_-2.5rem_rgba(0,0,0,0.8)]"
-          style={shouldReduceMotion ? undefined : { x: bodyX, rotate: bodyRotate }}
-          animate={{ scaleX: isWatching ? 1.025 : 1, y: isWatching ? 2 : 0 }}
-          transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
-        />
-      </div>
-
-      <motion.span
-        className="pointer-events-none absolute size-[55%] rounded-full bg-[color-mix(in_srgb,var(--foreground)_5%,transparent)] blur-[3.5rem]"
-        animate={{ opacity: isWatching ? 0.8 : 0.35, scale: isWatching ? 1.08 : 0.92 }}
-        transition={{ duration: 0.5 }}
-      />
-    </div>
-  );
 }
 
 type ContactFieldProps = {
@@ -443,12 +321,12 @@ function ChannelDialog({
               <span className="font-mono text-[clamp(0.58rem,0.68vw,0.74rem)] tracking-[0.1em] text-[var(--accent)] uppercase">
                 MENSAJE PREPARADO
               </span>
-              <h2
+              <MagneticTitle
+                as="h2"
                 id="contact-channel-title"
-                className="m-0 text-[clamp(2rem,5vw,4.75rem)] leading-[0.92] tracking-[-0.055em]"
-              >
-                ¿Dónde deseas enviarlo?
-              </h2>
+                text="¿Dónde deseas enviarlo?"
+                className="m-0 text-[clamp(1.6rem,3.6vw,3.4rem)] leading-[0.94] tracking-[-0.055em]"
+              />
             </div>
 
             <div className="relative z-[1] grid gap-6 sm:grid-cols-2">
@@ -467,7 +345,7 @@ function ChannelDialog({
                   <strong className="font-medium text-foreground">
                     Gmail
                   </strong>
-                  <small className="truncate text-[var(--muted)]">
+                  <small className="[overflow-wrap:anywhere] text-[var(--muted)]">
                     Abrir el correo en el navegador
                   </small>
                 </span>
@@ -490,7 +368,7 @@ function ChannelDialog({
                   <strong className="font-medium text-foreground">
                     WhatsApp
                   </strong>
-                  <small className="truncate text-[var(--muted)]">
+                  <small className="[overflow-wrap:anywhere] text-[var(--muted)]">
                     Abrir el chat con el mensaje listo
                   </small>
                 </span>
@@ -522,7 +400,6 @@ function ContactForm({ profile }: { profile: PublicProfile }) {
   const [statusMessage, setStatusMessage] = useState<string | null>(null);
   const [isFormReady, setIsFormReady] = useState(false);
   const [isSubmitActive, setIsSubmitActive] = useState(false);
-  const [isFormFocused, setIsFormFocused] = useState(false);
 
   const handleFormInput = (event: FormEvent<HTMLFormElement>) => {
     const formData = new FormData(event.currentTarget);
@@ -601,18 +478,19 @@ function ContactForm({ profile }: { profile: PublicProfile }) {
   return (
     <>
       <div className="grid min-w-0 gap-[clamp(1.25rem,3vw,3rem)] lg:grid-cols-[minmax(16rem,0.65fr)_minmax(0,1.35fr)] lg:items-stretch">
-        <CursorFollower isWatching={isFormFocused} />
+        <div className="grid min-w-0 place-items-center self-center" aria-label="Carnet profesional">
+          <ProfileBadge
+            name={profile.publicName}
+            headline={profile.headline}
+            imageUrl={profile.profileImageUrl}
+            interactive={false}
+          />
+        </div>
 
         <motion.form
           className="grid min-w-0 gap-[clamp(1.5rem,3vw,2.5rem)] rounded-[clamp(1.5rem,3vw,3rem)] bg-[color-mix(in_srgb,var(--surface-raised)_58%,transparent)] p-[clamp(1.25rem,3vw,3rem)] shadow-[0_2.5rem_7rem_-4rem_color-mix(in_srgb,var(--foreground)_34%,transparent)] backdrop-blur-2xl"
           onSubmit={handleSubmit}
           onInput={handleFormInput}
-          onFocusCapture={() => setIsFormFocused(true)}
-          onBlurCapture={(event) => {
-            if (!event.currentTarget.contains(event.relatedTarget)) {
-              setIsFormFocused(false);
-            }
-          }}
           noValidate
           initial={shouldReduceMotion ? false : { opacity: 0, y: "1.5rem" }}
           animate={{ opacity: 1, y: 0 }}
@@ -744,7 +622,7 @@ function ContactForm({ profile }: { profile: PublicProfile }) {
                 <strong className="font-medium text-foreground">
                   Enviar mensaje
                 </strong>
-                <small className="truncate text-[var(--muted)]">
+                <small className="[overflow-wrap:anywhere] text-[var(--muted)]">
                   Elegir Gmail o WhatsApp
                 </small>
               </span>

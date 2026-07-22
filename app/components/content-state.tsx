@@ -1,4 +1,5 @@
 import { FiAlertCircle, FiInbox } from "react-icons/fi";
+import { MagneticTitle } from "./magnetic-title";
 
 type ContentStateProps = {
   type: "empty" | "error";
@@ -21,9 +22,7 @@ export function ContentState({ type, title, message }: ContentStateProps) {
         <p className="m-0 font-mono text-[clamp(0.62rem,0.72vw,0.78rem)] tracking-[0.1em] text-[var(--muted)] uppercase">
           {type === "empty" ? "SIN CONTENIDO" : "SERVICIO NO DISPONIBLE"}
         </p>
-        <h2 className="m-0 text-[clamp(1.8rem,4vw,4rem)] leading-[0.98] tracking-[-0.05em]">
-          {title}
-        </h2>
+        <MagneticTitle as="h2" text={title} className="m-0 text-[clamp(1.55rem,3vw,3.2rem)] leading-[0.98] tracking-[-0.05em]" />
         <p className="m-0 text-[clamp(0.95rem,1.2vw,1.15rem)] leading-[1.7] text-[var(--muted)]">
           {message}
         </p>

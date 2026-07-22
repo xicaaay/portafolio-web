@@ -10,6 +10,7 @@ import {
 } from "react";
 import { FiMousePointer, FiRadio } from "react-icons/fi";
 import { ContentState } from "../components/content-state";
+import { MagneticTitle } from "../components/magnetic-title";
 import { SECTION_ITEMS } from "../components/navigation-config";
 import { SectionPageShell } from "../components/section-page-shell";
 import { TechnologyGlyph } from "../components/technology-glyph";
@@ -235,7 +236,7 @@ function TechnologiesCollage({
                         </span>
 
                         <strong
-                          className={`min-w-0 truncate text-[clamp(0.9rem,1vw,1.05rem)] font-medium ${
+                          className={`min-w-0 [overflow-wrap:anywhere] text-[clamp(0.9rem,1vw,1.05rem)] font-medium ${
                             isActive ? "text-background" : "text-foreground"
                           }`}
                         >
@@ -282,9 +283,7 @@ function TechnologiesCollage({
 
                 <div className="grid gap-3">
                   <div className="flex flex-wrap items-center justify-between gap-3">
-                    <h2 className="m-0 text-[clamp(1.5rem,3vw,3rem)] leading-none tracking-[-0.045em]">
-                      {activeTechnology.name}
-                    </h2>
+                    <MagneticTitle as="h2" text={activeTechnology.name} className="m-0 text-[clamp(1.25rem,2.2vw,2.3rem)] leading-none tracking-[-0.045em]" />
                     <span className="font-mono text-[clamp(0.56rem,0.66vw,0.72rem)] tracking-[0.08em] text-[var(--muted)] uppercase">
                       {getCategoryLabel(activeTechnology.category)}
                     </span>

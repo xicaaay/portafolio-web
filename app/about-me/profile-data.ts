@@ -82,6 +82,10 @@ function parseProfile(value: unknown): PublicProfile | null {
     publicName: readText(value.publicName),
     headline: readText(value.headline),
     shortBio: readText(value.shortBio),
+    longBio:
+      readText(value.longBio) ??
+      readText(value.longDescription) ??
+      readText(value.description),
     profileImageUrl: readHttpUrl(value.profileImageUrl),
     resumeUrl: readHttpUrl(value.resumeUrl),
     publicEmail: readEmail(value.publicEmail),
@@ -94,6 +98,7 @@ function hasVisibleContent(profile: PublicProfile): boolean {
     profile.publicName ||
       profile.headline ||
       profile.shortBio ||
+      profile.longBio ||
       profile.profileImageUrl ||
       profile.resumeUrl ||
       profile.publicEmail ||

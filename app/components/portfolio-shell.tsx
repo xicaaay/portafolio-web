@@ -12,6 +12,7 @@ import {
   useState,
 } from "react";
 import { CustomCursor } from "./custom-cursor";
+import { DotCharacterLoader } from "./dot-character-loader";
 import { SiteHeader } from "./site-header";
 import { ThemeToggle } from "./theme-toggle";
 
@@ -39,11 +40,14 @@ export function PortfolioShell({ children }: { children: React.ReactNode }) {
   const [theme, setTheme] = useState<ThemeMode>("light");
   const [isThemeReady, setIsThemeReady] = useState(false);
   const [targetPath, setTargetPath] = useState<string | null>(null);
-  const [isCoverVisible, setIsCoverVisible] = useState(false);
-  const coverTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const [isInitialLoading, setIsInitialLoading] = useState(true);
+  const [isLoaderReady, setIsLoaderReady] = useState(false);
+  const initialReadyTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const initialFinishTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const routeTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const finishTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const isTransitioning = targetPath !== null;
+  const reducedMotion = shouldReduceMotion ?? false;
+  const isTransitioning = isInitialLoading || targetPath !== null;
 
   useEffect(() => {
     const frameId = window.requestAnimationFrame(() => {
@@ -76,18 +80,38 @@ export function PortfolioShell({ children }: { children: React.ReactNode }) {
   }, [isThemeReady, theme]);
 
   useEffect(() => {
+    initialReadyTimeoutRef.current = setTimeout(
+      () => setIsLoaderReady(true),
+      reducedMotion ? 60 : 460,
+    );
+    initialFinishTimeoutRef.current = setTimeout(
+      () => setIsInitialLoading(false),
+      reducedMotion ? 220 : 2240,
+    );
+
+    return () => {
+      if (initialReadyTimeoutRef.current) clearTimeout(initialReadyTimeoutRef.current);
+      if (initialFinishTimeoutRef.current) clearTimeout(initialFinishTimeoutRef.current);
+    };
+  }, [reducedMotion]);
+
+  useEffect(() => {
     if (!targetPath || pathname !== targetPath) return;
 
-    coverTimeoutRef.current = setTimeout(() => setIsCoverVisible(false), 0);
+    const readyTimeout = setTimeout(() => setIsLoaderReady(true), 0);
     finishTimeoutRef.current = setTimeout(
-      () => setTargetPath(null),
-      shouldReduceMotion ? 120 : 520,
+      () => {
+        setTargetPath(null);
+        setIsLoaderReady(false);
+      },
+      reducedMotion ? 220 : 2050,
     );
-  }, [pathname, shouldReduceMotion, targetPath]);
+
+    return () => clearTimeout(readyTimeout);
+  }, [pathname, reducedMotion, targetPath]);
 
   useEffect(
     () => () => {
-      if (coverTimeoutRef.current) clearTimeout(coverTimeoutRef.current);
       if (routeTimeoutRef.current) clearTimeout(routeTimeoutRef.current);
       if (finishTimeoutRef.current) clearTimeout(finishTimeoutRef.current);
     },
@@ -106,23 +130,16 @@ export function PortfolioShell({ children }: { children: React.ReactNode }) {
     (href: string) => {
       if (isTransitioning || href === pathname) return;
 
-      if (coverTimeoutRef.current) clearTimeout(coverTimeoutRef.current);
       if (routeTimeoutRef.current) clearTimeout(routeTimeoutRef.current);
       if (finishTimeoutRef.current) clearTimeout(finishTimeoutRef.current);
 
       setTargetPath(href);
-      setIsCoverVisible(false);
+      setIsLoaderReady(false);
 
-      const coverDelay = shouldReduceMotion ? 40 : 620;
-      const routeDelay = shouldReduceMotion ? 180 : 1120;
-
-      coverTimeoutRef.current = setTimeout(
-        () => setIsCoverVisible(true),
-        coverDelay,
-      );
+      const routeDelay = reducedMotion ? 80 : 320;
       routeTimeoutRef.current = setTimeout(() => router.push(href), routeDelay);
     },
-    [isTransitioning, pathname, router, shouldReduceMotion],
+    [isTransitioning, pathname, reducedMotion, router],
   );
 
   const value = useMemo(
@@ -139,22 +156,10 @@ export function PortfolioShell({ children }: { children: React.ReactNode }) {
   return (
     <PortfolioContext.Provider value={value}>
       <div className="portfolio-shell" aria-busy={isTransitioning}>
-        <SiteHeader />
-        <AnimatePresence mode="wait" initial={false}>
-          <motion.div
-            key={pathname}
-            className="route-page"
-            initial={shouldReduceMotion ? { opacity: 0 } : { opacity: 0, y: 24 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0 }}
-            transition={{
-              duration: shouldReduceMotion ? 0.12 : 0.52,
-              ease: [0.22, 1, 0.36, 1],
-            }}
-          >
-            {children}
-          </motion.div>
-        </AnimatePresence>
+        <SiteHeader onNavigate={navigate} />
+        <div key={pathname} className="route-page">
+          {children}
+        </div>
 
         <ThemeToggle />
         <CustomCursor />
@@ -163,26 +168,16 @@ export function PortfolioShell({ children }: { children: React.ReactNode }) {
           {isTransitioning && (
             <motion.div
               className="route-transition"
-              aria-hidden="true"
-              initial={{ opacity: 1 }}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              transition={{ duration: shouldReduceMotion ? 0.08 : 0.35 }}
+              transition={{ duration: reducedMotion ? 0.08 : 0.28 }}
             >
-              <motion.div
-                className="route-transition-cover"
-                initial={{ opacity: 0, scaleY: 0 }}
-                animate={
-                  isCoverVisible
-                    ? { opacity: 1, scaleY: 1 }
-                    : { opacity: 0, scaleY: 0 }
-                }
-                transition={{
-                  duration: shouldReduceMotion ? 0.12 : 0.48,
-                  ease: [0.76, 0, 0.24, 1],
-                }}
-              >
-                <span className="route-transition-mark font-display">AX</span>
-              </motion.div>
+              <DotCharacterLoader
+                ready={isLoaderReady}
+                label={targetPath ? "Cargando proyecto" : "Preparando sitio"}
+                overlay
+              />
             </motion.div>
           )}
         </AnimatePresence>

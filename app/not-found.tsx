@@ -2,6 +2,8 @@
 
 import { motion, useReducedMotion } from "motion/react";
 import { FiArrowLeft, FiCompass } from "react-icons/fi";
+import { MagneticTitle } from "./components/magnetic-title";
+import { HOME_PATH } from "./components/navigation-config";
 import { RouteTransitionLink } from "./components/route-transition-link";
 
 const DIGITS = ["4", "0", "4"];
@@ -88,9 +90,7 @@ export default function NotFound() {
               RUTA NO ENCONTRADA
             </p>
 
-            <h1 className="m-0 text-[clamp(1.8rem,4vw,4rem)] leading-[0.98] tracking-[-0.05em]">
-              Esta página salió del mapa.
-            </h1>
+            <MagneticTitle as="h1" text="Esta página salió del mapa." className="m-0 text-[clamp(1.55rem,3vw,3.2rem)] leading-[0.98] tracking-[-0.05em]" />
 
             <p className="m-0 max-w-[38rem] text-[clamp(0.95rem,1.2vw,1.15rem)] leading-[1.7] text-[var(--muted)]">
               La dirección no existe o fue movida. Regresa al inicio para continuar
@@ -98,7 +98,7 @@ export default function NotFound() {
             </p>
 
             <RouteTransitionLink
-              href="/"
+              href={HOME_PATH}
               className="group/back inline-flex items-center gap-4 bg-foreground px-[clamp(1rem,2vw,1.4rem)] py-[clamp(0.85rem,1.3vw,1.05rem)] text-background no-underline transition duration-300 hover:-translate-y-[0.2rem] hover:bg-[var(--accent)] focus-visible:-translate-y-[0.2rem] focus-visible:bg-[var(--accent)]"
             >
               <FiArrowLeft className="transition-transform duration-300 group-hover/back:-translate-x-[0.2rem]" aria-hidden="true" />

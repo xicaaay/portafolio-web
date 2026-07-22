@@ -1,5 +1,6 @@
 import { FiArrowLeft, FiArrowUpRight } from "react-icons/fi";
-import type { SectionItem } from "./navigation-config";
+import { MagneticTitle } from "./magnetic-title";
+import { HOME_PATH, type SectionItem } from "./navigation-config";
 import { RouteTransitionLink } from "./route-transition-link";
 
 export function InternalPage({ section }: { section: SectionItem }) {
@@ -9,12 +10,10 @@ export function InternalPage({ section }: { section: SectionItem }) {
         <div className="internal-section-index font-mono">{section.number}</div>
         <div className="internal-copy">
           <p className="internal-eyebrow font-mono">SECCIÓN</p>
-          <h1 id="section-title" className="font-display">
-            {section.label}
-          </h1>
+          <MagneticTitle as="h1" id="section-title" text={section.label} className="font-display" />
           <p className="internal-description">{section.description}</p>
 
-          <RouteTransitionLink href="/" className="internal-back-link">
+          <RouteTransitionLink href={HOME_PATH} className="internal-back-link">
             <FiArrowLeft aria-hidden="true" />
             Regresar al inicio
           </RouteTransitionLink>

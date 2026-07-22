@@ -1,5 +1,5 @@
-import { ProjectDetailLoader } from "../project-detail-loader";
+import { DotCharacterLoader } from "../../components/dot-character-loader";
 
 export default function Loading() {
-  return <ProjectDetailLoader title="Proyecto" />;
+  return <DotCharacterLoader label="Cargando proyecto" overlay />;
 }

@@ -9,6 +9,7 @@ import {
   FiMapPin,
 } from "react-icons/fi";
 import { ContentState } from "../components/content-state";
+import { MagneticTitle } from "../components/magnetic-title";
 import { SECTION_ITEMS } from "../components/navigation-config";
 import { SectionPageShell } from "../components/section-page-shell";
 import { TechnologyGlyph } from "../components/technology-glyph";
@@ -61,9 +62,7 @@ function ExperienceDetail({ experience }: { experience: PublicExperience }) {
           <span className="font-mono text-[clamp(0.58rem,0.68vw,0.74rem)] tracking-[0.1em] text-[var(--muted)] uppercase">
             EXPERIENCIA ACTIVA
           </span>
-          <h2 className="m-0 max-w-[15ch] [overflow-wrap:anywhere] text-[clamp(2rem,4vw,4.6rem)] leading-[0.92] tracking-[-0.055em]">
-            {experience.positionTitle}
-          </h2>
+          <MagneticTitle as="h2" text={experience.positionTitle} className="m-0 max-w-[15ch] [overflow-wrap:anywhere] text-[clamp(1.65rem,3.2vw,3.5rem)] leading-[0.94] tracking-[-0.055em]" />
         </div>
 
         {experience.organizationLogoUrl ? (

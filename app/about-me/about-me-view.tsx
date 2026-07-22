@@ -1,13 +1,12 @@
 "use client";
 
-/* eslint-disable @next/next/no-img-element */
-
-import { motion, useReducedMotion } from "motion/react";
 import { useState } from "react";
+import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import type { IconType } from "react-icons";
 import {
   FiArrowLeft,
   FiArrowUpRight,
+  FiChevronDown,
   FiLink,
   FiRefreshCw,
 } from "react-icons/fi";
@@ -33,6 +32,8 @@ import {
 } from "react-icons/si";
 import { FaLink } from "react-icons/fa6";
 import { InteractiveSectionTitle } from "../components/interactive-section-title";
+import { MagneticTitle } from "../components/magnetic-title";
+import { HOME_PATH } from "../components/navigation-config";
 import { RouteTransitionLink } from "../components/route-transition-link";
 import type {
   ProfileLoadResult,
@@ -40,6 +41,7 @@ import type {
   PublicSocialLink,
 } from "./about-me.types";
 import styles from "./about-me.module.css";
+import { ProfileBadge } from "./profile-badge";
 
 const easing = [0.22, 1, 0.36, 1] as const;
 
@@ -110,17 +112,6 @@ function getSocialIcon(social: PublicSocialLink): IconType {
   return FiLink;
 }
 
-function getInitials(name: string | null) {
-  if (!name) return "AX";
-
-  const words = name.trim().split(/\s+/).filter(Boolean);
-  const first = words.at(0)?.charAt(0) ?? "A";
-  const last = words.at(-1)?.charAt(0) ?? "X";
-
-  return `${first}${last}`.toUpperCase();
-}
-
-
 function EmptyState() {
   return (
     <section
@@ -130,18 +121,18 @@ function EmptyState() {
       <p className="m-0 font-mono text-[clamp(0.5rem,0.65vw,0.7rem)] tracking-[0.1em] text-[var(--muted)] uppercase">
         PROFILE / EMPTY
       </p>
-      <h1
+      <MagneticTitle
+        as="h1"
         id="empty-profile-title"
-        className="mt-5 mb-0 text-[clamp(2rem,3.6vw,4.5rem)] leading-[0.98] font-normal tracking-[-0.055em]"
-      >
-        Aún no hay información pública.
-      </h1>
+        text="Aún no hay información pública."
+        className="mt-5 mb-0 text-[clamp(1.7rem,2.8vw,3.2rem)] leading-[0.98] font-normal tracking-[-0.055em]"
+      />
       <p className="mt-7 mb-0 max-w-[39rem] text-[clamp(1rem,1.35vw,1.25rem)] leading-[1.7] text-[var(--muted)]">
         El perfil existe, pero todavía no contiene datos visibles para mostrar
         en esta sección.
       </p>
       <RouteTransitionLink
-        href="/"
+        href={HOME_PATH}
         className="mt-8 inline-flex w-fit max-w-full items-center gap-4 border border-[var(--line)] bg-transparent px-[1.125rem] py-4 text-[0.875rem] text-foreground no-underline transition duration-200 hover:-translate-y-0.5 hover:border-foreground focus-visible:-translate-y-0.5"
       >
         <FiArrowLeft aria-hidden="true" />
@@ -160,12 +151,12 @@ function ErrorState({ message }: { message: string }) {
       <p className="m-0 font-mono text-[clamp(0.5rem,0.65vw,0.7rem)] tracking-[0.1em] text-[var(--muted)] uppercase">
         PROFILE / UNAVAILABLE
       </p>
-      <h1
+      <MagneticTitle
+        as="h1"
         id="profile-error-title"
-        className="mt-5 mb-0 text-[clamp(2rem,3.6vw,4.5rem)] leading-[0.98] font-normal tracking-[-0.055em]"
-      >
-        No pudimos cargar esta sección.
-      </h1>
+        text="No pudimos cargar esta sección."
+        className="mt-5 mb-0 text-[clamp(1.7rem,2.8vw,3.2rem)] leading-[0.98] font-normal tracking-[-0.055em]"
+      />
       <p className="mt-7 mb-0 max-w-[39rem] text-[clamp(1rem,1.35vw,1.25rem)] leading-[1.7] text-[var(--muted)]">
         {message}
       </p>
@@ -251,12 +242,14 @@ function ProfileContent({
   profile: PublicProfile;
   reducedMotion: boolean;
 }) {
-  const [imageFailed, setImageFailed] = useState(false);
-  const showImage = Boolean(profile.profileImageUrl) && !imageFailed;
+  const [isBioExpanded, setIsBioExpanded] = useState(false);
   const hasSocialConnections = Boolean(
     profile.publicEmail || profile.socialLinks.length > 0,
   );
   const hasConnectionArea = hasSocialConnections || Boolean(profile.resumeUrl);
+  const shortBio = profile.shortBio?.trim() ?? "";
+  const longBio = profile.longBio?.trim() ?? "";
+  const hasLongBio = longBio.length > 0 && longBio !== shortBio;
 
   const reveal = {
     hidden: { opacity: 0, y: "1.5rem" },
@@ -279,14 +272,12 @@ function ProfileContent({
           variants={reveal}
           transition={{ duration: 0.68, ease: easing }}
         >
-          {profile.publicName && (
-            <InteractiveSectionTitle
-              id="profile-name"
-              text={profile.publicName}
-              size="profile"
-              preserveCase
-            />
-          )}
+          <InteractiveSectionTitle
+            id="profile-name"
+            text="Sobre mí"
+            size="profile"
+            preserveCase
+          />
 
           {profile.headline && (
             <p className="mt-[clamp(1rem,2vw,1.8rem)] mb-0 max-w-[52ch] font-mono text-[clamp(0.72rem,0.95vw,1rem)] leading-[1.5] tracking-[0.105em] text-[var(--accent)] uppercase">
@@ -296,7 +287,7 @@ function ProfileContent({
         </motion.div>
 
         <div className="grid min-w-0 items-stretch gap-[clamp(1.5rem,3.2vw,3.25rem)] xl:grid-cols-[minmax(0,1.35fr)_minmax(15rem,0.65fr)]">
-          {profile.shortBio && (
+          {(shortBio || longBio) && (
             <motion.article
               className={`${styles.bioCard} soft-panel soft-panel-interactive relative grid min-h-[clamp(16rem,28vw,26rem)] min-w-0 content-between gap-[clamp(1.75rem,4vw,3.75rem)] p-[clamp(1.5rem,3.2vw,3rem)] outline-none motion-reduce:transform-none motion-reduce:transition-none`}
               variants={reveal}
@@ -307,39 +298,60 @@ function ProfileContent({
               <span className="font-mono text-[clamp(0.62rem,0.7vw,0.74rem)] tracking-[0.11em] text-[var(--muted)] uppercase">
                 PERFIL / 01
               </span>
-              <p className="m-0 max-w-[48ch] [overflow-wrap:anywhere] text-[clamp(0.98rem,1.15vw,1.22rem)] leading-[1.62] tracking-[-0.012em] text-foreground">
-                {profile.shortBio}
-              </p>
+              <div className="grid min-w-0 gap-[clamp(1rem,1.8vw,1.5rem)]">
+                <p className="m-0 max-w-[48ch] [overflow-wrap:anywhere] text-[clamp(0.98rem,1.15vw,1.22rem)] leading-[1.62] tracking-[-0.012em] text-foreground">
+                  {shortBio || longBio}
+                </p>
+
+                {hasLongBio && (
+                  <>
+                    <button
+                      type="button"
+                      className={styles.readMore}
+                      aria-expanded={isBioExpanded}
+                      aria-controls="about-long-bio"
+                      onClick={() => setIsBioExpanded((current) => !current)}
+                      data-cursor="action"
+                    >
+                      {isBioExpanded ? "Leer menos" : "Leer más"}
+                      <span className={styles.readMoreIcon} aria-hidden="true">
+                        <FiChevronDown />
+                      </span>
+                    </button>
+
+                    <AnimatePresence initial={false}>
+                      {isBioExpanded && (
+                        <motion.div
+                          id="about-long-bio"
+                          initial={{ height: 0, opacity: 0 }}
+                          animate={{ height: "auto", opacity: 1 }}
+                          exit={{ height: 0, opacity: 0 }}
+                          transition={{ duration: 0.48, ease: easing }}
+                          className="overflow-hidden"
+                        >
+                          <p className="m-0 max-w-[58ch] whitespace-pre-line [overflow-wrap:anywhere] border-t border-[var(--line)] pt-[clamp(1rem,1.8vw,1.5rem)] text-[clamp(0.9rem,1vw,1.05rem)] leading-[1.72] text-[var(--muted)]">
+                            {longBio}
+                          </p>
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+                  </>
+                )}
+              </div>
             </motion.article>
           )}
 
-          <motion.figure
-            className={`${styles.sceneSecondary} soft-media m-0 w-full min-w-0 max-w-[28rem] justify-self-end overflow-hidden rounded-[clamp(1rem,2vw,1.5rem)] bg-[var(--surface)] sm:max-w-[26rem] xl:max-w-none`}
+          <motion.div
+            className={`${styles.sceneSecondary} m-0 w-full min-w-0 max-w-[21rem] justify-self-end sm:max-w-[22rem]`}
             variants={reveal}
             transition={{ duration: 0.72, delay: 0.04, ease: easing }}
           >
-            {showImage && profile.profileImageUrl ? (
-              <img
-                className="block aspect-[4/5] h-full w-full bg-[var(--surface)] object-cover saturate-[0.72] contrast-[1.04]"
-                src={profile.profileImageUrl}
-                alt={
-                  profile.publicName
-                    ? `Imagen de perfil de ${profile.publicName}`
-                    : "Imagen de perfil"
-                }
-                loading="lazy"
-                decoding="async"
-                onError={() => setImageFailed(true)}
-              />
-            ) : (
-              <div
-                className="soft-panel grid aspect-[4/5] h-full w-full select-none place-items-center font-display text-[clamp(4rem,8vw,9rem)] tracking-[-0.08em] text-[color-mix(in_srgb,var(--foreground)_14%,transparent)]"
-                aria-label="Espacio reservado para fotografía de perfil"
-              >
-                <span aria-hidden="true">{getInitials(profile.publicName)}</span>
-              </div>
-            )}
-          </motion.figure>
+            <ProfileBadge
+              name={profile.publicName}
+              headline={profile.headline}
+              imageUrl={profile.profileImageUrl}
+            />
+          </motion.div>
         </div>
       </section>
 
@@ -450,7 +462,7 @@ export function AboutMeView({ result }: { result: ProfileLoadResult }) {
 
   return (
     <main
-      className="site-page grid min-h-svh overflow-x-clip bg-background p-[clamp(1.25rem,3vw,3rem)] text-foreground"
+      className="site-page grid min-h-svh bg-background p-[clamp(1.25rem,3vw,3rem)] text-foreground"
       aria-label="Sobre mí"
     >
       <div className="w-full py-[clamp(4rem,8vh,7rem)]">
