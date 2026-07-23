@@ -19,6 +19,14 @@
   will-change: transform;
 }
 
+.stage[data-compact="true"] {
+  min-height: clamp(20rem, 28vw, 24rem);
+}
+
+.stage[data-compact="true"] .badge {
+  width: min(100%, 15.5rem);
+}
+
 .cardInner {
   position: absolute;
   inset: 0;
@@ -92,7 +100,8 @@
   width: calc(100% - var(--card-padding) - var(--card-padding));
   height: calc(100% - var(--card-padding) - var(--card-padding));
   border-radius: clamp(0.9rem, 1.8vw, 1.4rem);
-  object-fit: cover;
+  object-fit: contain;
+  object-position: center;
   filter: contrast(1.03);
   pointer-events: none;
 }

@@ -186,11 +186,6 @@ export function HomeScreen({ publicName }: HomeScreenProps) {
               transition={{ delay: 0.52, duration: 0.8, ease: easing }}
             >
               <InteractiveCharacter ariaLabel="Hacer saltar al personaje" />
-
-              <p id="home-character-hint" className="home-character-label font-mono">
-                <span>INTERACTIVO</span>
-                <small>Mueve el cursor · haz clic</small>
-              </p>
             </motion.div>
             <span className="home-portrait-corner home-portrait-corner-top" aria-hidden="true" />
             <span className="home-portrait-corner home-portrait-corner-bottom" aria-hidden="true" />
@@ -241,9 +236,11 @@ function TypingLine({ number, text, delay, reducedMotion }: TypingLineProps) {
 
   return (
     <p aria-label={text}>
-      <span aria-hidden="true">{number}</span>
-      <code aria-hidden="true">{text.slice(0, renderedCharacters)}</code>
-      <i className={isTyping ? "is-typing" : undefined} aria-hidden="true" />
+      <span className="home-code-line-number" aria-hidden="true">{number}</span>
+      <span className="home-code-line-content" aria-hidden="true">
+        <code>{text.slice(0, renderedCharacters)}</code>
+        <i className={isTyping ? "is-typing" : undefined} />
+      </span>
     </p>
   );
 }

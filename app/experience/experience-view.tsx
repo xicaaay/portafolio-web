@@ -181,7 +181,29 @@ function ExperienceDetail({ experience }: { experience: PublicExperience }) {
       </div>
 
       <div className="soft-strip grid gap-3 px-[clamp(1rem,1.8vw,1.4rem)] py-[clamp(1.1rem,2vw,1.6rem)] font-mono text-[clamp(0.62rem,0.75vw,0.82rem)] tracking-[0.05em] uppercase sm:grid-cols-2">
-        <span>{experience.organizationName}</span>
+        <div className="m-0 grid min-w-0 justify-items-start gap-3 p-0 text-left">
+          <span className="m-0 p-0">{experience.organizationName.trim()}</span>
+
+          {experience.organizationUrl && (
+            <a
+              href={experience.organizationUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="group/company-link inline-flex min-w-0 items-center gap-[clamp(0.65rem,1vw,0.9rem)] bg-transparent py-1 text-foreground no-underline transition duration-300 ease-out hover:-translate-y-[0.2rem] hover:text-[var(--accent)] focus-visible:-translate-y-[0.2rem] focus-visible:text-[var(--accent)]"
+              aria-label={`Ver ${experience.organizationName.trim()} en una nueva pestaña`}
+              data-cursor="action"
+            >
+              <span className="grid size-[clamp(2rem,2.5vw,2.3rem)] shrink-0 place-items-center rounded-full bg-[var(--surface)] text-foreground transition duration-300 ease-out group-hover/company-link:-rotate-6 group-hover/company-link:scale-105 group-hover/company-link:bg-foreground group-hover/company-link:text-background group-focus-visible/company-link:-rotate-6 group-focus-visible/company-link:scale-105 group-focus-visible/company-link:bg-foreground group-focus-visible/company-link:text-background">
+                <FiBriefcase className="size-[clamp(0.85rem,1vw,1rem)]" aria-hidden="true" />
+              </span>
+              <strong className="font-medium">Ver organización</strong>
+              <FiArrowUpRight
+                className="size-[clamp(0.8rem,1vw,0.95rem)] shrink-0 translate-x-[-0.375rem] translate-y-[0.375rem] opacity-0 transition duration-300 ease-out group-hover/company-link:translate-x-[0.125rem] group-hover/company-link:translate-y-[-0.125rem] group-hover/company-link:opacity-100 group-focus-visible/company-link:translate-x-[0.125rem] group-focus-visible/company-link:translate-y-[-0.125rem] group-focus-visible/company-link:opacity-100"
+                aria-hidden="true"
+              />
+            </a>
+          )}
+        </div>
         <span className="text-[var(--muted)] sm:text-right">
           {formatPeriod(experience)}
         </span>
@@ -270,18 +292,6 @@ function ExperienceDetail({ experience }: { experience: PublicExperience }) {
         </div>
       )}
 
-      {experience.organizationUrl && (
-        <a
-          href={experience.organizationUrl}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="group/company-link inline-flex w-fit items-center gap-3 border-b border-[var(--line)] pb-2 text-foreground no-underline transition-colors duration-300 hover:border-foreground focus-visible:border-foreground"
-          data-cursor="action"
-        >
-          Visitar organización
-          <FiArrowUpRight className="transition-transform duration-300 group-hover/company-link:translate-x-[0.15rem] group-hover/company-link:translate-y-[-0.15rem]" aria-hidden="true" />
-        </a>
-      )}
     </motion.article>
   );
 }

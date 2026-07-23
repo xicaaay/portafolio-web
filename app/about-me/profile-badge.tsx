@@ -11,6 +11,7 @@ type ProfileBadgeProps = {
   headline: string | null;
   imageUrl: string | null;
   interactive?: boolean;
+  compact?: boolean;
 };
 
 function getInitials(name: string | null) {
@@ -28,6 +29,7 @@ export function ProfileBadge({
   headline,
   imageUrl,
   interactive = true,
+  compact = false,
 }: ProfileBadgeProps) {
   const shouldReduceMotion = useReducedMotion() ?? false;
   const [imageFailed, setImageFailed] = useState(false);
@@ -42,7 +44,7 @@ export function ProfileBadge({
   };
 
   return (
-    <div className={styles.stage}>
+    <div className={styles.stage} data-compact={compact ? "true" : undefined}>
       <motion.figure
         className={styles.badge}
         drag={interactive && !shouldReduceMotion}

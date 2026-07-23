@@ -40,7 +40,12 @@ export function SectionPageShell({
           {showExploreHint && <span>DESPLAZA PARA EXPLORAR</span>}
         </div>
 
-        <InteractiveSectionTitle id="section-page-title" text={section.label} />
+        <InteractiveSectionTitle
+          id="section-page-title"
+          text={section.label}
+          size="profile"
+          preserveCase
+        />
 
         <p className="section-page-intro m-0 max-w-[56rem] [overflow-wrap:anywhere] text-[clamp(0.95rem,1.35vw,1.35rem)] leading-[1.7] text-[var(--muted)]">
           {intro}

@@ -10,6 +10,7 @@ type RouteTransitionLinkProps = {
   className?: string;
   children: ReactNode;
   ariaLabel?: string;
+  onClick?: (event: MouseEvent<HTMLAnchorElement>) => void;
 };
 
 export function RouteTransitionLink({
@@ -17,6 +18,7 @@ export function RouteTransitionLink({
   className,
   children,
   ariaLabel,
+  onClick,
 }: RouteTransitionLinkProps) {
   const pathname = usePathname();
   const { isTransitioning, targetPath, navigate } = usePortfolio();
@@ -24,6 +26,8 @@ export function RouteTransitionLink({
   const isSelected = targetPath === href;
 
   const handleClick = (event: MouseEvent<HTMLAnchorElement>) => {
+    onClick?.(event);
+
     if (
       event.defaultPrevented ||
       event.button !== 0 ||

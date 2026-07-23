@@ -5,7 +5,14 @@ import {
   motion,
   useReducedMotion,
 } from "motion/react";
-import { type FormEvent, useEffect, useMemo, useState } from "react";
+import {
+  type FocusEvent,
+  type FormEvent,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import {
   FiArrowUpRight,
   FiCheck,
@@ -20,7 +27,6 @@ import type {
   PublicProfile,
   PublicSocialLink,
 } from "../about-me/about-me.types";
-import { ProfileBadge } from "../about-me/profile-badge";
 import { ContentState } from "../components/content-state";
 import { MagneticTitle } from "../components/magnetic-title";
 import { SECTION_ITEMS } from "../components/navigation-config";
@@ -42,6 +48,8 @@ type PreparedMessage = {
   subject: string;
   body: string;
 };
+
+type NoteTakingMode = "idle" | "ready" | "writing";
 
 function normalizeSocialIdentifier(value: string | null | undefined) {
   return value?.toLowerCase().replace(/[^a-z0-9]/g, "") ?? "";
@@ -160,6 +168,128 @@ function validateForm(formData: FormData) {
   }
 
   return errors;
+}
+
+function NoteTakingCharacter({
+  mode,
+  reducedMotion,
+}: {
+  mode: NoteTakingMode;
+  reducedMotion: boolean;
+}) {
+  const modeLabel = {
+    idle: "Personaje esperando con una libreta",
+    ready: "Personaje atento y listo para tomar nota",
+    writing: "Personaje escribiendo en su libreta",
+  }[mode];
+
+  return (
+    <motion.figure
+      className="contact-note-scene"
+      data-mode={mode}
+      role="img"
+      aria-label={modeLabel}
+      initial={reducedMotion ? false : { opacity: 0, y: "1.5rem" }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{
+        duration: reducedMotion ? 0.15 : 0.72,
+        delay: reducedMotion ? 0 : 0.12,
+        ease: [0.22, 1, 0.36, 1],
+      }}
+    >
+      <span className="contact-note-orbit" aria-hidden="true" />
+
+      <svg
+        className="contact-note-character"
+        viewBox="0 0 520 470"
+        fill="none"
+        aria-hidden="true"
+      >
+        <path className="contact-sketch-ground" d="M44 426H476" />
+        <ellipse
+          className="contact-sketch-shadow"
+          cx="271"
+          cy="424"
+          rx="174"
+          ry="13"
+        />
+
+        <g className="contact-sketch-person">
+          <g className="contact-sketch-body">
+            <path d="M198 250c-2 54-2 111-1 170" />
+          </g>
+
+          <g className="contact-sketch-head">
+            <path
+              className="contact-sketch-hair"
+              d="M157 78c14-23 43-34 70-21-14-2-28 2-39 10 20-7 40-4 56 8-32-10-59-7-87 3Z"
+            />
+            <path d="M216 68c-50-8-94 25-101 75-7 53 23 101 75 112 50 10 101-19 114-68 13-49-14-105-88-119Z" />
+            <ellipse
+              className="contact-sketch-eye contact-sketch-eye-left"
+              cx="264"
+              cy="151"
+              rx="7"
+              ry="18"
+            />
+            <ellipse
+              className="contact-sketch-eye contact-sketch-eye-right"
+              cx="291"
+              cy="159"
+              rx="7"
+              ry="17"
+            />
+          </g>
+
+          <g className="contact-sketch-holding-arm">
+            <path d="M198 264c-16 21-29 46-40 76 43 5 84 4 124-1" />
+            <ellipse
+              cx="287"
+              cy="338"
+              rx="14"
+              ry="10"
+              transform="rotate(-18 287 338)"
+            />
+          </g>
+
+          <g className="contact-sketch-paper">
+            <path d="M281 338 370 255l104 10-90 75-44 77-109-3 50-76Z" />
+            <path
+              className="contact-sketch-paper-line contact-sketch-paper-line-one"
+              d="M295 349h63"
+            />
+            <path
+              className="contact-sketch-paper-line contact-sketch-paper-line-two"
+              d="m282 369 67-1"
+            />
+            <path
+              className="contact-sketch-paper-line contact-sketch-paper-line-three"
+              d="m269 389 68-1"
+            />
+            <path
+              className="contact-sketch-paper-line contact-sketch-paper-line-four"
+              d="m256 408 60-1"
+            />
+            <path d="M476 260c7 0 10 6 7 13" />
+          </g>
+
+          <g className="contact-sketch-writing-arm">
+            <path d="M197 275c24 26 51 46 84 62" />
+            <path d="M281 337c17-8 29-24 41-42" />
+            <ellipse
+              cx="322"
+              cy="294"
+              rx="13"
+              ry="10"
+              transform="rotate(-38 322 294)"
+            />
+            <path className="contact-sketch-pen" d="m308 280 58 55" />
+            <path className="contact-sketch-pen-tip" d="m366 335 8 9" />
+          </g>
+        </g>
+      </svg>
+    </motion.figure>
+  );
 }
 
 type ContactFieldProps = {
@@ -400,10 +530,71 @@ function ContactForm({ profile }: { profile: PublicProfile }) {
   const [statusMessage, setStatusMessage] = useState<string | null>(null);
   const [isFormReady, setIsFormReady] = useState(false);
   const [isSubmitActive, setIsSubmitActive] = useState(false);
+  const [isFieldFocused, setIsFieldFocused] = useState(false);
+  const [isWriting, setIsWriting] = useState(false);
+  const writingTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const noteTakingMode: NoteTakingMode = isWriting
+    ? "writing"
+    : isFieldFocused
+      ? "ready"
+      : "idle";
+
+  useEffect(
+    () => () => {
+      if (writingTimeoutRef.current) {
+        clearTimeout(writingTimeoutRef.current);
+      }
+    },
+    [],
+  );
 
   const handleFormInput = (event: FormEvent<HTMLFormElement>) => {
     const formData = new FormData(event.currentTarget);
     setIsFormReady(Object.keys(validateForm(formData)).length === 0);
+
+    if (
+      event.target instanceof HTMLInputElement ||
+      event.target instanceof HTMLTextAreaElement
+    ) {
+      setIsWriting(true);
+
+      if (writingTimeoutRef.current) {
+        clearTimeout(writingTimeoutRef.current);
+      }
+
+      writingTimeoutRef.current = setTimeout(() => {
+        setIsWriting(false);
+      }, 680);
+    }
+  };
+
+  const handleFormFocus = (event: FocusEvent<HTMLFormElement>) => {
+    if (
+      event.target instanceof HTMLInputElement ||
+      event.target instanceof HTMLTextAreaElement
+    ) {
+      setIsFieldFocused(true);
+    }
+  };
+
+  const handleFormBlur = (event: FocusEvent<HTMLFormElement>) => {
+    const nextTarget = event.relatedTarget;
+
+    if (
+      nextTarget instanceof Element &&
+      event.currentTarget.contains(nextTarget) &&
+      (nextTarget instanceof HTMLInputElement ||
+        nextTarget instanceof HTMLTextAreaElement)
+    ) {
+      return;
+    }
+
+    setIsFieldFocused(false);
+    setIsWriting(false);
+
+    if (writingTimeoutRef.current) {
+      clearTimeout(writingTimeoutRef.current);
+    }
   };
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
@@ -422,19 +613,14 @@ function ContactForm({ profile }: { profile: PublicProfile }) {
 
     const name = String(formData.get("name") ?? "").trim();
     const senderEmail = String(formData.get("email") ?? "").trim();
-    const company = String(formData.get("company") ?? "").trim();
-    const subjectInput = String(formData.get("subject") ?? "").trim();
     const message = String(formData.get("message") ?? "").trim();
-    const subject = subjectInput || `Consulta desde el portafolio — ${name}`;
+    const subject = `Consulta desde el portafolio — ${name}`;
     const body = [
       `Hola, soy ${name}.`,
-      company ? `Empresa o proyecto: ${company}` : null,
       `Correo de contacto: ${senderEmail}`,
       "",
       message,
-    ]
-      .filter((line): line is string => line !== null)
-      .join("\n");
+    ].join("\n");
 
     // La elección del canal ocurre después de validar y preparar el mensaje.
     setPreparedMessage({ subject, body });
@@ -477,20 +663,13 @@ function ContactForm({ profile }: { profile: PublicProfile }) {
 
   return (
     <>
-      <div className="grid min-w-0 gap-[clamp(1.25rem,3vw,3rem)] lg:grid-cols-[minmax(16rem,0.65fr)_minmax(0,1.35fr)] lg:items-stretch">
-        <div className="grid min-w-0 place-items-center self-center" aria-label="Carnet profesional">
-          <ProfileBadge
-            name={profile.publicName}
-            headline={profile.headline}
-            imageUrl={profile.profileImageUrl}
-            interactive={false}
-          />
-        </div>
-
+      <div className="contact-form-layout grid min-w-0 gap-[clamp(1.25rem,3vw,3rem)] lg:grid-cols-2 lg:items-stretch">
         <motion.form
-          className="grid min-w-0 gap-[clamp(1.5rem,3vw,2.5rem)] rounded-[clamp(1.5rem,3vw,3rem)] bg-[color-mix(in_srgb,var(--surface-raised)_58%,transparent)] p-[clamp(1.25rem,3vw,3rem)] shadow-[0_2.5rem_7rem_-4rem_color-mix(in_srgb,var(--foreground)_34%,transparent)] backdrop-blur-2xl"
+          className="contact-form-surface grid h-full w-full min-w-0 content-start gap-[clamp(1.1rem,2vw,1.75rem)] rounded-[clamp(1.25rem,2.4vw,2.25rem)] p-[clamp(1.1rem,2.2vw,2.2rem)] lg:order-2"
           onSubmit={handleSubmit}
           onInput={handleFormInput}
+          onFocus={handleFormFocus}
+          onBlur={handleFormBlur}
           noValidate
           initial={shouldReduceMotion ? false : { opacity: 0, y: "1.5rem" }}
           animate={{ opacity: 1, y: 0 }}
@@ -533,21 +712,6 @@ function ContactForm({ profile }: { profile: PublicProfile }) {
             />
           </div>
 
-          <div className="grid gap-[clamp(1rem,2vw,1.75rem)] sm:grid-cols-2">
-            <ContactField
-              label="Empresa o proyecto"
-              name="company"
-              placeholder="Opcional"
-              autoComplete="organization"
-            />
-
-            <ContactField
-              label="Asunto"
-              name="subject"
-              placeholder="Opcional"
-            />
-          </div>
-
           <label className="group/field grid gap-2">
             <span className="font-mono text-[clamp(0.58rem,0.68vw,0.74rem)] tracking-[0.07em] text-[var(--muted)] uppercase transition-colors duration-300 group-focus-within/field:text-foreground">
               Mensaje
@@ -555,7 +719,7 @@ function ContactForm({ profile }: { profile: PublicProfile }) {
 
             <span className="relative border-b border-[var(--line)] py-[clamp(0.75rem,1.5vw,1rem)] after:absolute after:inset-x-0 after:bottom-[-0.0625rem] after:h-[0.125rem] after:origin-left after:scale-x-0 after:bg-[var(--accent)] after:transition-transform after:duration-300 after:content-[''] group-focus-within/field:after:scale-x-100">
               <textarea
-                className="min-h-[clamp(8rem,20vw,13rem)] w-full resize-y border-0 bg-transparent p-0 text-foreground outline-none placeholder:text-[var(--subtle)]"
+                className="min-h-[clamp(6rem,12vw,8.5rem)] w-full resize-y border-0 bg-transparent p-0 text-foreground outline-none placeholder:text-[var(--subtle)]"
                 name="message"
                 placeholder="Cuéntame qué necesitas construir, mejorar o integrar."
                 aria-invalid={Boolean(errors.message)}
@@ -659,6 +823,11 @@ function ContactForm({ profile }: { profile: PublicProfile }) {
             </AnimatePresence>
           </div>
         </motion.form>
+
+        <NoteTakingCharacter
+          mode={noteTakingMode}
+          reducedMotion={shouldReduceMotion ?? false}
+        />
       </div>
 
       <ChannelDialog
@@ -682,7 +851,7 @@ export function ContactView({ result }: ContactViewProps) {
     <SectionPageShell
       section={SECTION_ITEMS[4]}
       eyebrow="CONVERSEMOS"
-      intro="Cuéntame qué necesitas. Al preparar el mensaje podrás elegir entre Gmail y WhatsApp sin volver a escribir nada."
+      intro="Cuéntame qué necesitas."
     >
       {result.status === "success" && hasContactChannels && (
         <ContactForm profile={result.profile} />

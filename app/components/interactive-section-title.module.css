@@ -11,6 +11,7 @@
 }
 
 .sectionTitle {
+  margin-inline-start: -0.035em;
   font-size: clamp(2.15rem, var(--title-fluid-size), 8.5rem);
   line-height: 0.82;
   text-transform: uppercase;
