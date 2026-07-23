@@ -7,6 +7,13 @@
   perspective: 70rem;
 }
 
+.magneticBadge {
+  width: min(100%, 18rem);
+  aspect-ratio: 0.72;
+  perspective: 70rem;
+  will-change: transform;
+}
+
 .badge {
   position: relative;
   width: min(100%, 18rem);
@@ -19,11 +26,16 @@
   will-change: transform;
 }
 
+.magneticBadge > .badge {
+  width: 100%;
+  height: 100%;
+}
+
 .stage[data-compact="true"] {
   min-height: clamp(20rem, 28vw, 24rem);
 }
 
-.stage[data-compact="true"] .badge {
+.stage[data-compact="true"] .magneticBadge {
   width: min(100%, 15.5rem);
 }
 
@@ -113,6 +125,13 @@
     0 0 2.5rem color-mix(in srgb, var(--accent) 12%, transparent);
 }
 
+.magneticBadge[data-magnetic-active="true"] .face {
+  border-color: color-mix(in srgb, var(--accent) 34%, var(--line-soft));
+  box-shadow:
+    0 3rem 5.5rem -2.8rem color-mix(in srgb, var(--foreground) 46%, transparent),
+    0 0 2.25rem color-mix(in srgb, var(--accent) 14%, transparent);
+}
+
 .badge[data-static="true"] {
   cursor: default;
   touch-action: auto;
@@ -198,27 +217,30 @@
   overflow-wrap: anywhere;
 }
 
-@media (max-width: 30rem) {
-  .stage {
-    min-height: 20rem;
-  }
-
-  .badge {
-    width: min(100%, 15rem);
-  }
-}
-
 @media (max-width: 80rem) {
   .stage {
     min-height: clamp(20rem, 42vw, 27rem);
   }
 
-  .badge {
+  .magneticBadge {
     width: min(100%, 16rem);
   }
 }
 
+@media (max-width: 38rem) {
+  .magneticBadge {
+    width: min(100%, 15rem);
+  }
+}
+
+@media (max-width: 30rem) {
+  .stage {
+    min-height: 20rem;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
+  .magneticBadge,
   .badge,
   .cardInner,
   .photo img {

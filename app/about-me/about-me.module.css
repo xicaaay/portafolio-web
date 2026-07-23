@@ -4,6 +4,29 @@
     transform 420ms cubic-bezier(0.22, 1, 0.36, 1);
 }
 
+.profileCards {
+  display: grid;
+  width: 100%;
+  min-width: 0;
+  max-width: 38rem;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  align-items: center;
+  justify-self: center;
+  gap: clamp(1.25rem, 2.5vw, 2rem);
+}
+
+.profileCards[data-single="true"] {
+  max-width: 21rem;
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.resumeCardStage {
+  display: grid;
+  width: 100%;
+  min-height: clamp(22rem, 34vw, 31rem);
+  place-items: center;
+}
+
 .bioCard {
   padding-inline: 0 !important;
   border-inline: 0;
@@ -84,6 +107,472 @@
   transform: rotate(180deg);
 }
 
+.resumePreview[data-resume-card="true"] {
+  --magnetic-x: 50%;
+  --magnetic-y: 50%;
+  position: relative;
+  display: grid;
+  width: min(100%, 18rem);
+  aspect-ratio: 0.72;
+  cursor: pointer;
+  overflow: visible;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  outline: none;
+  background: transparent;
+  color: var(--foreground);
+  text-align: left;
+  touch-action: auto;
+  user-select: none;
+  will-change: transform;
+}
+
+.resumeFace {
+  transition:
+    border-color 280ms ease,
+    box-shadow 430ms cubic-bezier(0.22, 1, 0.36, 1),
+    filter 320ms ease;
+}
+
+.resumeWritingSurface {
+  align-content: center;
+  padding: clamp(1.25rem, 2.4vw, 2rem);
+  background:
+    radial-gradient(
+      circle at var(--magnetic-x) var(--magnetic-y),
+      color-mix(in srgb, var(--accent) 18%, transparent),
+      transparent 48%
+    ),
+    linear-gradient(
+      145deg,
+      color-mix(in srgb, var(--surface) 94%, white 6%),
+      color-mix(in srgb, var(--surface) 94%, black 6%)
+    );
+  transition:
+    background 320ms ease,
+    filter 320ms ease;
+}
+
+.resumeWritingLines {
+  display: grid;
+  width: 100%;
+  align-content: center;
+  gap: clamp(0.65rem, 1.15vw, 0.9rem);
+  opacity: 0;
+  clip-path: inset(0 0 100% 0);
+  contain: paint;
+  transform: translateZ(0);
+  animation: resumeLinesReveal 3.6s cubic-bezier(0.22, 1, 0.36, 1) infinite;
+  will-change: clip-path, opacity;
+}
+
+.resumeWritingLines > span {
+  display: block;
+  width: 100%;
+  height: clamp(0.24rem, 0.42vw, 0.36rem);
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--foreground) 72%, transparent);
+  opacity: 0.78;
+  transform: scaleX(1);
+  transform-origin: left;
+}
+
+.resumeWritingLines > span:nth-child(1) {
+  width: 58%;
+}
+
+.resumeWritingLines > span:nth-child(2) {
+  width: 88%;
+}
+
+.resumeWritingLines > span:nth-child(3) {
+  width: 76%;
+}
+
+.resumeWritingLines > span:nth-child(4) {
+  width: 94%;
+}
+
+.resumeWritingLines > span:nth-child(5) {
+  width: 67%;
+}
+
+.resumeWritingLines > span:nth-child(6) {
+  width: 84%;
+}
+
+.resumeWritingLines > span:nth-child(7) {
+  width: 91%;
+}
+
+.resumeWritingLines > span:nth-child(8) {
+  width: 48%;
+}
+
+@keyframes resumeLinesReveal {
+  0%,
+  10% {
+    opacity: 0;
+    clip-path: inset(0 0 100% 0);
+  }
+
+  18% {
+    opacity: 1;
+  }
+
+  62%,
+  84% {
+    opacity: 1;
+    clip-path: inset(0 0 0% 0);
+  }
+
+  100% {
+    opacity: 0;
+    clip-path: inset(0 0 0% 0);
+  }
+}
+
+.resumePreview:hover,
+.resumePreview:focus-visible,
+.resumePreview[data-magnetic-active="true"] {
+  color: var(--foreground);
+  filter: saturate(1.16);
+}
+
+.resumePreview:hover .resumeFace,
+.resumePreview:focus-visible .resumeFace,
+.resumePreview[data-magnetic-active="true"] .resumeFace {
+  border-color: color-mix(in srgb, var(--accent) 44%, var(--line-soft));
+  box-shadow:
+    0 3.5rem 6rem -2.6rem color-mix(in srgb, var(--foreground) 48%, transparent),
+    0 0 2.5rem color-mix(in srgb, var(--accent) 18%, transparent);
+}
+
+.resumePreview:hover .resumeWritingLines > span,
+.resumePreview:focus-visible .resumeWritingLines > span,
+.resumePreview[data-magnetic-active="true"] .resumeWritingLines > span {
+  background: color-mix(in srgb, var(--accent) 76%, var(--foreground));
+}
+
+.resumeModalBackdrop {
+  position: fixed;
+  z-index: 520;
+  inset: 0;
+  display: grid;
+  min-height: 100svh;
+  place-items: center;
+  overflow: hidden;
+  padding: clamp(0.75rem, 2vw, 1.5rem);
+  background: rgba(5, 7, 8, 0.82);
+  backdrop-filter: blur(20px);
+}
+
+.resumeModal {
+  position: relative;
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
+  width: min(100%, 72rem);
+  max-height: calc(100svh - clamp(1.5rem, 4vw, 3rem));
+  min-height: min(44rem, calc(100svh - clamp(1.5rem, 4vw, 3rem)));
+  gap: clamp(1rem, 2vw, 1.75rem);
+  padding: clamp(1.25rem, 2.5vw, 2.5rem);
+  background:
+    radial-gradient(
+      circle at 12% 0,
+      color-mix(in srgb, var(--accent) 13%, transparent),
+      transparent 34%
+    ),
+    color-mix(in srgb, var(--surface-raised) 98%, transparent);
+  color: var(--foreground);
+  box-shadow: 0 3rem 9rem -3rem rgba(0, 0, 0, 0.9);
+}
+
+.resumeModalCorner {
+  position: absolute;
+  width: clamp(1.5rem, 3vw, 2.75rem);
+  height: clamp(1.5rem, 3vw, 2.75rem);
+  border-color: var(--accent);
+  opacity: 0.7;
+  pointer-events: none;
+}
+
+.resumeModalCornerTl {
+  top: 0.75rem;
+  left: 0.75rem;
+  border-top: 1px solid;
+  border-left: 1px solid;
+}
+
+.resumeModalCornerTr {
+  top: 0.75rem;
+  right: 0.75rem;
+  border-top: 1px solid;
+  border-right: 1px solid;
+}
+
+.resumeModalCornerBl {
+  bottom: 0.75rem;
+  left: 0.75rem;
+  border-bottom: 1px solid;
+  border-left: 1px solid;
+}
+
+.resumeModalCornerBr {
+  right: 0.75rem;
+  bottom: 0.75rem;
+  border-right: 1px solid;
+  border-bottom: 1px solid;
+}
+
+.resumeModalHeader {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  min-width: 0;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.resumeModalHeading {
+  display: grid;
+  min-width: 0;
+  gap: 0.4rem;
+}
+
+.resumeModalHeader small {
+  color: var(--muted);
+  font-family: var(--font-jetbrains-mono), monospace;
+  font-size: clamp(0.55rem, 0.65vw, 0.68rem);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.resumeModalTitle {
+  max-width: 100%;
+  margin: 0;
+  font-size: clamp(1.7rem, 3.4vw, 3.5rem);
+  line-height: 0.92;
+}
+
+.resumeModalActions {
+  display: flex;
+  min-width: 0;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.6rem;
+  margin-top: 0.6rem;
+}
+
+.resumeModalControls {
+  display: flex;
+  min-width: auto;
+  flex: 0 0 auto;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.resumeZoomControls {
+  display: inline-flex;
+  min-height: 2.75rem;
+  align-items: center;
+  gap: 0.2rem;
+}
+
+.resumeZoomControls button {
+  display: grid;
+  width: 2.5rem;
+  height: 2.5rem;
+  cursor: pointer;
+  place-items: center;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: var(--surface);
+  color: var(--foreground);
+  transition:
+    background 260ms ease,
+    color 260ms ease,
+    transform 320ms cubic-bezier(0.22, 1, 0.36, 1),
+    opacity 220ms ease;
+}
+
+.resumeZoomControls button:hover:not(:disabled),
+.resumeZoomControls button:focus-visible:not(:disabled) {
+  background: var(--foreground);
+  color: var(--background);
+  transform: scale(1.06);
+}
+
+.resumeZoomControls button:disabled {
+  cursor: default;
+  opacity: 0.35;
+}
+
+.resumeZoomControls output {
+  min-width: 3.25rem;
+  color: var(--muted);
+  font-family: var(--font-jetbrains-mono), monospace;
+  font-size: clamp(0.56rem, 0.66vw, 0.7rem);
+  letter-spacing: 0.04em;
+  text-align: center;
+}
+
+.resumeModalExternal {
+  position: relative;
+  display: inline-flex;
+  min-height: 3rem;
+  align-items: center;
+  gap: 0.65rem;
+  overflow: hidden;
+  padding: 0.32rem 0.95rem 0.32rem 0.34rem;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background:
+    linear-gradient(
+      135deg,
+      color-mix(in srgb, var(--surface-raised) 94%, white 6%),
+      color-mix(in srgb, var(--surface-raised) 96%, black 4%)
+    );
+  color: var(--foreground);
+  cursor: pointer;
+  font-family: inherit;
+  font-size: clamp(0.7rem, 0.78vw, 0.82rem);
+  font-weight: 620;
+  letter-spacing: -0.01em;
+  text-decoration: none;
+  box-shadow:
+    0 0.7rem 1.5rem -1.1rem color-mix(in srgb, var(--foreground) 40%, transparent),
+    inset 0 1px color-mix(in srgb, white 8%, transparent);
+  transition:
+    border-color 260ms ease,
+    background 260ms ease,
+    box-shadow 320ms ease,
+    color 260ms ease,
+    transform 320ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.resumeModalExternal:disabled {
+  cursor: wait;
+  opacity: 0.58;
+}
+
+.resumeModalExternal[data-downloading="true"] .resumeModalExternalIcon svg {
+  animation: resumeDownloadPulse 720ms ease-in-out infinite alternate;
+}
+
+@keyframes resumeDownloadPulse {
+  to {
+    transform: translateY(0.18rem);
+  }
+}
+
+.resumeModalExternalIcon {
+  display: grid;
+  width: 2.25rem;
+  height: 2.25rem;
+  flex: 0 0 auto;
+  place-items: center;
+  border: 1px solid color-mix(in srgb, var(--foreground) 12%, transparent);
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--foreground) 8%, transparent);
+  color: var(--foreground);
+  transition:
+    border-color 260ms ease,
+    background 260ms ease,
+    color 260ms ease,
+    transform 320ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.resumeModalExternalIcon svg {
+  width: 0.95rem;
+  height: 0.95rem;
+  transition: transform 320ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.resumeModalExternal:hover,
+.resumeModalExternal:focus-visible {
+  border-color: var(--foreground);
+  background: var(--foreground);
+  color: var(--background);
+  box-shadow:
+    0 1rem 2rem -1rem color-mix(in srgb, var(--foreground) 58%, transparent),
+    inset 0 1px color-mix(in srgb, white 10%, transparent);
+  transform: translateY(-0.15rem);
+}
+
+.resumeModalExternal:hover .resumeModalExternalIcon,
+.resumeModalExternal:focus-visible .resumeModalExternalIcon {
+  border-color: color-mix(in srgb, var(--background) 24%, transparent);
+  background: var(--background);
+  color: var(--foreground);
+  transform: rotate(-6deg) scale(1.05);
+}
+
+.resumeModalExternal:hover .resumeModalExternalIcon svg,
+.resumeModalExternal:focus-visible .resumeModalExternalIcon svg {
+  transform: translate(0.12rem, -0.12rem);
+}
+
+.resumeModalClose {
+  display: grid;
+  width: 2.75rem;
+  height: 2.75rem;
+  flex: 0 0 auto;
+  cursor: pointer;
+  place-items: center;
+  padding: 0;
+  border: 1px solid var(--line);
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--surface-raised) 76%, transparent);
+  color: var(--foreground);
+  transition:
+    background 260ms ease,
+    color 260ms ease,
+    transform 320ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.resumeModalClose:hover,
+.resumeModalClose:focus-visible {
+  background: var(--foreground);
+  color: var(--background);
+  transform: rotate(90deg) scale(1.06);
+}
+
+.resumeModalStage {
+  position: relative;
+  z-index: 1;
+  min-height: 0;
+  overflow: auto;
+  margin: 0;
+  border: 1px solid var(--line-soft);
+  border-radius: clamp(0.65rem, 1vw, 1rem);
+  background: color-mix(in srgb, var(--surface) 72%, #08090a);
+  overscroll-behavior: contain;
+}
+
+.resumeModalDocument {
+  display: grid;
+  min-width: 100%;
+  min-height: 100%;
+  place-items: start center;
+}
+
+.resumeModalStage iframe {
+  display: block;
+  width: auto;
+  max-width: 100%;
+  height: 100%;
+  min-height: 0;
+  aspect-ratio: 0.68;
+  border: 0;
+  background: #fff;
+  box-shadow: 0 1.5rem 4rem -2rem rgba(0, 0, 0, 0.7);
+}
+
 @supports selector(:has(*)) {
   .profileScene:has(.bioCard:hover) .sceneSecondary,
   .profileScene:has(.bioCard:focus-visible) .sceneSecondary {
@@ -96,5 +585,89 @@
   .sceneSecondary {
     transition: none;
     transform: none;
+  }
+
+  .resumePreview,
+  .resumeFace,
+  .resumeWritingSurface,
+  .resumeZoomControls button,
+  .resumeModalExternal,
+  .resumeModalExternalIcon,
+  .resumeModalExternalIcon svg,
+  .resumeModalClose {
+    transition: none;
+  }
+
+  .resumeWritingLines {
+    opacity: 1;
+    clip-path: none;
+    animation: none;
+  }
+}
+
+@media (max-width: 80rem) {
+  .resumeCardStage {
+    min-height: clamp(20rem, 42vw, 27rem);
+  }
+
+  .resumePreview[data-resume-card="true"] {
+    width: min(100%, 16rem);
+  }
+}
+
+@media (max-width: 48rem) {
+  .profileCards {
+    max-width: 21rem;
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@media (max-width: 38rem) {
+  .resumePreview[data-resume-card="true"] {
+    width: min(100%, 15rem);
+  }
+
+  .resumeModalBackdrop {
+    padding: 0;
+  }
+
+  .resumeModal {
+    width: 100%;
+    max-height: 100svh;
+    min-height: 100svh;
+    padding: 1rem;
+  }
+
+  .resumeModalTitle {
+    font-size: clamp(1.45rem, 8vw, 2.25rem);
+  }
+
+  .resumeModalHeader small {
+    display: none;
+  }
+
+  .resumeModalExternal {
+    min-height: 2.5rem;
+    font-size: 0.62rem;
+  }
+
+  .resumeModalExternalIcon {
+    width: 2.5rem;
+    height: 2.5rem;
+  }
+
+  .resumeZoomControls button {
+    width: 2.25rem;
+    height: 2.25rem;
+  }
+
+  .resumeZoomControls output {
+    min-width: 2.8rem;
+  }
+}
+
+@media (max-width: 30rem) {
+  .resumeCardStage {
+    min-height: 20rem;
   }
 }

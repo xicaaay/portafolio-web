@@ -39,6 +39,7 @@ export function DotCharacterLoader({
   overlay = false,
 }: DotCharacterLoaderProps) {
   const shouldReduceMotion = useReducedMotion() ?? false;
+  const statusTitle = ready ? "LISTO" : "CARGANDO";
 
   return (
     <div
@@ -47,6 +48,13 @@ export function DotCharacterLoader({
       aria-live="polite"
       aria-label={ready ? "Contenido listo" : label}
     >
+      <span className="dot-loader-frame" aria-hidden="true">
+        <i className="dot-loader-corner dot-loader-corner-tl" />
+        <i className="dot-loader-corner dot-loader-corner-tr" />
+        <i className="dot-loader-corner dot-loader-corner-bl" />
+        <i className="dot-loader-corner dot-loader-corner-br" />
+      </span>
+
       <div
         className={`dot-loader-character${ready ? " is-ready" : ""}`}
         aria-hidden="true"
@@ -186,7 +194,22 @@ export function DotCharacterLoader({
       </div>
 
       <div className="dot-loader-copy">
-        <strong>{ready ? "LISTO" : "CARGANDO"}</strong>
+        <motion.strong
+          key={statusTitle}
+          data-text={statusTitle}
+          initial={
+            ready || shouldReduceMotion
+              ? false
+              : { clipPath: "inset(-0.12em 100% -0.12em -0.08em)" }
+          }
+          animate={{ clipPath: "inset(-0.12em -0.08em -0.12em -0.08em)" }}
+          transition={{
+            duration: shouldReduceMotion ? 0.08 : 0.28,
+            ease: "linear",
+          }}
+        >
+          {statusTitle}
+        </motion.strong>
         <span>{ready ? "Contenido preparado" : label}</span>
       </div>
     </div>

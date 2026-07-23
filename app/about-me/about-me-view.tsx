@@ -1,14 +1,29 @@
 "use client";
 
-import { useState } from "react";
-import { AnimatePresence, motion, useReducedMotion } from "motion/react";
+import {
+  type PointerEvent as ReactPointerEvent,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
+import {
+  AnimatePresence,
+  motion,
+  useMotionValue,
+  useReducedMotion,
+  useSpring,
+} from "motion/react";
 import type { IconType } from "react-icons";
 import {
   FiArrowLeft,
   FiArrowUpRight,
   FiChevronDown,
+  FiDownload,
   FiLink,
+  FiMinus,
+  FiPlus,
   FiRefreshCw,
+  FiX,
 } from "react-icons/fi";
 import { FaLinkedinIn, FaXTwitter } from "react-icons/fa6";
 import {
@@ -30,7 +45,6 @@ import {
   SiX,
   SiYoutube,
 } from "react-icons/si";
-import { FaLink } from "react-icons/fa6";
 import { InteractiveSectionTitle } from "../components/interactive-section-title";
 import { MagneticTitle } from "../components/magnetic-title";
 import { HOME_PATH } from "../components/navigation-config";
@@ -41,6 +55,7 @@ import type {
   PublicSocialLink,
 } from "./about-me.types";
 import styles from "./about-me.module.css";
+import badgeStyles from "./profile-badge.module.css";
 import { ProfileBadge } from "./profile-badge";
 
 const easing = [0.22, 1, 0.36, 1] as const;
@@ -235,6 +250,346 @@ function SocialItem({
   );
 }
 
+function buildPdfViewerUrl(pdfUrl: string) {
+  const urlWithoutFragment = pdfUrl.split("#", 1)[0];
+  return `${urlWithoutFragment}#page=1&view=Fit&toolbar=0&navpanes=0`;
+}
+
+function ResumeCard({
+  reducedMotion,
+  onOpen,
+}: {
+  reducedMotion: boolean;
+  onOpen: () => void;
+}) {
+  const [isActive, setIsActive] = useState(false);
+  const offsetX = useMotionValue(0);
+  const offsetY = useMotionValue(0);
+  const springX = useSpring(offsetX, {
+    stiffness: 118,
+    damping: 11,
+    mass: 0.42,
+  });
+  const springY = useSpring(offsetY, {
+    stiffness: 118,
+    damping: 11,
+    mass: 0.42,
+  });
+
+  const release = () => {
+    setIsActive(false);
+    offsetX.set(0);
+    offsetY.set(0);
+  };
+
+  const followPointer = (event: ReactPointerEvent<HTMLButtonElement>) => {
+    if (reducedMotion || event.pointerType !== "mouse") return;
+
+    const bounds = event.currentTarget.getBoundingClientRect();
+    const distanceX = event.clientX - (bounds.left + bounds.width / 2);
+    const distanceY = event.clientY - (bounds.top + bounds.height / 2);
+    const pointerX = ((event.clientX - bounds.left) / bounds.width) * 100;
+    const pointerY = ((event.clientY - bounds.top) / bounds.height) * 100;
+
+    setIsActive(true);
+    event.currentTarget.style.setProperty("--magnetic-x", `${pointerX}%`);
+    event.currentTarget.style.setProperty("--magnetic-y", `${pointerY}%`);
+    offsetX.set(Math.max(-30, Math.min(30, distanceX * 0.32)));
+    offsetY.set(Math.max(-22, Math.min(22, distanceY * 0.42)));
+  };
+
+  return (
+    <motion.button
+      type="button"
+      className={`${styles.resumePreview} ${badgeStyles.badge}`}
+      style={reducedMotion ? undefined : { x: springX, y: springY }}
+      animate={{ scale: !reducedMotion && isActive ? 1.045 : 1 }}
+      transition={{ duration: 0.38, ease: easing }}
+      onPointerMove={followPointer}
+      onPointerLeave={release}
+      onFocus={() => setIsActive(true)}
+      onBlur={release}
+      onClick={onOpen}
+      aria-label="Abrir currículum"
+      data-cursor="action"
+      data-resume-card="true"
+      data-magnetic-active={isActive ? "true" : undefined}
+    >
+      <span className={badgeStyles.cardInner}>
+        <span
+          className={`${badgeStyles.face} ${badgeStyles.front} ${styles.resumeFace}`}
+        >
+          <span className={badgeStyles.grip} aria-hidden="true" />
+
+          <span
+            className={`${badgeStyles.photo} ${styles.resumeWritingSurface}`}
+            aria-hidden="true"
+          >
+            <span className={styles.resumeWritingLines}>
+              <span />
+              <span />
+              <span />
+              <span />
+              <span />
+              <span />
+              <span />
+              <span />
+            </span>
+          </span>
+
+          <span className={badgeStyles.identity}>
+            <strong>Currículum vitae</strong>
+            <span>Trayectoria profesional</span>
+          </span>
+        </span>
+      </span>
+    </motion.button>
+  );
+}
+
+function ResumeModal({
+  pdfUrl,
+  name,
+  reducedMotion,
+  onClose,
+}: {
+  pdfUrl: string;
+  name: string | null;
+  reducedMotion: boolean;
+  onClose: () => void;
+}) {
+  const stageRef = useRef<HTMLElement>(null);
+  const [zoom, setZoom] = useState(1);
+  const [isDownloading, setIsDownloading] = useState(false);
+  const [viewerSize, setViewerSize] = useState<{
+    width: number;
+    height: number;
+  } | null>(null);
+
+  useEffect(() => {
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+
+    const closeOnEscape = (event: KeyboardEvent) => {
+      if (event.key === "Escape") onClose();
+    };
+
+    window.addEventListener("keydown", closeOnEscape);
+
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      window.removeEventListener("keydown", closeOnEscape);
+    };
+  }, [onClose]);
+
+  useEffect(() => {
+    const stage = stageRef.current;
+    if (!stage) return;
+
+    const pageRatio = 0.68;
+    const updateViewerSize = () => {
+      const availableWidth = stage.clientWidth;
+      const availableHeight = stage.clientHeight;
+      const fittedHeight = Math.min(
+        availableHeight,
+        availableWidth / pageRatio,
+      );
+
+      setViewerSize({
+        width: Math.floor(fittedHeight * pageRatio),
+        height: Math.floor(fittedHeight),
+      });
+    };
+
+    updateViewerSize();
+    const resizeObserver = new ResizeObserver(updateViewerSize);
+    resizeObserver.observe(stage);
+
+    return () => resizeObserver.disconnect();
+  }, []);
+
+  const decreaseZoom = () => {
+    setZoom((current) => Math.max(0.75, current - 0.25));
+  };
+
+  const increaseZoom = () => {
+    setZoom((current) => Math.min(1.75, current + 0.25));
+  };
+
+  const downloadResume = async () => {
+    if (isDownloading) return;
+
+    setIsDownloading(true);
+    const resumeFileName = `CV-${(name ?? "Amilcar Xicay")
+      .trim()
+      .replace(/\s+/g, "-")}.pdf`;
+
+    try {
+      const response = await fetch(pdfUrl);
+      if (!response.ok) throw new Error("No se pudo descargar el currículum.");
+
+      const fileBlob = await response.blob();
+      const objectUrl = URL.createObjectURL(fileBlob);
+      const downloadLink = document.createElement("a");
+      downloadLink.href = objectUrl;
+      downloadLink.download = resumeFileName;
+      document.body.append(downloadLink);
+      downloadLink.click();
+      downloadLink.remove();
+      window.setTimeout(() => URL.revokeObjectURL(objectUrl), 0);
+    } catch {
+      const fallbackLink = document.createElement("a");
+      fallbackLink.href = pdfUrl;
+      fallbackLink.target = "_blank";
+      fallbackLink.rel = "noopener noreferrer";
+      fallbackLink.click();
+    } finally {
+      setIsDownloading(false);
+    }
+  };
+
+  const viewerStyle = viewerSize
+    ? {
+        width: `${viewerSize.width * zoom}px`,
+        height: `${viewerSize.height * zoom}px`,
+        maxWidth: "none",
+      }
+    : undefined;
+
+  return (
+    <motion.div
+      className={styles.resumeModalBackdrop}
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="resume-dialog-title"
+      initial={reducedMotion ? false : { opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: reducedMotion ? 0.08 : 0.26 }}
+      onMouseDown={(event) => {
+        if (event.target === event.currentTarget) onClose();
+      }}
+    >
+      <motion.article
+        className={styles.resumeModal}
+        initial={
+          reducedMotion
+            ? false
+            : { opacity: 0, y: "1.5rem", scale: 0.97 }
+        }
+        animate={{ opacity: 1, y: 0, scale: 1 }}
+        exit={{ opacity: 0, y: "1rem", scale: 0.98 }}
+        transition={{ duration: 0.4, ease: easing }}
+        data-cursor-color="var(--cursor-primary)"
+      >
+        <span className={`${styles.resumeModalCorner} ${styles.resumeModalCornerTl}`} />
+        <span className={`${styles.resumeModalCorner} ${styles.resumeModalCornerTr}`} />
+        <span className={`${styles.resumeModalCorner} ${styles.resumeModalCornerBl}`} />
+        <span className={`${styles.resumeModalCorner} ${styles.resumeModalCornerBr}`} />
+
+        <header className={styles.resumeModalHeader}>
+          <div className={styles.resumeModalHeading}>
+            <span className="section-route-marker font-mono text-[clamp(0.58rem,0.68vw,0.74rem)] tracking-[0.1em] uppercase">
+              03 / CURRÍCULUM
+            </span>
+            <MagneticTitle
+              as="h2"
+              id="resume-dialog-title"
+              text="Mi currículum"
+              className={styles.resumeModalTitle}
+            />
+
+            <div
+              className={styles.resumeModalActions}
+              aria-label="Acciones del currículum"
+            >
+              <button
+                type="button"
+                className={styles.resumeModalExternal}
+                onClick={downloadResume}
+                disabled={isDownloading}
+                aria-label="Descargar currículum en PDF"
+                data-cursor="action"
+                data-downloading={isDownloading ? "true" : undefined}
+              >
+                <span className={styles.resumeModalExternalIcon}>
+                  <FiDownload aria-hidden="true" />
+                </span>
+                <span>{isDownloading ? "Descargando…" : "Descargar"}</span>
+              </button>
+
+              <a
+                className={styles.resumeModalExternal}
+                href={pdfUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="Ver currículum en una pestaña nueva"
+                data-cursor="action"
+              >
+                <span className={styles.resumeModalExternalIcon}>
+                  <FiArrowUpRight aria-hidden="true" />
+                </span>
+                <span>Ver en pestaña nueva</span>
+              </a>
+            </div>
+
+            <small>Presiona ESC o × para cerrar</small>
+          </div>
+
+          <div className={styles.resumeModalControls}>
+            <div
+              className={styles.resumeZoomControls}
+              role="group"
+              aria-label="Controles de zoom"
+            >
+              <button
+                type="button"
+                onClick={decreaseZoom}
+                disabled={zoom <= 0.75}
+                aria-label="Alejar currículum"
+                data-cursor="action"
+              >
+                <FiMinus aria-hidden="true" />
+              </button>
+              <output aria-live="polite">{Math.round(zoom * 100)}%</output>
+              <button
+                type="button"
+                onClick={increaseZoom}
+                disabled={zoom >= 1.75}
+                aria-label="Acercar currículum"
+                data-cursor="action"
+              >
+                <FiPlus aria-hidden="true" />
+              </button>
+            </div>
+
+            <button
+              type="button"
+              className={styles.resumeModalClose}
+              onClick={onClose}
+              aria-label="Cerrar currículum"
+              data-cursor="action"
+              autoFocus
+            >
+              <FiX aria-hidden="true" />
+            </button>
+          </div>
+        </header>
+
+        <figure ref={stageRef} className={styles.resumeModalStage}>
+          <div className={styles.resumeModalDocument}>
+            <iframe
+              src={buildPdfViewerUrl(pdfUrl)}
+              title={`Currículum de ${name ?? "Amilcar"}`}
+              style={viewerStyle}
+            />
+          </div>
+        </figure>
+      </motion.article>
+    </motion.div>
+  );
+}
+
 function ProfileContent({
   profile,
   reducedMotion,
@@ -243,10 +598,11 @@ function ProfileContent({
   reducedMotion: boolean;
 }) {
   const [isBioExpanded, setIsBioExpanded] = useState(false);
+  const [isResumeOpen, setIsResumeOpen] = useState(false);
   const hasSocialConnections = Boolean(
     profile.publicEmail || profile.socialLinks.length > 0,
   );
-  const hasConnectionArea = hasSocialConnections || Boolean(profile.resumeUrl);
+  const hasResume = Boolean(profile.resumeUrl);
   const shortBio = profile.shortBio?.trim() ?? "";
   const longBio = profile.longBio?.trim() ?? "";
   const hasLongBio = longBio.length > 0 && longBio !== shortBio;
@@ -264,7 +620,11 @@ function ProfileContent({
       transition={{ staggerChildren: 0.1, delayChildren: 0.12 }}
     >
       <section
-        className={`${styles.profileScene} grid min-w-0 items-center gap-[clamp(2rem,5vw,5.5rem)] xl:grid-cols-[minmax(0,1.25fr)_minmax(16rem,0.55fr)]`}
+        className={`${styles.profileScene} grid min-w-0 items-center gap-[clamp(2rem,5vw,5.5rem)] ${
+          hasResume
+            ? "xl:grid-cols-[minmax(0,1fr)_minmax(38rem,0.95fr)]"
+            : "xl:grid-cols-[minmax(0,1.25fr)_minmax(16rem,0.55fr)]"
+        }`}
         aria-label="Perfil profesional"
       >
         <div className="grid min-w-0 content-center gap-[clamp(2rem,4vw,3.75rem)]">
@@ -344,7 +704,8 @@ function ProfileContent({
         </div>
 
         <motion.div
-          className={`${styles.sceneSecondary} m-0 w-full min-w-0 max-w-[21rem] justify-self-center xl:justify-self-end`}
+          className={`${styles.sceneSecondary} ${styles.profileCards}`}
+          data-single={!hasResume ? "true" : undefined}
           variants={reveal}
           transition={{ duration: 0.72, delay: 0.04, ease: easing }}
         >
@@ -353,51 +714,52 @@ function ProfileContent({
             headline={profile.headline}
             imageUrl={profile.profileImageUrl}
           />
+
+          {profile.resumeUrl && (
+            <div className={styles.resumeCardStage}>
+              <ResumeCard
+                reducedMotion={reducedMotion}
+                onOpen={() => setIsResumeOpen(true)}
+              />
+            </div>
+          )}
         </motion.div>
       </section>
 
-      {hasConnectionArea && (
+      {hasSocialConnections && (
         <motion.section
           className="grid min-w-0 gap-[clamp(1.75rem,3vw,2.75rem)] border-t border-[var(--line)] pt-[clamp(1.75rem,3vw,2.75rem)]"
           variants={reveal}
           transition={{ duration: 0.72, ease: easing }}
-          aria-label="Redes sociales y currículum"
+          aria-label="Redes sociales"
         >
-          <div
-            className={`grid min-w-0 gap-[clamp(2.5rem,5vw,5rem)] ${
-              hasSocialConnections && profile.resumeUrl
-                ? "xl:grid-cols-[minmax(0,1fr)_minmax(18rem,0.42fr)]"
-                : "grid-cols-1"
-            }`}
-          >
-            {hasSocialConnections && (
-              <div className="grid min-w-0 content-start gap-[clamp(1.5rem,2.5vw,2.25rem)]">
-                <span className="section-route-marker font-mono text-[clamp(0.62rem,0.7vw,0.74rem)] tracking-[0.11em] uppercase">
-                  02 / CONECTEMOS
-                </span>
+          <div className="grid min-w-0 content-start gap-[clamp(1.5rem,2.5vw,2.25rem)]">
+            <span className="section-route-marker font-mono text-[clamp(0.62rem,0.7vw,0.74rem)] tracking-[0.11em] uppercase">
+              02 / CONECTEMOS
+            </span>
 
-                <div className="grid min-w-0 grid-cols-1 gap-x-[clamp(1.5rem,3vw,3rem)] gap-y-[clamp(1.25rem,2vw,2rem)] sm:grid-cols-2 xl:grid-cols-3">
-                  {profile.socialLinks.map((social, index) => {
-                    const SocialIcon = getSocialIcon(social);
+            <div className="grid min-w-0 grid-cols-1 gap-x-[clamp(1.5rem,3vw,3rem)] gap-y-[clamp(1.25rem,2vw,2rem)] sm:grid-cols-2 xl:grid-cols-3">
+              {profile.socialLinks.map((social, index) => {
+                const SocialIcon = getSocialIcon(social);
 
-                    return (
-                      <SocialItem
-                        key={`${social.key}-${social.url}`}
-                        href={social.url}
-                        label={social.label}
-                        detail={
-                          social.username
-                            ? `@${social.username.replace(/^@/, "")}`
-                            : null
-                        }
-                        Icon={SocialIcon}
-                        index={index}
-                        reducedMotion={reducedMotion}
-                      />
-                    );
-                  })}
+                return (
+                  <SocialItem
+                    key={`${social.key}-${social.url}`}
+                    href={social.url}
+                    label={social.label}
+                    detail={
+                      social.username
+                        ? `@${social.username.replace(/^@/, "")}`
+                        : null
+                    }
+                    Icon={SocialIcon}
+                    index={index}
+                    reducedMotion={reducedMotion}
+                  />
+                );
+              })}
 
-                  {profile.publicEmail && (
+              {profile.publicEmail && (
                     <SocialItem
                       href={`mailto:${profile.publicEmail}`}
                       label="Gmail"
@@ -407,53 +769,22 @@ function ProfileContent({
                       reducedMotion={reducedMotion}
                       external={false}
                     />
-                  )}
-                </div>
-              </div>
-            )}
-
-            {profile.resumeUrl && (
-              <motion.aside
-                className="soft-panel soft-panel-interactive group/resume grid min-w-0 content-between gap-[clamp(2rem,4vw,3.5rem)] p-[clamp(1.4rem,2.5vw,2.5rem)] motion-reduce:transform-none motion-reduce:transition-none"
-                variants={reveal}
-                transition={{ duration: 0.62, ease: easing }}
-                aria-label="Currículum"
-              >
-                <div className="grid gap-[clamp(0.75rem,1.4vw,1.2rem)]">
-                  <span className="section-route-marker font-mono text-[clamp(0.62rem,0.7vw,0.74rem)] tracking-[0.11em] uppercase">
-                    03 / CURRÍCULUM
-                  </span>
-                  <p className="m-0 max-w-[32ch] text-[clamp(0.92rem,1vw,1.05rem)] leading-[1.6] text-[var(--muted)]">
-                    Consulta mi trayectoria, experiencia y preparación en un
-                    documento independiente.
-                  </p>
-                </div>
-
-                <a
-                  className="ui-button-primary group/resume-button inline-flex w-fit max-w-full items-center gap-3 px-[clamp(1rem,1.5vw,1.25rem)] py-[clamp(0.8rem,1vw,1rem)] text-[clamp(0.78rem,0.85vw,0.9rem)] no-underline transition duration-300 ease-out hover:-translate-y-[0.2rem] hover:text-[var(--accent)] focus-visible:-translate-y-[0.2rem] focus-visible:text-[var(--accent)] motion-reduce:transform-none motion-reduce:transition-none"
-                  href={profile.resumeUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  aria-label="Abrir currículum en una nueva pestaña"
-                  data-cursor="action"
-                >
-                  <span className="grid size-[clamp(2rem,2.5vw,2.3rem)] shrink-0 place-items-center rounded-full bg-[var(--surface)] text-foreground transition duration-300 ease-out group-hover/resume-button:-rotate-6 group-hover/resume-button:scale-105 group-hover/resume-button:bg-foreground group-hover/resume-button:text-background group-focus-visible/resume-button:-rotate-6 group-focus-visible/resume-button:scale-105 group-focus-visible/resume-button:bg-foreground group-focus-visible/resume-button:text-background motion-reduce:transform-none motion-reduce:transition-none">
-                    <FaLink
-                      className="size-[clamp(0.85rem,1vw,1rem)]"
-                      aria-hidden="true"
-                    />
-                  </span>
-                  <strong className="font-medium">Ver currículum</strong>
-                  <FiArrowUpRight
-                    className="size-[clamp(0.8rem,1vw,0.95rem)] shrink-0 translate-x-[-0.375rem] translate-y-[0.375rem] opacity-0 transition duration-300 ease-out group-hover/resume-button:translate-x-[0.125rem] group-hover/resume-button:translate-y-[-0.125rem] group-hover/resume-button:opacity-100 group-focus-visible/resume-button:translate-x-[0.125rem] group-focus-visible/resume-button:translate-y-[-0.125rem] group-focus-visible/resume-button:opacity-100 motion-reduce:transform-none motion-reduce:transition-none"
-                    aria-hidden="true"
-                  />
-                </a>
-              </motion.aside>
-            )}
+              )}
+            </div>
           </div>
         </motion.section>
       )}
+
+      <AnimatePresence>
+        {isResumeOpen && profile.resumeUrl && (
+          <ResumeModal
+            pdfUrl={profile.resumeUrl}
+            name={profile.publicName}
+            reducedMotion={reducedMotion}
+            onClose={() => setIsResumeOpen(false)}
+          />
+        )}
+      </AnimatePresence>
     </motion.div>
   );
 }

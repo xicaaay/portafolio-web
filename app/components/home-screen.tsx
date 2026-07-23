@@ -1,7 +1,16 @@
 "use client";
 
-import { motion, useReducedMotion } from "motion/react";
-import { useEffect, useState } from "react";
+import {
+  motion,
+  useMotionValue,
+  useReducedMotion,
+  useSpring,
+} from "motion/react";
+import {
+  type PointerEvent as ReactPointerEvent,
+  useEffect,
+  useState,
+} from "react";
 import type { IconType } from "react-icons";
 import { FiArrowUpRight, FiLayers, FiUser } from "react-icons/fi";
 import { InteractiveCharacter } from "./interactive-character";
@@ -53,6 +62,39 @@ function HomeActionLink({
 
 export function HomeScreen({ publicName }: HomeScreenProps) {
   const shouldReduceMotion = useReducedMotion() ?? false;
+  const [isPortraitMagnetic, setIsPortraitMagnetic] = useState(false);
+  const portraitOffsetX = useMotionValue(0);
+  const portraitOffsetY = useMotionValue(0);
+  const portraitSpringX = useSpring(portraitOffsetX, {
+    stiffness: 118,
+    damping: 11,
+    mass: 0.42,
+  });
+  const portraitSpringY = useSpring(portraitOffsetY, {
+    stiffness: 118,
+    damping: 11,
+    mass: 0.42,
+  });
+
+  const releasePortrait = () => {
+    setIsPortraitMagnetic(false);
+    portraitOffsetX.set(0);
+    portraitOffsetY.set(0);
+  };
+
+  const followPortraitPointer = (
+    event: ReactPointerEvent<HTMLDivElement>,
+  ) => {
+    if (shouldReduceMotion || event.pointerType !== "mouse") return;
+
+    const bounds = event.currentTarget.getBoundingClientRect();
+    const distanceX = event.clientX - (bounds.left + bounds.width / 2);
+    const distanceY = event.clientY - (bounds.top + bounds.height / 2);
+
+    setIsPortraitMagnetic(true);
+    portraitOffsetX.set(Math.max(-26, Math.min(26, distanceX * 0.28)));
+    portraitOffsetY.set(Math.max(-20, Math.min(20, distanceY * 0.34)));
+  };
 
   return (
     <motion.section
@@ -178,19 +220,36 @@ export function HomeScreen({ publicName }: HomeScreenProps) {
           animate={{ opacity: 1, x: 0, clipPath: "inset(0 0 0% 0 round 1.5rem)" }}
           transition={{ delay: 0.3, duration: 1.05, ease: easing }}
         >
-          <div className="home-portrait-frame">
-            <motion.div
-              className="home-character-intro"
-              initial={shouldReduceMotion ? false : { scale: 0.9, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              transition={{ delay: 0.52, duration: 0.8, ease: easing }}
-            >
-              <InteractiveCharacter ariaLabel="Hacer saltar al personaje" />
-            </motion.div>
-            <span className="home-portrait-corner home-portrait-corner-top" aria-hidden="true" />
-            <span className="home-portrait-corner home-portrait-corner-bottom" aria-hidden="true" />
-          </div>
-      
+          <motion.div
+            className="home-portrait-magnetic"
+            style={
+              shouldReduceMotion
+                ? undefined
+                : { x: portraitSpringX, y: portraitSpringY }
+            }
+            animate={{
+              scale: !shouldReduceMotion && isPortraitMagnetic ? 1.025 : 1,
+            }}
+            transition={{ duration: 0.38, ease: easing }}
+            onPointerMove={followPortraitPointer}
+            onPointerLeave={releasePortrait}
+            onFocus={() => setIsPortraitMagnetic(true)}
+            onBlur={releasePortrait}
+            data-magnetic-active={isPortraitMagnetic ? "true" : undefined}
+          >
+            <div className="home-portrait-frame">
+              <motion.div
+                className="home-character-intro"
+                initial={shouldReduceMotion ? false : { scale: 0.9, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                transition={{ delay: 0.52, duration: 0.8, ease: easing }}
+              >
+                <InteractiveCharacter ariaLabel="Hacer saltar al personaje" />
+              </motion.div>
+              <span className="home-portrait-corner home-portrait-corner-top" aria-hidden="true" />
+              <span className="home-portrait-corner home-portrait-corner-bottom" aria-hidden="true" />
+            </div>
+          </motion.div>
         </motion.figure>
       </div>
 

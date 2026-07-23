@@ -283,8 +283,8 @@ function NoteTakingCharacter({
               ry="10"
               transform="rotate(-38 322 294)"
             />
-            <path className="contact-sketch-pen" d="m308 280 58 55" />
-            <path className="contact-sketch-pen-tip" d="m366 335 8 9" />
+            <path className="contact-sketch-pen" d="m311 283 47 45" />
+            <path className="contact-sketch-pen-tip" d="m358 328 6 6" />
           </g>
         </g>
       </svg>
