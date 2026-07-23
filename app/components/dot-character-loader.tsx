@@ -48,13 +48,6 @@ export function DotCharacterLoader({
       aria-live="polite"
       aria-label={ready ? "Contenido listo" : label}
     >
-      <span className="dot-loader-frame" aria-hidden="true">
-        <i className="dot-loader-corner dot-loader-corner-tl" />
-        <i className="dot-loader-corner dot-loader-corner-tr" />
-        <i className="dot-loader-corner dot-loader-corner-bl" />
-        <i className="dot-loader-corner dot-loader-corner-br" />
-      </span>
-
       <div
         className={`dot-loader-character${ready ? " is-ready" : ""}`}
         aria-hidden="true"
@@ -196,7 +189,6 @@ export function DotCharacterLoader({
       <div className="dot-loader-copy">
         <motion.strong
           key={statusTitle}
-          data-text={statusTitle}
           initial={
             ready || shouldReduceMotion
               ? false
