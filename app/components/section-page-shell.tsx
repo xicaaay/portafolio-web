@@ -28,14 +28,14 @@ export function SectionPageShell({
         className="section-page-hero mx-auto grid min-w-0 w-full max-w-[96rem] gap-[clamp(1.25rem,3vw,3rem)] py-[clamp(3.25rem,9vh,8rem)]"
         aria-labelledby="section-page-title"
         initial={
-          shouldReduceMotion ? false : { opacity: 0, y: "clamp(1rem,3vw,2.5rem)" }
+          shouldReduceMotion ? false : { opacity: 0, y: 40 }
         }
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.72, ease: [0.22, 1, 0.36, 1] }}
       >
         <div className="section-page-meta flex min-w-0 flex-wrap items-center justify-between gap-4 font-mono text-[clamp(0.62rem,0.72vw,0.78rem)] tracking-[0.1em] text-[var(--muted)] uppercase">
-          <span>
-            {section.number} {eyebrow}
+          <span className="section-route-marker">
+            {section.number.replace("/", "")} / {eyebrow}
           </span>
           {showExploreHint && <span>DESPLAZA PARA EXPLORAR</span>}
         </div>

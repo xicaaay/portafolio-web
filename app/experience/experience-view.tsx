@@ -1,6 +1,13 @@
 "use client";
 
-import { AnimatePresence, motion, useReducedMotion } from "motion/react";
+import {
+  AnimatePresence,
+  motion,
+  useMotionValue,
+  useReducedMotion,
+  useSpring,
+} from "motion/react";
+import type { PointerEvent } from "react";
 import { useMemo, useState } from "react";
 import {
   FiArrowUpRight,
@@ -17,6 +24,7 @@ import type {
   PublicApiLoadResult,
   PublicExperience,
 } from "../lib/public-api";
+import technologyStyles from "../technologies/technologies.module.css";
 
 type ExperienceViewProps = {
   result: PublicApiLoadResult<PublicExperience[]>;
@@ -45,8 +53,78 @@ function formatYear(value: string) {
   }).format(new Date(value));
 }
 
+type ExperienceTechnology = PublicExperience["technologies"][number];
+
+function MagneticExperienceTechnology({
+  technology,
+  index,
+  reducedMotion,
+}: {
+  technology: ExperienceTechnology;
+  index: number;
+  reducedMotion: boolean;
+}) {
+  const [isActive, setIsActive] = useState(false);
+  const offsetX = useMotionValue(0);
+  const offsetY = useMotionValue(0);
+  const springX = useSpring(offsetX, {
+    stiffness: 118,
+    damping: 11,
+    mass: 0.42,
+  });
+  const springY = useSpring(offsetY, {
+    stiffness: 118,
+    damping: 11,
+    mass: 0.42,
+  });
+
+  const release = () => {
+    setIsActive(false);
+    offsetX.set(0);
+    offsetY.set(0);
+  };
+
+  const followPointer = (event: PointerEvent<HTMLSpanElement>) => {
+    if (reducedMotion || event.pointerType !== "mouse") return;
+
+    const bounds = event.currentTarget.getBoundingClientRect();
+    const distanceX = event.clientX - (bounds.left + bounds.width / 2);
+    const distanceY = event.clientY - (bounds.top + bounds.height / 2);
+    const pointerX = ((event.clientX - bounds.left) / bounds.width) * 100;
+    const pointerY = ((event.clientY - bounds.top) / bounds.height) * 100;
+
+    setIsActive(true);
+    event.currentTarget.style.setProperty("--magnetic-x", `${pointerX}%`);
+    event.currentTarget.style.setProperty("--magnetic-y", `${pointerY}%`);
+    offsetX.set(Math.max(-30, Math.min(30, distanceX * 0.32)));
+    offsetY.set(Math.max(-18, Math.min(18, distanceY * 0.42)));
+  };
+
+  return (
+    <motion.span
+      className={technologyStyles.technologyItem}
+      style={reducedMotion ? undefined : { x: springX, y: springY }}
+      initial={reducedMotion ? false : { opacity: 0 }}
+      whileInView={{ opacity: 1 }}
+      animate={{ scale: !reducedMotion && isActive ? 1.075 : 1 }}
+      viewport={{ once: true, amount: 0.65 }}
+      transition={{ duration: 0.38, delay: Math.min(index * 0.04, 0.24) }}
+      onPointerMove={followPointer}
+      onPointerLeave={release}
+      onFocus={() => setIsActive(true)}
+      onBlur={release}
+      tabIndex={0}
+      data-cursor="action"
+      data-magnetic-active={isActive ? "true" : undefined}
+    >
+      <TechnologyGlyph name={technology.name} iconKey={technology.iconKey} />
+      <span>{technology.name}</span>
+    </motion.span>
+  );
+}
+
 function ExperienceDetail({ experience }: { experience: PublicExperience }) {
-  const shouldReduceMotion = useReducedMotion();
+  const shouldReduceMotion = useReducedMotion() ?? false;
 
   return (
     <motion.article
@@ -59,9 +137,6 @@ function ExperienceDetail({ experience }: { experience: PublicExperience }) {
     >
       <div className="flex flex-wrap items-start justify-between gap-5">
         <div className="grid gap-3">
-          <span className="font-mono text-[clamp(0.58rem,0.68vw,0.74rem)] tracking-[0.1em] text-[var(--muted)] uppercase">
-            EXPERIENCIA ACTIVA
-          </span>
           <MagneticTitle as="h2" text={experience.positionTitle} className="m-0 max-w-[15ch] [overflow-wrap:anywhere] text-[clamp(1.65rem,3.2vw,3.5rem)] leading-[0.94] tracking-[-0.055em]" />
         </div>
 
@@ -134,8 +209,8 @@ function ExperienceDetail({ experience }: { experience: PublicExperience }) {
       </div>
 
       <div className="grid gap-4">
-        <span className="font-mono text-[clamp(0.58rem,0.68vw,0.74rem)] tracking-[0.1em] text-[var(--muted)] uppercase">
-          CONTEXTO / 01
+        <span className="section-route-marker font-mono text-[clamp(0.58rem,0.68vw,0.74rem)] tracking-[0.1em] uppercase">
+          01 / CONTEXTO
         </span>
         <p className="m-0 whitespace-pre-line text-[clamp(0.95rem,1.15vw,1.16rem)] leading-[1.75]">
           {experience.longDescription ??
@@ -146,8 +221,8 @@ function ExperienceDetail({ experience }: { experience: PublicExperience }) {
 
       {experience.responsibilities.length > 0 && (
         <div className="grid gap-4">
-          <span className="font-mono text-[clamp(0.58rem,0.68vw,0.74rem)] tracking-[0.1em] text-[var(--muted)] uppercase">
-            RESPONSABILIDADES / 02
+          <span className="section-route-marker font-mono text-[clamp(0.58rem,0.68vw,0.74rem)] tracking-[0.1em] uppercase">
+            02 / RESPONSABILIDADES
           </span>
           <ul className="m-0 grid list-none gap-4 p-0">
             {experience.responsibilities.map((responsibility, index) => (
@@ -179,46 +254,17 @@ function ExperienceDetail({ experience }: { experience: PublicExperience }) {
 
       {experience.technologies.length > 0 && (
         <div className="grid gap-4">
-          <span className="font-mono text-[clamp(0.58rem,0.68vw,0.74rem)] tracking-[0.1em] text-[var(--muted)] uppercase">
-            TECNOLOGÍAS / 03
+          <span className="section-route-marker font-mono text-[clamp(0.58rem,0.68vw,0.74rem)] tracking-[0.1em] uppercase">
+            03 / TECNOLOGÍAS
           </span>
-          <div className="flex flex-wrap gap-3">
+          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
             {experience.technologies.map((technology, index) => (
-              <span
-                className="soft-chip group/experience-tech inline-flex items-center gap-3 px-4 py-3 font-mono text-[clamp(0.58rem,0.68vw,0.74rem)] tracking-[0.06em] uppercase hover:-translate-y-[0.2rem]"
+              <MagneticExperienceTechnology
                 key={technology.id}
-              >
-                <motion.span
-                  className="text-[var(--accent)]"
-                  data-blue-icon
-                  animate={
-                    shouldReduceMotion
-                      ? undefined
-                      : {
-                          y: [0, -2.5, 0],
-                          rotate: [0, index % 2 === 0 ? 3 : -3, 0],
-                        }
-                  }
-                  whileHover={
-                    shouldReduceMotion
-                      ? undefined
-                      : { scale: 1.22, rotate: index % 2 === 0 ? 8 : -8 }
-                  }
-                  transition={{
-                    duration: 3.4 + (index % 3) * 0.45,
-                    delay: index * 0.12,
-                    repeat: Number.POSITIVE_INFINITY,
-                    ease: "easeInOut",
-                  }}
-                >
-                  <TechnologyGlyph
-                    name={technology.name}
-                    iconKey={technology.iconKey}
-                    className="size-[clamp(0.9rem,1.2vw,1.1rem)]"
-                  />
-                </motion.span>
-                {technology.name}
-              </span>
+                technology={technology}
+                index={index}
+                reducedMotion={shouldReduceMotion}
+              />
             ))}
           </div>
         </div>

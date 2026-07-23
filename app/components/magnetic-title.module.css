@@ -69,15 +69,11 @@
   opacity: 0;
 }
 
-.solid .fill,
-.solid .word:hover .fill,
-.solid .word[data-magnetic-active="true"] .fill {
+.solid .fill {
   opacity: 1;
 }
 
-.solid .outline,
-.solid .word:hover .outline,
-.solid .word[data-magnetic-active="true"] .outline {
+.solid .outline {
   opacity: 0;
 }
 
@@ -91,12 +87,12 @@
 
 .lastOutline .word:not(.lastWord):hover .fill,
 .lastOutline .word:not(.lastWord)[data-magnetic-active="true"] .fill {
-  opacity: 1;
+  opacity: 0;
 }
 
 .lastOutline .word:not(.lastWord):hover .outline,
 .lastOutline .word:not(.lastWord)[data-magnetic-active="true"] .outline {
-  opacity: 0;
+  opacity: 1;
 }
 
 .lastOutline .lastWord .fill,
@@ -108,6 +104,16 @@
 .lastOutline .lastWord .outline,
 .lastOutline .lastWord:hover .outline,
 .lastOutline .lastWord[data-magnetic-active="true"] .outline {
+  opacity: 1;
+}
+
+.solid .word:hover .fill,
+.solid .word[data-magnetic-active="true"] .fill {
+  opacity: 0;
+}
+
+.solid .word:hover .outline,
+.solid .word[data-magnetic-active="true"] .outline {
   opacity: 1;
 }
 

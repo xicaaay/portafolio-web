@@ -258,46 +258,47 @@ function ProfileContent({
 
   return (
     <motion.div
-      className="mx-auto grid w-full max-w-[96rem] gap-[clamp(2.75rem,5vw,5.75rem)]"
+      className="mx-auto grid w-full max-w-[96rem] gap-[clamp(2.25rem,4vw,4.25rem)]"
       initial={reducedMotion ? false : "hidden"}
       animate="visible"
       transition={{ staggerChildren: 0.1, delayChildren: 0.12 }}
     >
       <section
-        className={`${styles.profileScene} grid min-w-0 gap-[clamp(2rem,4vw,3.75rem)]`}
+        className={`${styles.profileScene} grid min-w-0 items-center gap-[clamp(2rem,5vw,5.5rem)] xl:grid-cols-[minmax(0,1.25fr)_minmax(16rem,0.55fr)]`}
         aria-label="Perfil profesional"
       >
-        <motion.div
-          className={`${styles.sceneSecondary} grid min-w-0`}
-          variants={reveal}
-          transition={{ duration: 0.68, ease: easing }}
-        >
-          <InteractiveSectionTitle
-            id="profile-name"
-            text="Sobre mí"
-            size="profile"
-            preserveCase
-          />
+        <div className="grid min-w-0 content-center gap-[clamp(2rem,4vw,3.75rem)]">
+          <motion.div
+            className={`${styles.sceneSecondary} grid min-w-0 gap-[clamp(0.85rem,1.6vw,1.4rem)]`}
+            variants={reveal}
+            transition={{ duration: 0.68, ease: easing }}
+          >
+            <span className="section-route-marker font-mono text-[clamp(0.62rem,0.72vw,0.78rem)] tracking-[0.1em] uppercase">
+              01 / PERFIL
+            </span>
 
-          {profile.headline && (
-            <p className="mt-[clamp(1rem,2vw,1.8rem)] mb-0 max-w-[52ch] font-mono text-[clamp(0.72rem,0.95vw,1rem)] leading-[1.5] tracking-[0.105em] text-[var(--accent)] uppercase">
-              {profile.headline}
-            </p>
-          )}
-        </motion.div>
+            <InteractiveSectionTitle
+              id="profile-name"
+              text="Sobre mí"
+              size="profile"
+              preserveCase
+            />
 
-        <div className="grid min-w-0 items-stretch gap-[clamp(1.5rem,3.2vw,3.25rem)] xl:grid-cols-[minmax(0,1.35fr)_minmax(15rem,0.65fr)]">
+            {profile.headline && (
+              <p className="m-0 max-w-[52ch] font-mono text-[clamp(0.72rem,0.95vw,1rem)] leading-[1.5] tracking-[0.105em] text-[var(--accent)] uppercase">
+                {profile.headline}
+              </p>
+            )}
+          </motion.div>
+
           {(shortBio || longBio) && (
             <motion.article
-              className={`${styles.bioCard} soft-panel soft-panel-interactive relative grid min-h-[clamp(16rem,28vw,26rem)] min-w-0 content-between gap-[clamp(1.75rem,4vw,3.75rem)] p-[clamp(1.5rem,3.2vw,3rem)] outline-none motion-reduce:transform-none motion-reduce:transition-none`}
+              className={`${styles.bioCard} soft-panel soft-panel-interactive relative grid min-w-0 gap-[clamp(1.25rem,2vw,2rem)] border-t border-[var(--line)] pt-[clamp(1.25rem,2vw,2rem)] outline-none motion-reduce:transform-none motion-reduce:transition-none`}
               variants={reveal}
               transition={{ duration: 0.72, ease: easing }}
               tabIndex={0}
               aria-label="Descripción profesional"
             >
-              <span className="font-mono text-[clamp(0.62rem,0.7vw,0.74rem)] tracking-[0.11em] text-[var(--muted)] uppercase">
-                PERFIL / 01
-              </span>
               <div className="grid min-w-0 gap-[clamp(1rem,1.8vw,1.5rem)]">
                 <p className="m-0 max-w-[48ch] [overflow-wrap:anywhere] text-[clamp(0.98rem,1.15vw,1.22rem)] leading-[1.62] tracking-[-0.012em] text-foreground">
                   {shortBio || longBio}
@@ -340,19 +341,19 @@ function ProfileContent({
               </div>
             </motion.article>
           )}
-
-          <motion.div
-            className={`${styles.sceneSecondary} m-0 w-full min-w-0 max-w-[21rem] justify-self-end sm:max-w-[22rem]`}
-            variants={reveal}
-            transition={{ duration: 0.72, delay: 0.04, ease: easing }}
-          >
-            <ProfileBadge
-              name={profile.publicName}
-              headline={profile.headline}
-              imageUrl={profile.profileImageUrl}
-            />
-          </motion.div>
         </div>
+
+        <motion.div
+          className={`${styles.sceneSecondary} m-0 w-full min-w-0 max-w-[21rem] justify-self-center xl:justify-self-end`}
+          variants={reveal}
+          transition={{ duration: 0.72, delay: 0.04, ease: easing }}
+        >
+          <ProfileBadge
+            name={profile.publicName}
+            headline={profile.headline}
+            imageUrl={profile.profileImageUrl}
+          />
+        </motion.div>
       </section>
 
       {hasConnectionArea && (
@@ -371,8 +372,8 @@ function ProfileContent({
           >
             {hasSocialConnections && (
               <div className="grid min-w-0 content-start gap-[clamp(1.5rem,2.5vw,2.25rem)]">
-                <span className="font-mono text-[clamp(0.62rem,0.7vw,0.74rem)] tracking-[0.11em] text-[var(--muted)] uppercase">
-                  CONECTEMOS / 02
+                <span className="section-route-marker font-mono text-[clamp(0.62rem,0.7vw,0.74rem)] tracking-[0.11em] uppercase">
+                  02 / CONECTEMOS
                 </span>
 
                 <div className="grid min-w-0 grid-cols-1 gap-x-[clamp(1.5rem,3vw,3rem)] gap-y-[clamp(1.25rem,2vw,2rem)] sm:grid-cols-2 xl:grid-cols-3">
@@ -419,8 +420,8 @@ function ProfileContent({
                 aria-label="Currículum"
               >
                 <div className="grid gap-[clamp(0.75rem,1.4vw,1.2rem)]">
-                  <span className="font-mono text-[clamp(0.62rem,0.7vw,0.74rem)] tracking-[0.11em] text-[var(--muted)] uppercase">
-                    CURRÍCULUM / 03
+                  <span className="section-route-marker font-mono text-[clamp(0.62rem,0.7vw,0.74rem)] tracking-[0.11em] uppercase">
+                    03 / CURRÍCULUM
                   </span>
                   <p className="m-0 max-w-[32ch] text-[clamp(0.92rem,1vw,1.05rem)] leading-[1.6] text-[var(--muted)]">
                     Consulta mi trayectoria, experiencia y preparación en un

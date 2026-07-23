@@ -5,7 +5,11 @@ import { FiMoon, FiSun } from "react-icons/fi";
 import { useEffect, useState } from "react";
 import { usePortfolio } from "./portfolio-shell";
 
-export function ThemeToggle() {
+type ThemeToggleProps = {
+  placement?: "detail" | "fixed" | "navigation";
+};
+
+export function ThemeToggle({ placement = "fixed" }: ThemeToggleProps) {
   const { theme, toggleTheme } = usePortfolio();
   const [isMounted, setIsMounted] = useState(false);
 
@@ -23,7 +27,13 @@ export function ThemeToggle() {
   return (
     <motion.button
       type="button"
-      className="theme-toggle theme-toggle-fixed"
+      className={`theme-toggle ${
+        placement === "navigation"
+          ? "theme-toggle-navigation"
+          : placement === "detail"
+            ? "theme-toggle-detail"
+            : "theme-toggle-fixed"
+      }`}
       onClick={toggleTheme}
       aria-label={label}
       title={label}

@@ -3,7 +3,7 @@
 /* eslint-disable @next/next/no-img-element */
 
 import { motion, useReducedMotion } from "motion/react";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import styles from "./profile-badge.module.css";
 
 type ProfileBadgeProps = {
@@ -32,7 +32,14 @@ export function ProfileBadge({
   const shouldReduceMotion = useReducedMotion() ?? false;
   const [imageFailed, setImageFailed] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
+  const [isFlipped, setIsFlipped] = useState(false);
+  const dragGuardRef = useRef(false);
   const showImage = Boolean(imageUrl) && !imageFailed;
+
+  const flipBadge = () => {
+    if (!interactive || dragGuardRef.current) return;
+    setIsFlipped((current) => !current);
+  };
 
   return (
     <div className={styles.stage}>
@@ -45,36 +52,68 @@ export function ProfileBadge({
         dragSnapToOrigin
         dragTransition={{ bounceStiffness: 320, bounceDamping: 12 }}
         whileDrag={{ scale: 1.035, rotate: 1.6 }}
-        onDragStart={() => setIsDragging(true)}
-        onDragEnd={() => setIsDragging(false)}
+        onDragStart={() => {
+          dragGuardRef.current = true;
+          setIsDragging(true);
+        }}
+        onDragEnd={() => {
+          setIsDragging(false);
+          window.setTimeout(() => {
+            dragGuardRef.current = false;
+          }, 0);
+        }}
+        onClick={flipBadge}
+        onKeyDown={(event) => {
+          if (!interactive || (event.key !== "Enter" && event.key !== " ")) {
+            return;
+          }
+          event.preventDefault();
+          flipBadge();
+        }}
         data-dragging={isDragging ? "true" : undefined}
         data-static={!interactive ? "true" : undefined}
+        data-flipped={isFlipped ? "true" : undefined}
         data-cursor={interactive ? "action" : undefined}
+        role={interactive ? "button" : undefined}
+        tabIndex={interactive ? 0 : undefined}
+        aria-pressed={interactive ? isFlipped : undefined}
         aria-label={
           interactive
-            ? `Carnet de ${name ?? "perfil profesional"}. Arrástralo y suéltalo para hacerlo rebotar.`
+            ? `Carnet de ${name ?? "perfil profesional"}. Haz clic para ver la otra cara o arrástralo y suéltalo para hacerlo rebotar.`
             : `Carnet de ${name ?? "perfil profesional"}`
         }
       >
-        <span className={styles.grip} aria-hidden="true" />
+        <div className={styles.cardInner}>
+          <div className={`${styles.face} ${styles.front}`}>
+            <span className={styles.grip} aria-hidden="true" />
 
-        <div className={styles.photo}>
-          {showImage && imageUrl ? (
+            <div className={styles.photo}>
+              {showImage && imageUrl ? (
+                <img
+                  src={imageUrl}
+                  alt={name ? `Fotografía de ${name}` : "Fotografía de perfil"}
+                  draggable={false}
+                  onError={() => setImageFailed(true)}
+                />
+              ) : (
+                <span aria-hidden="true">{getInitials(name)}</span>
+              )}
+            </div>
+
+            <figcaption className={styles.identity}>
+              <strong>{name ?? "Amilcar Xicay"}</strong>
+              <span>{headline ?? "Full Stack Developer"}</span>
+            </figcaption>
+          </div>
+
+          <div className={`${styles.face} ${styles.back}`} aria-hidden={!isFlipped}>
             <img
-              src={imageUrl}
-              alt={name ? `Fotografía de ${name}` : "Fotografía de perfil"}
+              src="/image.jpeg"
+              alt="Ilustración Absolute Cinema"
               draggable={false}
-              onError={() => setImageFailed(true)}
             />
-          ) : (
-            <span aria-hidden="true">{getInitials(name)}</span>
-          )}
+          </div>
         </div>
-
-        <figcaption className={styles.identity}>
-          <strong>{name ?? "Amilcar Xicay"}</strong>
-          <span>{headline ?? "Full Stack Developer"}</span>
-        </figcaption>
       </motion.figure>
     </div>
   );

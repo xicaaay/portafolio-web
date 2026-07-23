@@ -163,13 +163,17 @@ export function ProjectPageView({ project }: { project: PublicProject }) {
         </RouteTransitionLink>
 
         <div className={styles.detailEyebrow}>
-          <span>{project.category?.name ?? "Proyecto digital"}</span>
+          <span className="section-route-marker">02 / PROYECTOS</span>
           <span>{formatDate(project.publishedAt)}</span>
         </div>
 
         <div className={styles.detailTitleRow}>
           <MagneticTitle as="h1" text={project.title} />
-          <span aria-hidden="true">CASE<br />STUDY</span>
+          <span aria-hidden="true">
+            {(project.category?.name ?? "Proyecto digital").toUpperCase()}
+            <br />
+            CASE STUDY
+          </span>
         </div>
 
         <div className={styles.detailIntro}>

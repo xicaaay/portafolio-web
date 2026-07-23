@@ -13,6 +13,7 @@ import {
 } from "react";
 import { CustomCursor } from "./custom-cursor";
 import { DotCharacterLoader } from "./dot-character-loader";
+import { ScrollControls } from "./scroll-controls";
 import { SiteHeader } from "./site-header";
 import { ThemeToggle } from "./theme-toggle";
 
@@ -48,6 +49,7 @@ export function PortfolioShell({ children }: { children: React.ReactNode }) {
   const finishTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const reducedMotion = shouldReduceMotion ?? false;
   const isTransitioning = isInitialLoading || targetPath !== null;
+  const isProjectDetail = /^\/projects\/[^/]+\/?$/.test(pathname);
 
   useEffect(() => {
     const frameId = window.requestAnimationFrame(() => {
@@ -161,7 +163,8 @@ export function PortfolioShell({ children }: { children: React.ReactNode }) {
           {children}
         </div>
 
-        <ThemeToggle />
+        <ScrollControls hidden={isTransitioning} />
+        {isProjectDetail && <ThemeToggle placement="detail" />}
         <CustomCursor />
 
         <AnimatePresence>

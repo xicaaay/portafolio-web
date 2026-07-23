@@ -8,6 +8,7 @@ import {
   SECTION_ITEMS,
 } from "./navigation-config";
 import { RouteTransitionLink } from "./route-transition-link";
+import { ThemeToggle } from "./theme-toggle";
 
 const NAVIGATION_ITEMS = [
   {
@@ -67,6 +68,9 @@ export function SiteHeader({ onNavigate }: { onNavigate: (href: string) => void 
             </RouteTransitionLink>
           );
         })}
+        <span className="site-navigation-theme">
+          <ThemeToggle placement="navigation" />
+        </span>
       </nav>
     </header>
   );

@@ -85,6 +85,15 @@ html {
   min-height: 100%;
   background: var(--background);
   scroll-behavior: smooth;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+html::-webkit-scrollbar,
+body::-webkit-scrollbar {
+  display: none;
+  width: 0;
+  height: 0;
 }
 
 body {
@@ -146,6 +155,10 @@ a:focus-visible {
 
 .font-display {
   font-family: var(--font-archivo-black), Impact, sans-serif;
+}
+
+.section-route-marker {
+  color: var(--accent);
 }
 
 .font-body,
@@ -900,7 +913,22 @@ a:focus-visible {
   position: relative;
   width: 4.75rem;
   height: 4.75rem;
+}
+
+.dot-loader-motion {
+  position: absolute;
+  inset: 0;
+  display: block;
+  transform-origin: center bottom;
+  backface-visibility: hidden;
+  transform: translate3d(0, 0, 0);
   will-change: transform;
+}
+
+.dot-loader-character.is-ready .dot-loader-motion {
+  --character-jump-height: -5.2rem;
+  --character-rebound-height: -0.55rem;
+  animation: home-character-jump 880ms linear 720ms both;
 }
 
 .dot-loader-figure {
@@ -2081,6 +2109,10 @@ a:focus-visible {
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .dot-loader-character.is-ready .dot-loader-motion {
+    animation: none;
+  }
+
   .home-code-body p > i.is-typing {
     animation: none;
   }
@@ -2231,6 +2263,30 @@ a:focus-visible {
   content: "";
 }
 
+.site-navigation-theme {
+  position: relative;
+  display: flex;
+  flex: 0 0 auto;
+  align-items: center;
+  padding-left: clamp(0.75rem, 1.25vw, 1.35rem);
+}
+
+.site-navigation-theme::before {
+  position: absolute;
+  left: 0;
+  width: 1px;
+  height: 1rem;
+  background: var(--line);
+  content: "";
+}
+
+.theme-toggle-navigation {
+  flex: 0 0 auto;
+  width: 2rem;
+  height: 2rem;
+  background: color-mix(in srgb, var(--surface-raised) 76%, transparent);
+}
+
 .site-navigation-number {
   font-size: 0.55rem;
 }
@@ -2334,6 +2390,14 @@ a:focus-visible {
     height: 0.75rem;
   }
 
+  .site-navigation-theme {
+    padding-left: 0.55rem;
+  }
+
+  .site-navigation-theme::before {
+    height: 0.75rem;
+  }
+
   .portfolio-home,
   .route-page > main:not(.portfolio-home):not(.portfolio-root) {
     padding-top: 9rem !important;
@@ -2369,6 +2433,14 @@ a:focus-visible {
   position: fixed;
   right: clamp(18px, 2.4vw, 34px);
   bottom: clamp(18px, 2.4vw, 34px);
+  z-index: 160;
+  box-shadow: 0 10px 34px color-mix(in srgb, var(--foreground) 12%, transparent);
+}
+
+.theme-toggle-detail {
+  position: fixed;
+  top: clamp(18px, 2.4vw, 34px);
+  right: clamp(18px, 2.4vw, 34px);
   z-index: 160;
   box-shadow: 0 10px 34px color-mix(in srgb, var(--foreground) 12%, transparent);
 }

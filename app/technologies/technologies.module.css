@@ -1,0 +1,324 @@
+.categoryLink {
+  position: relative;
+  padding: 0.2rem 0 0.35rem;
+  border: 0;
+  background: transparent;
+  color: var(--accent);
+  font-family: var(--font-jetbrains-mono), monospace;
+  font-size: clamp(0.58rem, 0.68vw, 0.74rem);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: color 240ms ease;
+}
+
+.categoryLink::after {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  height: 1px;
+  background: var(--accent);
+  content: "";
+  transform: scaleX(0);
+  transform-origin: right;
+  transition: transform 320ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.categoryLink:hover,
+.categoryLink:focus-visible {
+  color: var(--foreground);
+}
+
+.categoryLink:hover::after,
+.categoryLink:focus-visible::after {
+  transform: scaleX(1);
+  transform-origin: left;
+}
+
+.categorySection {
+  display: grid;
+  gap: clamp(1rem, 2vw, 1.5rem);
+  scroll-margin-top: clamp(8rem, 11vw, 10rem);
+}
+
+.categoryHeading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding-bottom: 0.9rem;
+  border-bottom: 1px solid var(--line);
+  color: var(--muted);
+  font-family: var(--font-jetbrains-mono), monospace;
+  font-size: clamp(0.56rem, 0.66vw, 0.72rem);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.technologyGrid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: clamp(0.85rem, 1.3vw, 1.2rem);
+}
+
+.technologyItem {
+  --magnetic-x: 50%;
+  --magnetic-y: 50%;
+  position: relative;
+  isolation: isolate;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: center;
+  gap: 0.9rem;
+  min-height: 5rem;
+  padding: 1rem 1.15rem;
+  overflow: hidden;
+  border: 0;
+  border-radius: 1.15rem;
+  outline: none;
+  background: transparent;
+  color: var(--muted);
+  font-family: var(--font-jetbrains-mono), monospace;
+  font-size: clamp(0.62rem, 0.72vw, 0.76rem);
+  line-height: 1.45;
+  text-align: left;
+  text-transform: uppercase;
+  cursor: pointer;
+  box-shadow: 0 0 0 transparent;
+  will-change: transform;
+  transition:
+    color 280ms ease,
+    background 320ms ease,
+    box-shadow 430ms cubic-bezier(0.22, 1, 0.36, 1),
+    filter 320ms ease;
+}
+
+.technologyItem::before {
+  position: absolute;
+  z-index: -1;
+  inset: 0;
+  border-radius: inherit;
+  background:
+    radial-gradient(
+      circle at var(--magnetic-x) var(--magnetic-y),
+      color-mix(in srgb, var(--accent) 32%, transparent) 0,
+      color-mix(in srgb, var(--accent) 13%, transparent) 24%,
+      transparent 58%
+    ),
+    linear-gradient(
+      145deg,
+      color-mix(in srgb, var(--surface) 88%, white 12%),
+      color-mix(in srgb, var(--surface) 92%, black 8%)
+    );
+  opacity: 0;
+  content: "";
+  transform: scale(0.82);
+  transition:
+    opacity 220ms ease,
+    transform 420ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.technologyItem > svg {
+  width: 1.15rem;
+  height: 1.15rem;
+  color: var(--accent);
+  filter: drop-shadow(0 0 0 transparent);
+  transition:
+    transform 380ms cubic-bezier(0.22, 1, 0.36, 1),
+    filter 280ms ease;
+}
+
+.technologyItem:hover,
+.technologyItem:focus-visible,
+.technologyItem[data-magnetic-active="true"] {
+  color: var(--foreground);
+  filter: saturate(1.18);
+  box-shadow:
+    -1rem -1rem 2rem rgba(255, 255, 255, 0.085),
+    1.15rem 1.15rem 2.2rem rgba(0, 0, 0, 0.76),
+    0 0 2.4rem color-mix(in srgb, var(--accent) 18%, transparent),
+    inset 0.12rem 0.12rem 0.34rem rgba(255, 255, 255, 0.08),
+    inset -0.1rem -0.1rem 0.28rem rgba(0, 0, 0, 0.4);
+}
+
+.technologyItem:hover::before,
+.technologyItem:focus-visible::before,
+.technologyItem[data-magnetic-active="true"]::before {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.technologyItem:hover > svg,
+.technologyItem:focus-visible > svg,
+.technologyItem[data-magnetic-active="true"] > svg {
+  filter: drop-shadow(
+    0 0 0.55rem color-mix(in srgb, var(--accent) 72%, transparent)
+  );
+  transform: rotate(-14deg) scale(1.34);
+}
+
+.modalBackdrop {
+  position: fixed;
+  z-index: 320;
+  inset: 0;
+  display: grid;
+  min-height: 100svh;
+  place-items: center;
+  overflow-y: auto;
+  padding: clamp(1rem, 4vw, 3rem);
+  background: rgba(5, 7, 8, 0.72);
+  backdrop-filter: blur(18px);
+}
+
+.modal {
+  position: relative;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  width: min(100%, 48rem);
+  min-height: clamp(20rem, 42vw, 30rem);
+  align-items: center;
+  gap: clamp(1.5rem, 4vw, 3.5rem);
+  padding: clamp(2rem, 5vw, 4.5rem);
+  background:
+    radial-gradient(
+      circle at 18% 35%,
+      color-mix(in srgb, var(--accent) 14%, transparent),
+      transparent 38%
+    ),
+    color-mix(in srgb, var(--surface-raised) 96%, transparent);
+  color: var(--foreground);
+  box-shadow: 0 3rem 8rem -3rem rgba(0, 0, 0, 0.82);
+}
+
+.modalCorner {
+  position: absolute;
+  width: clamp(1.6rem, 4vw, 3rem);
+  height: clamp(1.6rem, 4vw, 3rem);
+  border-color: var(--accent);
+  pointer-events: none;
+}
+
+.modalCornerTl {
+  top: clamp(0.75rem, 1.5vw, 1.25rem);
+  left: clamp(0.75rem, 1.5vw, 1.25rem);
+  border-top: 1px solid;
+  border-left: 1px solid;
+}
+
+.modalCornerTr {
+  top: clamp(0.75rem, 1.5vw, 1.25rem);
+  right: clamp(0.75rem, 1.5vw, 1.25rem);
+  border-top: 1px solid;
+  border-right: 1px solid;
+}
+
+.modalCornerBl {
+  bottom: clamp(0.75rem, 1.5vw, 1.25rem);
+  left: clamp(0.75rem, 1.5vw, 1.25rem);
+  border-bottom: 1px solid;
+  border-left: 1px solid;
+}
+
+.modalCornerBr {
+  right: clamp(0.75rem, 1.5vw, 1.25rem);
+  bottom: clamp(0.75rem, 1.5vw, 1.25rem);
+  border-right: 1px solid;
+  border-bottom: 1px solid;
+}
+
+.modalClose {
+  position: absolute;
+  top: clamp(1rem, 2vw, 1.5rem);
+  right: clamp(1rem, 2vw, 1.5rem);
+  display: grid;
+  width: 2.75rem;
+  height: 2.75rem;
+  place-items: center;
+  border: 0;
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--foreground) 7%, transparent);
+  color: var(--foreground);
+  cursor: pointer;
+  transition:
+    background 260ms ease,
+    color 260ms ease,
+    transform 320ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.modalClose:hover,
+.modalClose:focus-visible {
+  background: var(--foreground);
+  color: var(--background);
+  transform: rotate(90deg) scale(1.06);
+}
+
+.modalIcon {
+  display: grid;
+  width: clamp(5rem, 10vw, 8rem);
+  aspect-ratio: 1;
+  place-items: center;
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--accent) 12%, var(--surface));
+  color: var(--accent);
+  box-shadow: 0 0 3rem color-mix(in srgb, var(--accent) 20%, transparent);
+}
+
+.modalIcon svg {
+  width: 42%;
+  height: 42%;
+}
+
+.modalContent {
+  display: grid;
+  min-width: 0;
+  gap: clamp(1rem, 2vw, 1.5rem);
+}
+
+.modalTitle {
+  max-width: 100%;
+  margin: 0;
+  font-size: clamp(2rem, 5vw, 5rem);
+  line-height: 0.9;
+}
+
+.modalContent p {
+  max-width: 54ch;
+  margin: 0;
+  color: var(--muted);
+  font-size: clamp(0.95rem, 1.2vw, 1.15rem);
+  line-height: 1.75;
+}
+
+@media (max-width: 56rem) {
+  .technologyGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 38rem) {
+  .categoryHeading {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .technologyGrid,
+  .modal {
+    grid-template-columns: 1fr;
+  }
+
+  .modal {
+    align-content: center;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .categoryLink,
+  .categoryLink::after,
+  .technologyItem,
+  .technologyItem::before,
+  .technologyItem > svg,
+  .modalClose {
+    transition: none;
+  }
+}

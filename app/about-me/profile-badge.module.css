@@ -9,14 +9,32 @@
 
 .badge {
   position: relative;
-  isolation: isolate;
-  display: grid;
   width: min(100%, 18rem);
   aspect-ratio: 0.72;
-  grid-template-rows: minmax(0, 1fr) auto;
-  gap: clamp(1rem, 2vw, 1.4rem);
   margin: 0;
-  padding: clamp(0.8rem, 1.6vw, 1.15rem);
+  cursor: grab;
+  perspective: 70rem;
+  touch-action: none;
+  user-select: none;
+  will-change: transform;
+}
+
+.cardInner {
+  position: absolute;
+  inset: 0;
+  transform-style: preserve-3d;
+  transition: transform 760ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.badge[data-flipped="true"] .cardInner {
+  transform: rotateY(180deg);
+}
+
+.face {
+  position: absolute;
+  isolation: isolate;
+  inset: 0;
+  overflow: hidden;
   border: 1px solid var(--line-soft);
   border-radius: clamp(1.25rem, 2.4vw, 2rem);
   background:
@@ -25,27 +43,24 @@
   box-shadow:
     0 2.4rem 5rem -3rem color-mix(in srgb, var(--foreground) 40%, transparent),
     inset 0 1px color-mix(in srgb, var(--foreground) 8%, transparent);
-  cursor: grab;
-  touch-action: none;
-  user-select: none;
-  will-change: transform;
+  backface-visibility: hidden;
 }
 
-.badge::before,
-.badge::after {
+.face::before,
+.face::after {
   position: absolute;
-  z-index: -1;
+  z-index: 2;
   content: "";
   pointer-events: none;
 }
 
-.badge::before {
+.face::before {
   inset: 0;
   border-radius: inherit;
   background: radial-gradient(circle at 80% 8%, color-mix(in srgb, var(--accent) 13%, transparent), transparent 36%);
 }
 
-.badge::after {
+.face::after {
   right: 1.1rem;
   bottom: 1.1rem;
   width: 1.6rem;
@@ -55,7 +70,34 @@
   opacity: 0.65;
 }
 
-.badge[data-dragging="true"] {
+.front {
+  display: grid;
+  grid-template-rows: minmax(0, 1fr) auto;
+  gap: clamp(1rem, 2vw, 1.4rem);
+  padding: clamp(0.8rem, 1.6vw, 1.15rem);
+}
+
+.back {
+  --card-padding: clamp(0.8rem, 1.6vw, 1.15rem);
+  display: grid;
+  place-items: center;
+  padding: var(--card-padding);
+  transform: rotateY(180deg);
+}
+
+.back img {
+  position: absolute;
+  inset: var(--card-padding);
+  display: block;
+  width: calc(100% - var(--card-padding) - var(--card-padding));
+  height: calc(100% - var(--card-padding) - var(--card-padding));
+  border-radius: clamp(0.9rem, 1.8vw, 1.4rem);
+  object-fit: cover;
+  filter: contrast(1.03);
+  pointer-events: none;
+}
+
+.badge[data-dragging="true"] .face {
   cursor: grabbing;
   box-shadow:
     0 3.5rem 6rem -2.6rem color-mix(in srgb, var(--foreground) 56%, transparent),
@@ -65,6 +107,10 @@
 .badge[data-static="true"] {
   cursor: default;
   touch-action: auto;
+}
+
+.badge[data-static="true"] .cardInner {
+  transform: none;
 }
 
 .grip {
@@ -165,8 +211,12 @@
 
 @media (prefers-reduced-motion: reduce) {
   .badge,
+  .cardInner,
   .photo img {
-    transform: none !important;
     transition: none;
+  }
+
+  .badge {
+    transform: none !important;
   }
 }
