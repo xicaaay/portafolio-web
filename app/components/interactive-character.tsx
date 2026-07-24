@@ -5,7 +5,7 @@ import { useEffect, useRef, useState } from "react";
 import type { AnimationEvent as ReactAnimationEvent } from "react";
 
 type InteractiveCharacterProps = {
-  variant?: "hero" | "brand";
+  variant?: "hero" | "brand" | "loader";
   ariaLabel?: string;
   disabled?: boolean;
   onJumpComplete?: () => void;
@@ -117,9 +117,12 @@ export function InteractiveCharacter({
         onAnimationEnd={handleAnimationEnd}
         aria-hidden="true"
       >
-        <span className="home-character-head">
-          <span className="home-character-eye home-character-eye-left" />
-          <span className="home-character-eye home-character-eye-right" />
+        <span className="home-character-float">
+          <span className="home-character-head">
+            <span className="home-character-inner-ring" />
+            <span className="home-character-eye home-character-eye-left" />
+            <span className="home-character-eye home-character-eye-right" />
+          </span>
         </span>
       </span>
       <span className="home-character-shadow" aria-hidden="true" />

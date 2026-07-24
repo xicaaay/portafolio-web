@@ -1548,10 +1548,11 @@ a:focus-visible {
   place-items: center;
   align-content: center;
   min-height: 100svh;
-  gap: 1.4rem;
+  gap: 1.65rem;
   overflow: hidden;
-  background: #1d202b;
-  color: #f5f6f1;
+  background: var(--background);
+  color: var(--foreground);
+  transition: background-color 450ms ease, color 450ms ease;
 }
 
 .dot-loader-overlay {
@@ -1564,128 +1565,16 @@ a:focus-visible {
 .dot-loader-character {
   position: relative;
   z-index: 2;
-  width: 3.5rem;
-  height: 3.5rem;
+  display: grid;
+  width: clamp(7.5rem, 24vw, 9rem);
+  aspect-ratio: 1;
+  place-items: center;
 }
 
-.dot-loader-motion {
-  position: absolute;
-  inset: 0;
-  display: block;
-  transform-origin: center bottom;
-  backface-visibility: hidden;
-  transform: translate3d(0, 0, 0);
-  will-change: transform;
-}
-
-.dot-loader-character.is-ready .dot-loader-motion {
-  --character-jump-height: -5.2rem;
-  --character-rebound-height: -0.55rem;
-  animation: home-character-jump 880ms linear 720ms both;
-}
-
-.dot-loader-figure {
-  position: absolute;
-  z-index: 1;
-  inset: 0;
-  display: block;
+.dot-loader-character > .home-character {
+  align-self: center;
   width: 100%;
-  height: 100%;
-  overflow: visible;
 }
-
-.dot-loader-head-line,
-.dot-loader-head-complete {
-  fill: none;
-  stroke: #f5f6f1;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-  vector-effect: non-scaling-stroke;
-}
-
-.dot-loader-head-line {
-  stroke-width: 1.65;
-  transform-box: fill-box;
-  transform-origin: center;
-}
-
-.dot-loader-head-complete {
-  stroke-width: 1.65;
-}
-
-.dot-loader-point,
-.dot-loader-eye,
-.dot-loader-shadow {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  display: block;
-}
-
-.dot-loader-point {
-  z-index: 3;
-  width: 0.48rem;
-  height: 0.48rem;
-  margin: -0.24rem 0 0 -0.24rem;
-  border-radius: 50%;
-  background: #f5f6f1;
-  box-shadow: 0 0 1rem rgba(255, 255, 255, 0.14);
-  will-change: transform, opacity;
-}
-
-.dot-loader-eye {
-  z-index: 4;
-  width: 0.3rem;
-  height: 1rem;
-  margin-top: -0.5rem;
-  border-radius: 999px;
-  background: #8aa5ff;
-  box-shadow: 0 0 0.8rem rgba(111, 142, 255, 0.5);
-  transform-origin: center;
-}
-
-.dot-loader-eye-left { margin-left: -0.72rem; }
-.dot-loader-eye-right { margin-left: 0.42rem; }
-
-.dot-loader-shadow {
-  top: calc(50% + 3.65rem);
-  left: 50%;
-  width: 3.75rem;
-  height: 0.42rem;
-  margin-left: -1.875rem;
-  border-radius: 50%;
-  background: rgba(0, 0, 0, 0.42);
-  filter: blur(0.3rem);
-  transform-origin: center;
-}
-
-.dot-loader-particles {
-  position: absolute;
-  z-index: 5;
-  bottom: -0.12rem;
-  left: 50%;
-  width: 0;
-  height: 0;
-  pointer-events: none;
-}
-
-.dot-loader-particles i {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  display: block;
-  width: 0.18rem;
-  height: 0.18rem;
-  margin: -0.09rem;
-  border-radius: 50%;
-  background: color-mix(in srgb, var(--accent) 76%, #fff);
-  box-shadow: none;
-}
-
-.dot-loader-particles i:nth-child(2),
-.dot-loader-particles i:nth-child(5) { width: .26rem; height: .26rem; margin: -.13rem; }
-.dot-loader-particles i:nth-child(3),
-.dot-loader-particles i:nth-child(4) { width: .14rem; height: .14rem; margin: -.07rem; }
 
 .dot-loader-copy {
   position: relative;
@@ -1699,7 +1588,7 @@ a:focus-visible {
 .dot-loader-copy strong {
   position: relative;
   display: block;
-  color: #f5f6f1;
+  color: var(--foreground);
   font-family: var(--font-geist), sans-serif;
   font-size: clamp(0.85rem, 1.5vw, 1rem);
   font-weight: 400;
@@ -1708,7 +1597,7 @@ a:focus-visible {
 }
 
 .dot-loader-copy span {
-  color: rgba(245, 246, 241, 0.42);
+  color: var(--subtle);
   font-family: var(--font-jetbrains-mono), monospace;
   font-size: 0.5rem;
   letter-spacing: 0.1em;
@@ -2353,8 +2242,8 @@ a:focus-visible {
   border: 1px solid var(--line-soft);
   border-radius: 1.4rem;
   background:
-    radial-gradient(circle at 58% 47%, rgba(255, 255, 255, 0.035), transparent 32%),
-    #050606;
+    radial-gradient(circle at 58% 47%, color-mix(in srgb, var(--accent) 10%, transparent), transparent 34%),
+    var(--surface-raised);
   box-shadow: 0 2rem 5rem -3.25rem color-mix(in srgb, var(--foreground) 50%, transparent);
   transition:
     border-color 280ms ease,
@@ -2362,20 +2251,12 @@ a:focus-visible {
     filter 320ms ease;
 }
 
-.home-portrait-magnetic[data-magnetic-active="true"] .home-portrait-frame {
-  border-color: color-mix(in srgb, var(--accent) 44%, var(--line-soft));
-  filter: saturate(1.08);
-  box-shadow:
-    0 3rem 6rem -3rem color-mix(in srgb, var(--foreground) 54%, transparent),
-    0 0 2.6rem color-mix(in srgb, var(--accent) 18%, transparent);
-}
-
 .home-portrait-frame::after {
   position: absolute;
   inset: 0;
   background:
-    linear-gradient(to top, rgba(0, 0, 0, 0.3), transparent 32%),
-    linear-gradient(115deg, transparent 55%, rgba(255, 255, 255, 0.12));
+    linear-gradient(to top, color-mix(in srgb, var(--foreground) 7%, transparent), transparent 32%),
+    linear-gradient(115deg, transparent 55%, color-mix(in srgb, var(--foreground) 7%, transparent));
   content: "";
   pointer-events: none;
 }
@@ -2395,6 +2276,39 @@ a:focus-visible {
   align-self: center;
 }
 
+.home-portrait-scan {
+  position: absolute;
+  z-index: 3;
+  top: 0;
+  right: 0;
+  left: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--accent) 18% 82%, transparent);
+  box-shadow: 0 0 0.9rem color-mix(in srgb, var(--accent) 58%, transparent);
+  opacity: 0;
+  pointer-events: none;
+  will-change: transform, opacity;
+  animation: character-card-scan 4.2s ease-in-out infinite;
+}
+
+.home-portrait-signature {
+  position: absolute;
+  z-index: 4;
+  bottom: 1.15rem;
+  left: 1.15rem;
+  color: var(--subtle);
+  font-size: 0.44rem;
+  letter-spacing: 0.14em;
+  pointer-events: none;
+}
+
+@keyframes character-card-scan {
+  0%, 12% { opacity: 0; transform: translateY(-0.2rem); }
+  18% { opacity: 0.72; }
+  72% { opacity: 0.22; }
+  82%, 100% { opacity: 0; transform: translateY(25rem); }
+}
+
 .home-character {
   --eye-x: 0px;
   --eye-y: 0px;
@@ -2412,7 +2326,7 @@ a:focus-visible {
   padding: 0;
   border: 0;
   background: transparent;
-  color: #f3f4ef;
+  color: var(--foreground);
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
   touch-action: manipulation;
@@ -2429,6 +2343,11 @@ a:focus-visible {
   align-self: auto;
   width: clamp(2.55rem, 2.9vw, 3.2rem);
   color: var(--foreground);
+}
+
+.home-character-loader {
+  --character-shadow-color: color-mix(in srgb, var(--foreground) 52%, transparent);
+  pointer-events: none;
 }
 
 .home-character-brand .home-character-head {
@@ -2459,6 +2378,21 @@ a:focus-visible {
   will-change: transform;
 }
 
+.home-character-float {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  transform: translate3d(0, 0, 0);
+  will-change: transform;
+  animation: home-character-float 4.5s ease-in-out infinite;
+}
+
+@keyframes home-character-float {
+  0%, 100% { transform: translate3d(0, 0.22rem, 0); }
+  50% { transform: translate3d(0, -0.45rem, 0); }
+}
+
 .home-character-head {
   position: relative;
   display: block;
@@ -2467,8 +2401,10 @@ a:focus-visible {
   overflow: hidden;
   border: 2px solid currentColor;
   border-radius: 50%;
-  background: transparent;
-  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.04);
+  background: var(--surface);
+  box-shadow:
+    inset 0 0 0 1px color-mix(in srgb, var(--foreground) 5%, transparent),
+    0 0 2rem color-mix(in srgb, var(--accent) 8%, transparent);
   backface-visibility: hidden;
   will-change: transform;
   transition:
@@ -2476,6 +2412,14 @@ a:focus-visible {
     background-color 320ms ease,
     box-shadow 420ms ease,
     transform 420ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.home-character-inner-ring {
+  position: absolute;
+  inset: 5.5%;
+  border: 1px solid color-mix(in srgb, var(--foreground) 18%, transparent);
+  border-radius: 50%;
+  pointer-events: none;
 }
 
 .home-character-eye {
@@ -2486,11 +2430,22 @@ a:focus-visible {
   border-radius: 999px;
   background: var(--accent);
   box-shadow: 0 0 1rem color-mix(in srgb, var(--accent) 42%, transparent);
-  transform: translate(var(--eye-x), var(--eye-y));
+  transform: translate(var(--eye-x), var(--eye-y)) scaleY(1);
+  transform-origin: center;
+  animation: home-character-blink 5.4s ease-in-out infinite;
   transition:
     background-color 280ms ease,
     box-shadow 280ms ease,
     transform 100ms ease-out;
+}
+
+@keyframes home-character-blink {
+  0%, 43%, 47%, 78%, 82%, 100% {
+    transform: translate(var(--eye-x), var(--eye-y)) scaleY(1);
+  }
+  45%, 80% {
+    transform: translate(var(--eye-x), var(--eye-y)) scaleY(0.08);
+  }
 }
 
 .home-character-eye-left {
@@ -2504,12 +2459,12 @@ a:focus-visible {
 .home-character:hover .home-character-head,
 .home-character:focus-visible .home-character-head,
 .home-character.is-jumping .home-character-head {
-  border-radius: 46% 46% 42% 42% / 45% 45% 55% 55%;
-  background: var(--accent);
+  border-radius: 50%;
+  background: var(--surface);
   box-shadow:
-    0 0 2.8rem color-mix(in srgb, var(--accent) 32%, transparent),
-    inset 0 0.7rem 1.7rem rgba(255, 255, 255, 0.16);
-  transform: scaleX(1.05) scaleY(0.94);
+    0 0 2.8rem color-mix(in srgb, var(--accent) 25%, transparent),
+    inset 0 0 0 1px color-mix(in srgb, var(--foreground) 8%, transparent);
+  transform: scale(1.025);
 }
 
 .home-character:hover .home-character-eye,
@@ -2565,6 +2520,15 @@ a:focus-visible {
 
 .home-character.is-jumping .home-character-shadow {
   animation: home-character-shadow var(--character-jump-duration) linear both;
+}
+
+.home-character:not(.is-jumping) .home-character-shadow {
+  animation: home-character-shadow-float 4.5s ease-in-out infinite;
+}
+
+@keyframes home-character-shadow-float {
+  0%, 100% { opacity: 0.6; transform: scaleX(1); }
+  50% { opacity: 0.32; transform: scaleX(0.76); }
 }
 
 @keyframes home-character-shadow {
@@ -2797,10 +2761,6 @@ a:focus-visible {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .dot-loader-character.is-ready .dot-loader-motion {
-    animation: none;
-  }
-
   .home-code-body p > i.is-typing {
     animation: none;
   }
@@ -2813,8 +2773,11 @@ a:focus-visible {
   }
 
   .home-character-motion,
+  .home-character-float,
   .home-character-shadow,
-  .home-character-dust i {
+  .home-character-dust i,
+  .home-character-eye,
+  .home-portrait-scan {
     animation: none;
   }
 
