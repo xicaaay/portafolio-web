@@ -2,7 +2,6 @@
 
 <img src="https://readme-typing-svg.demolab.com?font=JetBrains+Mono&weight=700&size=28&duration=2800&pause=900&color=7C3AED&center=true&vCenter=true&width=700&lines=Portafolio+Web;Amilcar+Xicay;Full+Stack+Developer" alt="Animación de escritura del portafolio" />
 
-# Portafolio Web
 
 Una experiencia digital personal para presentar mi perfil, proyectos, tecnologías y trayectoria profesional.
 
