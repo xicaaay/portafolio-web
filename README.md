@@ -42,10 +42,25 @@ La interfaz combina una estética minimalista y editorial con contenido dinámic
 | **Contacto** | Comunicación directa mediante correo electrónico o WhatsApp. |
 
 
-<div align="center">
+<h2 align="center">Desarrollado por</h2>
 
-**Diseñado y desarrollado por Amilcar Xicay.**
+<table align="center">
+  <tr>
+    <td align="center">
+      <a href="https://github.com/xicaaay">
+        <img
+          src="https://github.com/xicaaay.png"
+          width="100"
+          height="100"
+          alt="Amilcar Xicay"
+        >
+        <br>
+        <strong>Amilcar Xicay</strong>
+      </a>
+      <br>
+      <sub>Full Stack Developer</sub>
+    </td>
+  </tr>
+</table>
 
-`BUILD / SHIP / IMPROVE`
 
-</div>
