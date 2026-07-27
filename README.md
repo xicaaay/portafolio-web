@@ -57,7 +57,6 @@ La interfaz combina una estética minimalista y editorial con contenido dinámic
         <strong>Amilcar Xicay</strong>
       </a>
       <br>
-      <sub>Full Stack Developer</sub>
     </td>
   </tr>
 </table>
