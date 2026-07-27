@@ -59,6 +59,7 @@ import badgeStyles from "./profile-badge.module.css";
 import { ProfileBadge } from "./profile-badge";
 
 const easing = [0.22, 1, 0.36, 1] as const;
+const LOCAL_RESUME_URL = "/cv.pdf";
 
 const SOCIAL_ICONS_BY_KEY: Record<string, IconType> = {
   SiBehance,
@@ -348,12 +349,12 @@ function ResumeCard({
 }
 
 function ResumeModal({
-  pdfUrl,
+  externalResumeUrl,
   name,
   reducedMotion,
   onClose,
 }: {
-  pdfUrl: string;
+  externalResumeUrl: string;
   name: string | null;
   reducedMotion: boolean;
   onClose: () => void;
@@ -425,7 +426,7 @@ function ResumeModal({
       .replace(/\s+/g, "-")}.pdf`;
 
     try {
-      const response = await fetch(pdfUrl);
+      const response = await fetch(LOCAL_RESUME_URL);
       if (!response.ok) throw new Error("No se pudo descargar el currículum.");
 
       const fileBlob = await response.blob();
@@ -439,7 +440,7 @@ function ResumeModal({
       window.setTimeout(() => URL.revokeObjectURL(objectUrl), 0);
     } catch {
       const fallbackLink = document.createElement("a");
-      fallbackLink.href = pdfUrl;
+      fallbackLink.href = LOCAL_RESUME_URL;
       fallbackLink.target = "_blank";
       fallbackLink.rel = "noopener noreferrer";
       fallbackLink.click();
@@ -520,7 +521,7 @@ function ResumeModal({
 
               <a
                 className={styles.resumeModalExternal}
-                href={pdfUrl}
+                href={externalResumeUrl}
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="Ver currículum en una pestaña nueva"
@@ -579,7 +580,7 @@ function ResumeModal({
         <figure ref={stageRef} className={styles.resumeModalStage}>
           <div className={styles.resumeModalDocument}>
             <iframe
-              src={buildPdfViewerUrl(pdfUrl)}
+              src={buildPdfViewerUrl(LOCAL_RESUME_URL)}
               title={`Currículum de ${name ?? "Amilcar"}`}
               style={viewerStyle}
             />
@@ -778,7 +779,7 @@ function ProfileContent({
       <AnimatePresence>
         {isResumeOpen && profile.resumeUrl && (
           <ResumeModal
-            pdfUrl={profile.resumeUrl}
+            externalResumeUrl={profile.resumeUrl}
             name={profile.publicName}
             reducedMotion={reducedMotion}
             onClose={() => setIsResumeOpen(false)}
