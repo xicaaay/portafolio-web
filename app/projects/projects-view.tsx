@@ -1,8 +1,8 @@
 "use client";
 
-import { AnimatePresence, motion } from "motion/react";
-import { useState } from "react";
-import { FiArrowUpRight, FiLayers, FiPlus } from "react-icons/fi";
+import { AnimatePresence, motion, useReducedMotion } from "motion/react";
+import { useRef, useState } from "react";
+import { FiArrowLeft, FiArrowRight, FiArrowUpRight, FiLayers } from "react-icons/fi";
 import { ContentState } from "../components/content-state";
 import { MagneticTitle } from "../components/magnetic-title";
 import { SECTION_ITEMS } from "../components/navigation-config";
@@ -12,7 +12,7 @@ import type { PublicProject, PublicProjectsLoadResult } from "../lib/public-api"
 import styles from "./projects.module.css";
 
 type ProjectsViewProps = { result: PublicProjectsLoadResult };
-const INITIAL_PROJECT_COUNT = 5;
+const PROJECTS_PER_PAGE = 6;
 
 function formatProjectDate(value: string | null) {
   if (!value) return "Proyecto seleccionado";
@@ -34,6 +34,11 @@ function ProjectCard({ project, index, total }: {
       transition={{ duration: 0.55, delay: Math.min(index * 0.07, 0.28), ease: [0.22, 1, 0.36, 1] }}
     >
       <RouteTransitionLink href={`/projects/${encodeURIComponent(project.slug)}`} className={styles.folderCard} ariaLabel={`Ver detalles de ${project.title}`}>
+        <span className={styles.folderPaper} aria-hidden="true">
+          <span />
+          <span />
+          <span />
+        </span>
         <span className={styles.folderShape} aria-hidden="true" />
         <span className={styles.folderContent}>
           <span className={styles.folderTopline}>
@@ -57,9 +62,25 @@ function ProjectCard({ project, index, total }: {
 }
 
 function ProjectsContent({ projects }: { projects: PublicProject[] }) {
-  const [visibleCount, setVisibleCount] = useState(INITIAL_PROJECT_COUNT);
-  const visibleProjects = projects.slice(0, visibleCount);
-  const hasMoreProjects = visibleCount < projects.length;
+  const [currentPage, setCurrentPage] = useState(1);
+  const projectsGridRef = useRef<HTMLElement>(null);
+  const shouldReduceMotion = useReducedMotion();
+  const totalPages = Math.ceil(projects.length / PROJECTS_PER_PAGE);
+  const firstProjectIndex = (currentPage - 1) * PROJECTS_PER_PAGE;
+  const visibleProjects = projects.slice(firstProjectIndex, firstProjectIndex + PROJECTS_PER_PAGE);
+
+  const goToPage = (page: number) => {
+    const nextPage = Math.min(Math.max(page, 1), totalPages);
+    if (nextPage === currentPage) return;
+
+    setCurrentPage(nextPage);
+    window.requestAnimationFrame(() => {
+      projectsGridRef.current?.scrollIntoView({
+        behavior: shouldReduceMotion ? "auto" : "smooth",
+        block: "start",
+      });
+    });
+  };
 
   return <>
     <svg className={styles.folderClipDefs} aria-hidden="true" focusable="false">
@@ -69,12 +90,55 @@ function ProjectsContent({ projects }: { projects: PublicProject[] }) {
         </clipPath>
       </defs>
     </svg>
-    <section className={styles.projectsGrid} aria-label="Listado de proyectos">
-      <AnimatePresence initial={false}>
-        {visibleProjects.map((project, index) => <ProjectCard key={project.id} project={project} index={index} total={projects.length} />)}
+    <section ref={projectsGridRef} className={styles.projectsGrid} aria-label="Listado de proyectos" aria-live="polite">
+      <AnimatePresence mode="popLayout" initial={false}>
+        {visibleProjects.map((project, index) => (
+          <ProjectCard
+            key={project.id}
+            project={project}
+            index={firstProjectIndex + index}
+            total={projects.length}
+          />
+        ))}
       </AnimatePresence>
     </section>
-    {hasMoreProjects && <div className={styles.loadMoreRow}><button type="button" onClick={() => setVisibleCount((count) => Math.min(count + INITIAL_PROJECT_COUNT, projects.length))} data-cursor="action"><FiPlus aria-hidden="true" />Mostrar más proyectos</button></div>}
+
+    {totalPages > 1 && (
+      <nav className={styles.pagination} aria-label="Paginación de proyectos">
+        <div className={styles.paginationStatus} aria-live="polite">
+          <span>Página {String(currentPage).padStart(2, "0")}</span>
+          <span>{String(firstProjectIndex + 1).padStart(2, "0")}—{String(Math.min(firstProjectIndex + PROJECTS_PER_PAGE, projects.length)).padStart(2, "0")} de {String(projects.length).padStart(2, "0")}</span>
+        </div>
+
+        <div className={styles.paginationTrack} aria-hidden="true">
+          <span style={{ transform: `scaleX(${currentPage / totalPages})` }} />
+        </div>
+
+        <div className={styles.paginationControls}>
+          <button type="button" onClick={() => goToPage(currentPage - 1)} disabled={currentPage === 1} aria-label="Ir a la página anterior" data-cursor="action">
+            <FiArrowLeft aria-hidden="true" />
+          </button>
+          <div className={styles.pageNumbers}>
+            {Array.from({ length: totalPages }, (_, index) => index + 1).map((page) => (
+              <button
+                key={page}
+                type="button"
+                className={page === currentPage ? styles.activePage : undefined}
+                onClick={() => goToPage(page)}
+                aria-label={`Ir a la página ${page}`}
+                aria-current={page === currentPage ? "page" : undefined}
+                data-cursor="action"
+              >
+                {String(page).padStart(2, "0")}
+              </button>
+            ))}
+          </div>
+          <button type="button" onClick={() => goToPage(currentPage + 1)} disabled={currentPage === totalPages} aria-label="Ir a la página siguiente" data-cursor="action">
+            <FiArrowRight aria-hidden="true" />
+          </button>
+        </div>
+      </nav>
+    )}
   </>;
 }
 
