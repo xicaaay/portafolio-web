@@ -6,12 +6,17 @@ import "./globals.css";
 
 const siteTitle = "Amilcar Xicay — Full Stack Developer";
 const siteDescription =
-  "Portafolio profesional de Amilcar Xicay, desarrollador full stack especializado en sistemas, interfaces, APIs e integraciones.";
+  "Amilcar Xicay, portafolio profesional.";
 const vercelUrl =
   process.env.VERCEL_PROJECT_PRODUCTION_URL ?? process.env.VERCEL_URL;
+const railwayUrl = process.env.RAILWAY_PUBLIC_DOMAIN;
 const siteUrl =
   process.env.NEXT_PUBLIC_SITE_URL ??
-  (vercelUrl ? `https://${vercelUrl}` : "http://localhost:3002");
+  (railwayUrl
+    ? `https://${railwayUrl}`
+    : vercelUrl
+      ? `https://${vercelUrl}`
+      : "http://localhost:3002");
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
@@ -26,9 +31,9 @@ export const metadata: Metadata = {
     images: [
       {
         url: "/og-image.png",
-        width: 1297,
+        width: 1200,
         height: 630,
-        alt: "Vista previa del portafolio de Amilcar Xicay, Full Stack Developer.",
+        alt: "Vista previa.",
       },
     ],
   },
@@ -39,9 +44,9 @@ export const metadata: Metadata = {
     images: [
       {
         url: "/og-image.png",
-        width: 1297,
+        width: 1200,
         height: 630,
-        alt: "Vista previa del portafolio de Amilcar Xicay, Full Stack Developer.",
+        alt: "Vista previa.",
       },
     ],
   },
