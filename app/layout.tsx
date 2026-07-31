@@ -4,10 +4,47 @@ import { PortfolioShell } from "./components/portfolio-shell";
 import { archivoBlack, geist, jetBrainsMono } from "./fonts";
 import "./globals.css";
 
+const siteTitle = "Amilcar Xicay — Full Stack Developer";
+const siteDescription =
+  "Portafolio profesional de Amilcar Xicay, desarrollador full stack especializado en sistemas, interfaces, APIs e integraciones.";
+const vercelUrl =
+  process.env.VERCEL_PROJECT_PRODUCTION_URL ?? process.env.VERCEL_URL;
+const siteUrl =
+  process.env.NEXT_PUBLIC_SITE_URL ??
+  (vercelUrl ? `https://${vercelUrl}` : "http://localhost:3002");
+
 export const metadata: Metadata = {
-  title: "Amilcar — Full Stack Developer",
-  description:
-    "Portafolio profesional de Amilcar, desarrollador full stack especializado en sistemas, interfaces, APIs e integraciones.",
+  metadataBase: new URL(siteUrl),
+  title: siteTitle,
+  description: siteDescription,
+  openGraph: {
+    type: "website",
+    locale: "es_MX",
+    title: siteTitle,
+    description: siteDescription,
+    siteName: "Portafolio de Amilcar Xicay",
+    images: [
+      {
+        url: "/og-image.png",
+        width: 1297,
+        height: 630,
+        alt: "Vista previa del portafolio de Amilcar Xicay, Full Stack Developer.",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: siteTitle,
+    description: siteDescription,
+    images: [
+      {
+        url: "/og-image.png",
+        width: 1297,
+        height: 630,
+        alt: "Vista previa del portafolio de Amilcar Xicay, Full Stack Developer.",
+      },
+    ],
+  },
 };
 
 const themeInitializationScript = `
