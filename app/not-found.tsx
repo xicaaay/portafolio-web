@@ -73,10 +73,6 @@ export default function NotFound() {
 
   return (
     <main className="site-page relative grid min-h-svh overflow-hidden bg-background p-[clamp(1.25rem,3vw,3rem)] text-foreground">
-      <span
-        className="pointer-events-none absolute inset-0 bg-[linear-gradient(var(--line-soft)_0.0625rem,transparent_0.0625rem),linear-gradient(90deg,var(--line-soft)_0.0625rem,transparent_0.0625rem)] bg-[size:clamp(3rem,6vw,6rem)_clamp(3rem,6vw,6rem)] opacity-60"
-        aria-hidden="true"
-      />
       <span className="not-found-fog" aria-hidden="true" />
 
       <section className="not-found-layout relative z-10 grid content-center gap-[clamp(2rem,4vw,4rem)] py-[clamp(4rem,9vh,8rem)]">

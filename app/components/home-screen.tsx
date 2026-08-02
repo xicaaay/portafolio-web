@@ -63,8 +63,6 @@ export function HomeScreen({ publicName }: HomeScreenProps) {
       transition={{ duration: shouldReduceMotion ? 0.15 : 0.72, ease: easing }}
       aria-labelledby="home-title"
     >
-      <div className="home-hero-grid" aria-hidden="true" />
-
       <div className="home-hero-layout">
         <div className="home-hero-copy">
           <motion.p

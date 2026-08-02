@@ -1876,18 +1876,6 @@ a:focus-visible {
   isolation: isolate;
 }
 
-.home-hero-grid {
-  position: absolute;
-  inset: 0;
-  z-index: -3;
-  background-image:
-    linear-gradient(var(--line-soft) 1px, transparent 1px),
-    linear-gradient(90deg, var(--line-soft) 1px, transparent 1px);
-  background-size: clamp(3.5rem, 6vw, 6.5rem) clamp(3.5rem, 6vw, 6.5rem);
-  opacity: 0.22;
-  mask-image: linear-gradient(to bottom, transparent 4%, black 30%, black 78%, transparent 100%);
-}
-
 .home-orbit {
   position: absolute;
   z-index: -2;
