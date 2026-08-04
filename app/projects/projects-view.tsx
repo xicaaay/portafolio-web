@@ -1,6 +1,6 @@
 "use client";
 
-import { AnimatePresence, motion, useReducedMotion } from "motion/react";
+import { AnimatePresence, motion, useReducedMotion, type Variants } from "motion/react";
 import { useRef, useState } from "react";
 import { FiArrowLeft, FiArrowRight, FiArrowUpRight, FiLayers } from "react-icons/fi";
 import { ContentState } from "../components/content-state";
@@ -12,26 +12,67 @@ import type { PublicProject, PublicProjectsLoadResult } from "../lib/public-api"
 import styles from "./projects.module.css";
 
 type ProjectsViewProps = { result: PublicProjectsLoadResult };
+type PageTransitionContext = {
+  direction: -1 | 1;
+  reduceMotion: boolean;
+};
+
 const PROJECTS_PER_PAGE = 6;
+const PAGINATION_EASE = [0.22, 1, 0.36, 1] as const;
+
+const projectsPageVariants: Variants = {
+  enter: ({ direction, reduceMotion }: PageTransitionContext) => reduceMotion
+    ? { opacity: 1, x: 0, filter: "blur(0px)" }
+    : {
+        opacity: 0,
+        x: direction * 72,
+        filter: "blur(8px)",
+        transition: { duration: 0.36, ease: PAGINATION_EASE },
+      },
+  active: ({ reduceMotion }: PageTransitionContext) => ({
+    opacity: 1,
+    x: 0,
+    filter: "blur(0px)",
+    transition: reduceMotion
+      ? { duration: 0 }
+      : { duration: 0.46, ease: PAGINATION_EASE },
+  }),
+  exit: ({ direction, reduceMotion }: PageTransitionContext) => reduceMotion
+    ? { opacity: 1, x: 0, filter: "blur(0px)" }
+    : {
+        opacity: 0,
+        x: direction * -52,
+        filter: "blur(7px)",
+        transition: { duration: 0.28, ease: PAGINATION_EASE },
+      },
+};
 
 function formatProjectDate(value: string | null) {
   if (!value) return "Proyecto seleccionado";
   return new Intl.DateTimeFormat("es-MX", { month: "short", year: "numeric" }).format(new Date(value)).replace(".", "").toUpperCase();
 }
 
-function ProjectCard({ project, index, total }: {
+function ProjectCard({ project, index, order, reduceMotion, total }: {
   project: PublicProject;
   index: number;
+  order: number;
+  reduceMotion: boolean;
   total: number;
 }) {
   return (
     <motion.article
       className={styles.cardScene}
       layout
-      initial={{ opacity: 0, y: 28 }}
+      initial={reduceMotion ? false : { opacity: 0, y: 28, scale: 0.97 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, amount: 0.15 }}
-      transition={{ duration: 0.55, delay: Math.min(index * 0.07, 0.28), ease: [0.22, 1, 0.36, 1] }}
+      transition={reduceMotion
+        ? { duration: 0 }
+        : {
+            duration: 0.52,
+            delay: Math.min(order * 0.065, 0.325),
+            ease: PAGINATION_EASE,
+          }}
     >
       <RouteTransitionLink href={`/projects/${encodeURIComponent(project.slug)}`} className={styles.folderCard} ariaLabel={`Ver detalles de ${project.title}`}>
         <span className={styles.folderPaper} aria-hidden="true">
@@ -40,6 +81,14 @@ function ProjectCard({ project, index, total }: {
           <span />
         </span>
         <span className={styles.folderShape} aria-hidden="true" />
+        <svg
+          className={styles.folderOutline}
+          viewBox="-1 -1 102 102"
+          preserveAspectRatio="none"
+          aria-hidden="true"
+        >
+          <path d="M 7.5 7.5 H 44 L 55 0 H 92.5 C 96.8 0 100 3.2 100 7.5 V 92.5 C 100 96.8 96.8 100 92.5 100 H 7.5 C 3.2 100 0 96.8 0 92.5 V 15 C 0 10.8 3.2 7.5 7.5 7.5 Z" />
+        </svg>
         <span className={styles.folderContent}>
           <span className={styles.folderTopline}>
             <span>{project.category?.name ?? "Proyecto digital"}</span>
@@ -63,20 +112,27 @@ function ProjectCard({ project, index, total }: {
 
 function ProjectsContent({ projects }: { projects: PublicProject[] }) {
   const [currentPage, setCurrentPage] = useState(1);
+  const [pageDirection, setPageDirection] = useState<-1 | 1>(1);
   const projectsGridRef = useRef<HTMLElement>(null);
   const shouldReduceMotion = useReducedMotion();
+  const reduceMotion = shouldReduceMotion === true;
   const totalPages = Math.ceil(projects.length / PROJECTS_PER_PAGE);
   const firstProjectIndex = (currentPage - 1) * PROJECTS_PER_PAGE;
   const visibleProjects = projects.slice(firstProjectIndex, firstProjectIndex + PROJECTS_PER_PAGE);
+  const pageTransitionContext: PageTransitionContext = {
+    direction: pageDirection,
+    reduceMotion,
+  };
 
   const goToPage = (page: number) => {
     const nextPage = Math.min(Math.max(page, 1), totalPages);
     if (nextPage === currentPage) return;
 
+    setPageDirection(nextPage > currentPage ? 1 : -1);
     setCurrentPage(nextPage);
     window.requestAnimationFrame(() => {
       projectsGridRef.current?.scrollIntoView({
-        behavior: shouldReduceMotion ? "auto" : "smooth",
+        behavior: reduceMotion ? "auto" : "smooth",
         block: "start",
       });
     });
@@ -91,15 +147,27 @@ function ProjectsContent({ projects }: { projects: PublicProject[] }) {
       </defs>
     </svg>
     <section ref={projectsGridRef} className={styles.projectsGrid} aria-label="Listado de proyectos" aria-live="polite">
-      <AnimatePresence mode="popLayout" initial={false}>
-        {visibleProjects.map((project, index) => (
-          <ProjectCard
-            key={project.id}
-            project={project}
-            index={firstProjectIndex + index}
-            total={projects.length}
-          />
-        ))}
+      <AnimatePresence mode="wait" initial={false} custom={pageTransitionContext}>
+        <motion.div
+          key={currentPage}
+          className={styles.projectsPage}
+          custom={pageTransitionContext}
+          variants={projectsPageVariants}
+          initial="enter"
+          animate="active"
+          exit="exit"
+        >
+          {visibleProjects.map((project, index) => (
+            <ProjectCard
+              key={project.id}
+              project={project}
+              index={firstProjectIndex + index}
+              order={index}
+              reduceMotion={reduceMotion}
+              total={projects.length}
+            />
+          ))}
+        </motion.div>
       </AnimatePresence>
     </section>
 
