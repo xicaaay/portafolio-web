@@ -1,19 +1,27 @@
 {
   "name": "web-portafolio",
   "version": "0.1.0",
+  "type": "module",
   "private": true,
   "scripts": {
-    "dev": "next dev -p 3002",
-    "build": "next build",
-    "start": "next start -p 3002",
+    "dev": "next dev -p 3000",
+    "build": "payload generate:types && payload generate:importmap && next build",
+    "payload:types": "payload generate:types",
+    "payload:importmap": "payload generate:importmap",
+    "start": "next start -p 3000",
     "lint": "eslint"
   },
   "dependencies": {
+    "@payloadcms/db-mongodb": "^3.92.0",
+    "@payloadcms/next": "^3.92.0",
+    "@payloadcms/richtext-lexical": "^3.92.0",
     "motion": "^12.42.2",
-    "next": "16.2.10",
+    "next": "^16.3.3",
+    "payload": "^3.92.0",
     "react": "19.2.4",
     "react-dom": "19.2.4",
-    "react-icons": "^5.7.0"
+    "react-icons": "^5.7.0",
+    "sharp": "^0.35.5"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
@@ -21,8 +29,12 @@
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "eslint": "^9",
-    "eslint-config-next": "16.2.10",
+    "eslint-config-next": "^16.3.3",
     "tailwindcss": "^4",
     "typescript": "^5"
+  },
+  "allowScripts": {
+    "esbuild@0.28.2": true,
+    "unrs-resolver@1.12.2": true
   }
 }

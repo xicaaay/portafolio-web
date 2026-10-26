@@ -1,5 +1,0 @@
-import { DotCharacterLoader } from "./components/dot-character-loader";
-
-export default function Loading() {
-  return <DotCharacterLoader label="Preparando página" overlay />;
-}
