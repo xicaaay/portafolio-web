@@ -1,0 +1,305 @@
+/* ---------- Contenedor y paleta ---------- */
+
+.stage {
+  --blue: #0344dc;
+  --blue-soft: #a8c3ff;
+  --ink: #01203f;
+  --paper: #eef4ed;
+  --red: #ff1700;
+  --ease: cubic-bezier(0.22, 1, 0.36, 1);
+
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, min(36rem, 34vw)) minmax(0, min(34rem, 32vw));
+  align-items: center;
+  justify-content: center;
+  column-gap: clamp(2rem, 6vw, 8rem);
+  min-height: 100svh;
+  padding: clamp(2rem, 7vh, 5rem) clamp(1.5rem, 5vw, 6rem);
+  overflow: hidden;
+  background: var(--blue);
+  color: var(--paper);
+}
+
+.stage *,
+.stage *::before,
+.stage *::after {
+  box-sizing: border-box;
+}
+
+.srOnly {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+/* ---------- Fondo: trazos de brocha ---------- */
+
+.brushWide,
+.brushTall {
+  position: absolute;
+  z-index: 0;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.brushTall {
+  display: none;
+}
+
+/* ---------- Columna izquierda: presentación ---------- */
+
+.hero {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  /* Las medidas de texto y stickers se calculan con el ancho de esta columna. */
+  container-type: inline-size;
+}
+
+.lead {
+  margin: 0;
+  font-family: var(--font-heading);
+  font-size: clamp(2rem, 10cqi, 4.25rem);
+  font-weight: 500;
+  letter-spacing: -0.035em;
+  line-height: 1.08;
+}
+
+.lead span {
+  display: block;
+}
+
+.leadSoft {
+  color: var(--blue-soft);
+}
+
+.greeting {
+  margin: clamp(1.5rem, 4.6cqi, 2.25rem) 0 0;
+  font-family: var(--font-heading);
+  font-size: clamp(1.05rem, 3.5cqi, 1.45rem);
+  font-weight: 500;
+  line-height: 1.35;
+  text-wrap: balance;
+}
+
+.support {
+  max-width: 34rem;
+  margin: 0.85rem 0 0;
+  font-family: var(--font-body);
+  font-size: clamp(0.95rem, 2.9cqi, 1.1rem);
+  line-height: 1.65;
+  color: rgb(238 244 237 / 0.85);
+  text-wrap: pretty;
+}
+
+/* ---------- Redes sociales ---------- */
+
+.socials {
+  display: flex;
+  gap: 0.5rem;
+  margin: clamp(1.5rem, 4.6cqi, 2rem) 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.socials a {
+  display: grid;
+  place-items: center;
+  /* 2.75rem equivale a 44 px: tamaño mínimo cómodo para pulsar. */
+  width: clamp(2.75rem, 3vw, 3.25rem);
+  aspect-ratio: 1;
+  border-radius: 50%;
+  font-size: clamp(1.1rem, 3.4cqi, 1.4rem);
+  color: var(--paper);
+  transition: background-color 0.25s ease, color 0.25s ease, translate 0.25s var(--ease);
+}
+
+.socials a:hover {
+  background: var(--paper);
+  color: var(--blue);
+  translate: 0 -0.2rem;
+}
+
+.socials a:focus-visible {
+  outline: 0.15rem solid var(--paper);
+  outline-offset: 0.2rem;
+}
+
+/* ---------- Stickers ---------- */
+
+/* La caja fija la proporción; cada sticker se coloca en porcentajes dentro de ella. */
+.notes {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1 / 0.52;
+  margin-top: clamp(1.5rem, 5cqi, 2.5rem);
+}
+
+.sticker {
+  position: absolute;
+}
+
+.stickerAx {
+  top: 46%;
+  left: 2%;
+  width: 30%;
+}
+
+.stickerArrow {
+  top: 6%;
+  left: 28%;
+  width: 18%;
+}
+
+.stickerNote {
+  top: 0;
+  left: 50%;
+  width: 42%;
+}
+
+.stickerImage {
+  display: block;
+  width: 100%;
+  height: auto;
+  user-select: none;
+  transition: transform 0.4s var(--ease);
+}
+
+/* Microinteracciones: solo al pasar el cursor, sin animaciones constantes. */
+.axImage:hover {
+  transform: rotate(8deg) scale(1.05);
+}
+
+.noteImage:hover {
+  transform: translateY(-0.4rem) rotate(2.5deg);
+}
+
+/* La flecha insinúa su dirección cuando se toca la nota o la propia flecha. */
+.notes:has(.noteImage:hover, .arrowImage:hover) .arrowImage {
+  transform: translate(0.4rem, 0.1rem);
+}
+
+/* ---------- Columna derecha: carteles de navegación ---------- */
+
+.routes {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  width: 100%;
+  justify-self: center;
+  /* Tipografía, relleno y desplazamientos de los carteles escalan con este ancho. */
+  container-type: inline-size;
+}
+
+.routeItem {
+  position: relative;
+  margin-top: -3cqi;
+  translate: calc(var(--shift) * 1cqi) 0;
+}
+
+.routeItem:first-child {
+  margin-top: 0;
+}
+
+/* El cartel activo se coloca por encima de los demás. */
+.routeItem:hover,
+.routeItem:focus-within {
+  z-index: 2;
+}
+
+.route {
+  display: block;
+  padding: 3.9cqi 6cqi;
+  font-family: var(--font-bowlby-one), Impact, sans-serif;
+  font-size: clamp(1.5rem, 11cqi, 4.4rem);
+  line-height: 1;
+  text-align: center;
+  text-decoration: none;
+  text-transform: uppercase;
+  white-space: nowrap;
+  box-shadow: 0 0.6rem 1.4rem rgb(1 32 63 / 0.35);
+  /* Propiedades individuales: no compiten con la transformación de la entrada. */
+  rotate: var(--tilt);
+  scale: 1;
+  translate: 0 0;
+  transition:
+    rotate 0.4s var(--ease),
+    scale 0.4s var(--ease),
+    translate 0.4s var(--ease),
+    box-shadow 0.4s var(--ease);
+}
+
+.route:hover,
+.route:focus-visible {
+  rotate: calc(var(--tilt) * 0.45);
+  scale: 1.05;
+  translate: 0 -0.4rem;
+  box-shadow: 0 0.9rem 1.8rem rgb(1 32 63 / 0.45);
+}
+
+.route:focus-visible {
+  outline: 0.2rem solid var(--paper);
+  outline-offset: 0.35rem;
+}
+
+.ink {
+  background: var(--ink);
+  color: var(--paper);
+}
+
+.paper {
+  background: var(--paper);
+  color: var(--ink);
+}
+
+.red {
+  background: var(--red);
+  color: var(--paper);
+}
+
+/* ---------- Movimiento reducido ---------- */
+
+@media (prefers-reduced-motion: reduce) {
+  .route,
+  .stickerImage,
+  .socials a {
+    transition: none;
+  }
+}
+
+/* ---------- Tablet y móvil: una sola columna ---------- */
+
+@media (max-width: 56rem) {
+  .stage {
+    grid-template-columns: minmax(0, 34rem);
+    align-content: start;
+    row-gap: clamp(2.5rem, 9vw, 4rem);
+    padding: clamp(2rem, 8vw, 3.5rem) clamp(1.25rem, 6vw, 2.5rem) clamp(2.5rem, 8vw, 4rem);
+  }
+
+  /* En una columna los stickers no necesitan todo el ancho disponible. */
+  .notes {
+    max-width: 24rem;
+  }
+
+  .routes {
+    width: min(100%, 26rem);
+  }
+
+  .brushWide {
+    display: none;
+  }
+
+  .brushTall {
+    display: block;
+  }
+}

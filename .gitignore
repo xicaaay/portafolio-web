@@ -20,6 +20,9 @@
 # production
 /build
 
+# Payload local uploads (use persistent object storage in production)
+/media/
+
 # misc
 .DS_Store
 *.pem

@@ -68,7 +68,10 @@ export interface Config {
   blocks: {};
   collections: {
     users: User;
+    media: Media;
     projects: Project;
+    experiences: Experience;
+    posts: Post;
     'payload-kv': PayloadKv;
     'payload-locked-documents': PayloadLockedDocument;
     'payload-preferences': PayloadPreference;
@@ -77,7 +80,10 @@ export interface Config {
   collectionsJoins: {};
   collectionsSelect: {
     users: UsersSelect<false> | UsersSelect<true>;
+    media: MediaSelect<false> | MediaSelect<true>;
     projects: ProjectsSelect<false> | ProjectsSelect<true>;
+    experiences: ExperiencesSelect<false> | ExperiencesSelect<true>;
+    posts: PostsSelect<false> | PostsSelect<true>;
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
     'payload-preferences': PayloadPreferencesSelect<false> | PayloadPreferencesSelect<true>;
@@ -87,8 +93,12 @@ export interface Config {
     defaultIDType: string;
   };
   fallbackLocale: null;
-  globals: {};
-  globalsSelect: {};
+  globals: {
+    profile: Profile;
+  };
+  globalsSelect: {
+    profile: ProfileSelect<false> | ProfileSelect<true>;
+  };
   locale: null;
   widgets: {
     collections: CollectionsWidget;
@@ -145,6 +155,26 @@ export interface User {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "media".
+ */
+export interface Media {
+  id: string;
+  alt: string;
+  caption?: string | null;
+  updatedAt: string;
+  createdAt: string;
+  url?: string | null;
+  thumbnailURL?: string | null;
+  filename?: string | null;
+  mimeType?: string | null;
+  filesize?: number | null;
+  width?: number | null;
+  height?: number | null;
+  focalX?: number | null;
+  focalY?: number | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "projects".
  */
 export interface Project {
@@ -152,6 +182,97 @@ export interface Project {
   title: string;
   slug: string;
   summary: string;
+  cardImage: string | Media;
+  category?: string | null;
+  technologies?:
+    | {
+        name: string;
+        id?: string | null;
+      }[]
+    | null;
+  featured?: boolean | null;
+  featuredOrder?: number | null;
+  role?: string | null;
+  year?: number | null;
+  problem?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  solution?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  features?:
+    | {
+        title: string;
+        description?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  architecture?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  decisions?:
+    | {
+        decision: string;
+        reason: string;
+        id?: string | null;
+      }[]
+    | null;
+  results?:
+    | {
+        title: string;
+        description: string;
+        id?: string | null;
+      }[]
+    | null;
+  demoUrl?: string | null;
+  repositoryUrl?: string | null;
+  gallery?:
+    | {
+        image: string | Media;
+        alt: string;
+        caption?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * Contenido adicional opcional para el caso de estudio.
+   */
   content?: {
     root: {
       type: string;
@@ -167,6 +288,74 @@ export interface Project {
     };
     [k: string]: unknown;
   } | null;
+  status: 'draft' | 'published';
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "experiences".
+ */
+export interface Experience {
+  id: string;
+  position: string;
+  company: string;
+  location?: string | null;
+  employmentType?: ('full-time' | 'part-time' | 'contract' | 'freelance' | 'internship' | 'other') | null;
+  startDate: string;
+  endDate?: string | null;
+  current?: boolean | null;
+  summary?: string | null;
+  achievements?:
+    | {
+        description: string;
+        id?: string | null;
+      }[]
+    | null;
+  technologies?:
+    | {
+        name: string;
+        id?: string | null;
+      }[]
+    | null;
+  sortOrder?: number | null;
+  status: 'draft' | 'published';
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "posts".
+ */
+export interface Post {
+  id: string;
+  title: string;
+  slug: string;
+  excerpt: string;
+  coverImage?: (string | null) | Media;
+  content: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  };
+  category?: string | null;
+  tags?:
+    | {
+        name: string;
+        id?: string | null;
+      }[]
+    | null;
+  publishedAt?: string | null;
   status: 'draft' | 'published';
   updatedAt: string;
   createdAt: string;
@@ -200,8 +389,20 @@ export interface PayloadLockedDocument {
         value: string | User;
       } | null)
     | ({
+        relationTo: 'media';
+        value: string | Media;
+      } | null)
+    | ({
         relationTo: 'projects';
         value: string | Project;
+      } | null)
+    | ({
+        relationTo: 'experiences';
+        value: string | Experience;
+      } | null)
+    | ({
+        relationTo: 'posts';
+        value: string | Post;
       } | null);
   globalSlug?: string | null;
   user: {
@@ -270,13 +471,130 @@ export interface UsersSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "media_select".
+ */
+export interface MediaSelect<T extends boolean = true> {
+  alt?: T;
+  caption?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  url?: T;
+  thumbnailURL?: T;
+  filename?: T;
+  mimeType?: T;
+  filesize?: T;
+  width?: T;
+  height?: T;
+  focalX?: T;
+  focalY?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "projects_select".
  */
 export interface ProjectsSelect<T extends boolean = true> {
   title?: T;
   slug?: T;
   summary?: T;
+  cardImage?: T;
+  category?: T;
+  technologies?:
+    | T
+    | {
+        name?: T;
+        id?: T;
+      };
+  featured?: T;
+  featuredOrder?: T;
+  role?: T;
+  year?: T;
+  problem?: T;
+  solution?: T;
+  features?:
+    | T
+    | {
+        title?: T;
+        description?: T;
+        id?: T;
+      };
+  architecture?: T;
+  decisions?:
+    | T
+    | {
+        decision?: T;
+        reason?: T;
+        id?: T;
+      };
+  results?:
+    | T
+    | {
+        title?: T;
+        description?: T;
+        id?: T;
+      };
+  demoUrl?: T;
+  repositoryUrl?: T;
+  gallery?:
+    | T
+    | {
+        image?: T;
+        alt?: T;
+        caption?: T;
+        id?: T;
+      };
   content?: T;
+  status?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "experiences_select".
+ */
+export interface ExperiencesSelect<T extends boolean = true> {
+  position?: T;
+  company?: T;
+  location?: T;
+  employmentType?: T;
+  startDate?: T;
+  endDate?: T;
+  current?: T;
+  summary?: T;
+  achievements?:
+    | T
+    | {
+        description?: T;
+        id?: T;
+      };
+  technologies?:
+    | T
+    | {
+        name?: T;
+        id?: T;
+      };
+  sortOrder?: T;
+  status?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "posts_select".
+ */
+export interface PostsSelect<T extends boolean = true> {
+  title?: T;
+  slug?: T;
+  excerpt?: T;
+  coverImage?: T;
+  content?: T;
+  category?: T;
+  tags?:
+    | T
+    | {
+        name?: T;
+        id?: T;
+      };
+  publishedAt?: T;
   status?: T;
   updatedAt?: T;
   createdAt?: T;
@@ -320,6 +638,68 @@ export interface PayloadMigrationsSelect<T extends boolean = true> {
   batch?: T;
   updatedAt?: T;
   createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "profile".
+ */
+export interface Profile {
+  id: string;
+  name: string;
+  professionalTitle: string;
+  headline?: string | null;
+  about?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  location?: string | null;
+  contactEmail?: string | null;
+  profileImage?: (string | null) | Media;
+  socialLinks?:
+    | {
+        platform: 'linkedin' | 'github' | 'x' | 'instagram' | 'youtube' | 'behance' | 'dribbble' | 'other';
+        label?: string | null;
+        url: string;
+        id?: string | null;
+      }[]
+    | null;
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "profile_select".
+ */
+export interface ProfileSelect<T extends boolean = true> {
+  name?: T;
+  professionalTitle?: T;
+  headline?: T;
+  about?: T;
+  location?: T;
+  contactEmail?: T;
+  profileImage?: T;
+  socialLinks?:
+    | T
+    | {
+        platform?: T;
+        label?: T;
+        url?: T;
+        id?: T;
+      };
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema

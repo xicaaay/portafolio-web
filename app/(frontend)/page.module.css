@@ -1,0 +1,365 @@
+.portfolio {
+  min-height: 100svh;
+  overflow: clip;
+  background: #000;
+  color: #e8edf6;
+}
+
+.visuallyHidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  clip-path: inset(50%);
+}
+
+.scrollScene {
+  position: relative;
+  height: 100svh;
+  isolation: isolate;
+  background: #000;
+}
+
+.stickyScene {
+  --scene-gutter: clamp(1rem, 3vw, 3rem);
+  --card-perspective: 1500rem;
+  --plane-angle: -18deg;
+  --plane-x: 22deg;
+  --plane-y: 20deg;
+  --shared-card-transform: perspective(var(--card-perspective)) rotateX(var(--plane-x)) rotateY(var(--plane-y)) rotateZ(var(--plane-angle));
+
+  position: relative;
+  width: 100%;
+  height: 100svh;
+  overflow: hidden;
+  background:
+    radial-gradient(ellipse at 50% 52%, rgb(22 27 36 / 28%), transparent 58%),
+    #000;
+}
+
+.scenePlane {
+  position: absolute;
+  inset: 0;
+}
+
+.sceneGlow {
+  position: absolute;
+  inset: 14% 15%;
+  z-index: 0;
+  border-radius: 50%;
+  background: radial-gradient(ellipse, rgb(37 60 91 / 10%), transparent 70%);
+  filter: blur(40px);
+  pointer-events: none;
+}
+
+.centralLayer {
+  position: absolute;
+  z-index: 1;
+  top: 50.7%;
+  left: 50.47%;
+  width: min(71vw, calc(100vw - var(--scene-gutter) - var(--scene-gutter)));
+  height: min(51.5svh, 46vw);
+  min-width: 0;
+  transform: translate(-50%, -50%);
+}
+
+.mainWindow {
+  --window-min-height: 0px;
+  --toolbar-height: clamp(2rem, 3.1vw, 3.15rem);
+  --toolbar-padding: clamp(0.8rem, 1.5vw, 1.45rem);
+  --traffic-light-size: clamp(0.7rem, 1.1vw, 1.08rem);
+  --traffic-light-gap: clamp(0.38rem, 0.65vw, 0.64rem);
+  --window-border: #414b5d;
+  --window-toolbar: #1d232d;
+  --window-content: #141920;
+
+  width: 100%;
+  height: 100%;
+  border-radius: 1.18rem;
+  transform: var(--shared-card-transform);
+  box-shadow:
+    0 36px 100px rgb(0 0 0 / 68%),
+    0 2px 7px rgb(0 0 0 / 72%),
+    inset 0 1px rgb(255 255 255 / 8%);
+}
+
+.floatingWindow {
+  position: absolute;
+  z-index: 3;
+}
+
+.floatingWindow:hover {
+  z-index: 6;
+}
+
+.previewCard,
+.iconCard {
+  --window-min-height: 0px;
+  --toolbar-height: clamp(1.55rem, 2.2vw, 2.25rem);
+  --toolbar-padding: clamp(0.55rem, 0.9vw, 0.85rem);
+  --traffic-light-size: clamp(0.48rem, 0.72vw, 0.7rem);
+  --traffic-light-gap: clamp(0.28rem, 0.44vw, 0.42rem);
+  --window-border: #4a566c;
+  --window-toolbar: #1d232d;
+  --window-content: #0d1118;
+
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  border-radius: 0.82rem;
+  transform: var(--shared-card-transform);
+  box-shadow:
+    0 24px 52px rgb(0 0 0 / 64%),
+    0 2px 6px rgb(0 0 0 / 72%),
+    inset 0 1px rgb(255 255 255 / 7%);
+  transition: box-shadow 350ms ease, filter 350ms ease;
+}
+
+.floatingWindow:hover .previewCard,
+.floatingWindow:hover .iconCard {
+  filter: brightness(1.08);
+  box-shadow:
+    0 30px 66px rgb(0 0 0 / 72%),
+    0 2px 8px rgb(0 0 0 / 78%),
+    inset 0 1px rgb(255 255 255 / 9%);
+}
+
+.designLayer {
+  top: 11%;
+  right: 9.65%;
+  width: min(29.5vw, 46svh);
+  height: min(26.4svh, 19vw);
+}
+
+.terminalLayer {
+  top: 38%;
+  left: 5.5%;
+  width: min(31.15vw, 54svh);
+  height: min(30.7svh, 21vw);
+}
+
+.treeLayer {
+  right: 5.25%;
+  bottom: 23%;
+  width: min(24.2vw, 44svh);
+  height: min(25.5svh, 18vw);
+}
+
+.designBody {
+  padding: clamp(0.65rem, 1.1vw, 1.08rem) clamp(0.75rem, 1.4vw, 1.35rem) clamp(0.6rem, 1vw, 0.95rem);
+  background: linear-gradient(150deg, #151920, #0d1016);
+}
+
+.designTitle {
+  margin: 0 0 0.7rem;
+  color: #f1f4f9;
+  font-family: var(--font-heading);
+  font-size: clamp(0.86rem, 1.1vw, 1.14rem);
+  font-weight: 600;
+}
+
+.previewLabel {
+  margin: 0 0 0.55rem;
+  color: #e8ebf1;
+  font-family: var(--font-body);
+  font-size: clamp(0.7rem, 0.9vw, 0.94rem);
+  font-weight: 500;
+}
+
+.swatches {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: clamp(0.28rem, 0.7vw, 0.65rem);
+  padding: 0.05rem 0 0.82rem;
+  border-bottom: 1px solid rgb(255 255 255 / 7%);
+}
+
+.swatches span {
+  width: clamp(1.65rem, 3vw, 2.8rem);
+  aspect-ratio: 1;
+  border: 1px solid rgb(255 255 255 / 35%);
+  border-radius: 50%;
+  box-shadow: 0 5px 12px rgb(0 0 0 / 35%);
+}
+
+.designLower {
+  display: flex;
+  flex: 1;
+  justify-content: space-between;
+  padding-top: 0.8rem;
+}
+
+.designLower strong {
+  color: #dce3f0;
+  font-family: var(--font-heading);
+  font-size: clamp(2.3rem, 3.55vw, 3.4rem);
+  font-weight: 400;
+  letter-spacing: -0.12em;
+}
+
+.typographySample {
+  min-width: 54%;
+}
+
+.typeRow {
+  display: flex;
+  align-items: center;
+  gap: clamp(0.55rem, 1.3vw, 1.25rem);
+}
+
+.typeLines {
+  display: grid;
+  width: clamp(2.7rem, 5.7vw, 5.5rem);
+  gap: clamp(0.24rem, 0.5vw, 0.48rem);
+}
+
+.typeLines i {
+  display: block;
+  height: 0.34rem;
+  background: #3b4558;
+}
+
+.typeLines i:nth-child(1) { width: 74%; }
+.typeLines i:nth-child(2) { width: 100%; }
+.typeLines i:nth-child(3) { width: 90%; }
+
+.componentSamples {
+  display: grid;
+  grid-template-columns: auto auto auto;
+  align-content: start;
+  align-items: center;
+  gap: clamp(0.25rem, 0.55vw, 0.52rem);
+}
+
+.componentSamples .previewLabel {
+  grid-column: 1 / -1;
+  text-align: right;
+}
+
+.sampleButton,
+.sampleInput,
+.sampleToggle {
+  position: relative;
+  display: grid;
+  height: 1rem;
+  place-items: center;
+  border-radius: 0.28rem;
+}
+
+.sampleButton { width: 2.8rem; background: #1686ff; }
+.sampleInput { width: 2.15rem; background: #323945; }
+.sampleToggle { width: 2.1rem; border-radius: 1rem; background: #303747; }
+.sampleButton i { width: 0.85rem; height: 0.2rem; background: #0d315d; }
+.sampleInput i { width: 0.7rem; height: 0.16rem; background: #707a8e; }
+.sampleToggle i {
+  position: absolute;
+  right: -0.05rem;
+  width: 1.05rem;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: #dce4f5;
+  box-shadow: 0 1px 4px rgb(0 0 0 / 45%);
+}
+
+.terminalBody {
+  justify-content: center;
+  gap: clamp(0.4rem, 0.8vw, 0.78rem);
+  padding: clamp(0.7rem, 1.25vw, 1.2rem) clamp(0.8rem, 1.5vw, 1.45rem);
+  background: linear-gradient(135deg, #080b10, #10141b);
+  color: #eff2f8;
+  font-family: var(--font-mono);
+  font-size: clamp(0.9rem, 1.24vw, 1.28rem);
+}
+
+.terminalBody p { margin: 0; }
+.cyan { color: #42c9ed; }
+.ready { margin-top: 0.45rem !important; color: #38dc83; }
+.muted { color: #aeb9ca; }
+
+.treeBody {
+  justify-content: center;
+  gap: clamp(0.32rem, 0.66vw, 0.63rem);
+  padding: clamp(0.6rem, 1vw, 1rem) clamp(0.7rem, 1.3vw, 1.25rem);
+  background: linear-gradient(135deg, #10141b, #0a0d12);
+  color: #e8ebf2;
+  font-family: var(--font-body);
+  font-size: clamp(0.88rem, 1.15vw, 1.18rem);
+}
+
+.treeBody p {
+  display: flex;
+  align-items: center;
+  gap: 0.58rem;
+  margin: 0;
+}
+
+.treeBody p > svg:first-child { width: 0.82rem; color: #8996aa; }
+.folder { width: 1.2rem; color: #c4d1ee; }
+.indentOne { padding-left: 1.15rem; }
+.indentTwo { padding-left: 2.3rem; }
+
+.iconCard {
+  --card-toolbar-height: clamp(1.2rem, 2vw, 1.95rem);
+  --card-toolbar-padding: clamp(0.45rem, 0.85vw, 0.8rem);
+
+  border-radius: 0.72rem;
+}
+
+.iconContent {
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(145deg, #171c26, #0c1017);
+  color: #c4d2f8;
+}
+
+.iconContent svg { width: 52%; height: 52%; stroke-width: 1.7; }
+
+.databaseLayer {
+  top: 75%;
+  left: 7%;
+  width: min(8.4vw, 14svh);
+  aspect-ratio: 1.12;
+}
+
+.codeLayer {
+  top: 38%;
+  right: 4.72%;
+  width: min(8.4vw, 14svh);
+  aspect-ratio: 1.12;
+}
+
+@media (max-width: 64rem) {
+  .stickyScene { --plane-angle: -13deg; --plane-x: 10deg; --plane-y: 14deg; }
+  .centralLayer { width: min(78vw, 84svh); height: min(54svh, 54vw); }
+  .designLayer { top: 8%; right: 4%; width: min(38vw, 48svh); height: min(29svh, 26vw); }
+  .terminalLayer { top: 35%; left: 3%; width: min(42vw, 52svh); height: min(31svh, 28vw); }
+  .treeLayer { right: 4%; bottom: 8%; width: min(34vw, 44svh); height: min(27svh, 24vw); }
+  .databaseLayer { top: 72%; left: 4%; width: min(10vw, 12svh); }
+  .codeLayer { top: 46%; right: 2.5%; width: min(10vw, 12svh); }
+}
+
+@media (max-width: 48rem), (max-height: 32rem) {
+  .stickyScene { --plane-angle: -7deg; --plane-x: 5deg; --plane-y: 8deg; }
+
+  .centralLayer {
+    top: 50%;
+    left: 50%;
+    width: min(84vw, 70svh);
+    height: min(54svh, 70vw);
+  }
+
+  .floatingWindow { display: none; }
+
+  .mainWindow {
+    --toolbar-height: clamp(1.8rem, 8vw, 2.5rem);
+    --toolbar-padding: clamp(0.7rem, 3.5vw, 1rem);
+    --traffic-light-size: clamp(0.62rem, 2.7vw, 0.86rem);
+    --traffic-light-gap: clamp(0.32rem, 1.5vw, 0.48rem);
+
+    border-radius: clamp(0.75rem, 3vw, 1rem);
+  }
+}
+

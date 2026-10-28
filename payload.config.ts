@@ -6,6 +6,10 @@ import sharp from "sharp";
 import { buildConfig } from "payload";
 
 import { Projects } from "./collections/Projects";
+import { Experiences } from "./collections/Experiences";
+import { Media } from "./collections/Media";
+import { Posts } from "./collections/Posts";
+import { Profile } from "./globals/Profile";
 import { Users } from "./collections/Users";
 
 const filename = fileURLToPath(import.meta.url);
@@ -18,7 +22,8 @@ export default buildConfig({
       baseDir: dirname,
     },
   },
-  collections: [Users, Projects],
+  collections: [Users, Media, Projects, Experiences, Posts],
+  globals: [Profile],
   db: mongooseAdapter({
     url: process.env.DATABASE_URL ?? "",
   }),
