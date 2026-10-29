@@ -5,6 +5,131 @@
   --font-heading: var(--font-space-grotesk), Arial, sans-serif;
   --font-body: var(--font-inter), Arial, sans-serif;
   --font-mono: var(--font-jetbrains-mono), Consolas, monospace;
+
+  /*
+   * Ancho del contenido = el del inicio (columna izquierda + hueco + columna derecha). La
+   * sección de proyectos y las páginas interiores usan el mismo, así todo arranca en la misma línea.
+   */
+  --content-width: calc(min(36rem, 34vw) + min(34rem, 32vw) + clamp(2rem, 6vw, 8rem));
+  --page-pad: clamp(1.25rem, 5vw, 6rem);
+
+  /* Tamaño de los títulos de sección: el mismo que las letras de los carteles del inicio. */
+  --title-size: clamp(1.75rem, 3.52vw, 3.74rem);
+}
+
+@media (max-width: 56rem) {
+  :root {
+    --page-pad: clamp(1.25rem, 6vw, 2.5rem);
+    --title-size: clamp(1.5rem, calc((100vw - 2 * var(--page-pad)) * 0.11), 2.86rem);
+  }
+}
+
+/*
+ * Punteros personalizados (public/cursors). Cada uno trae su versión @2x para pantallas
+ * densas y el punto activo (x y) en la punta del dibujo; si la imagen no carga, el
+ * navegador usa el puntero del sistema indicado al final.
+ */
+:root {
+  --cursor-normal: image-set(url("/cursors/normal.webp") 1x, url("/cursors/normal@2x.webp") 2x) 11 5, default;
+  --cursor-click: image-set(url("/cursors/click.webp") 1x, url("/cursors/click@2x.webp") 2x) 19 15, default;
+  --cursor-azul: image-set(url("/cursors/azul.webp") 1x, url("/cursors/azul@2x.webp") 2x) 11 5, default;
+  --cursor-enlace: image-set(url("/cursors/enlace.webp") 1x, url("/cursors/enlace@2x.webp") 2x) 8 5, pointer;
+  --cursor-seleccionar: image-set(url("/cursors/seleccionar.webp") 1x, url("/cursors/seleccionar@2x.webp") 2x) 13 5, pointer;
+  --cursor-pulsar: image-set(url("/cursors/pulsar.webp") 1x, url("/cursors/pulsar@2x.webp") 2x) 15 11, pointer;
+  --cursor-texto: image-set(url("/cursors/texto.webp") 1x, url("/cursors/texto@2x.webp") 2x) 20 19, text;
+  --cursor-bloqueado: image-set(url("/cursors/bloqueado.webp") 1x, url("/cursors/bloqueado@2x.webp") 2x) 9 5, not-allowed;
+  --cursor-cargando: image-set(url("/cursors/cargando.webp") 1x, url("/cursors/cargando@2x.webp") 2x) 18 17, progress;
+  --cursor-agregar: image-set(url("/cursors/agregar.webp") 1x, url("/cursors/agregar@2x.webp") 2x) 8 5, copy;
+  --cursor-mano: image-set(url("/cursors/mano.webp") 1x, url("/cursors/mano@2x.webp") 2x) 20 19, grab;
+  --cursor-agarrar: image-set(url("/cursors/agarrar.webp") 1x, url("/cursors/agarrar@2x.webp") 2x) 19 19, grabbing;
+  --cursor-arrastrar: image-set(url("/cursors/arrastrar.webp") 1x, url("/cursors/arrastrar@2x.webp") 2x) 20 19, grabbing;
+  --cursor-mover: image-set(url("/cursors/mover.webp") 1x, url("/cursors/mover@2x.webp") 2x) 20 19, move;
+  --cursor-redimensionar: image-set(url("/cursors/redimensionar.webp") 1x, url("/cursors/redimensionar@2x.webp") 2x) 20 19, nesw-resize;
+}
+
+html,
+body {
+  cursor: var(--cursor-normal);
+}
+
+/* Al mantener pulsado sobre una zona sin acción se muestra el destello rojo. */
+body:active {
+  cursor: var(--cursor-click);
+}
+
+/* Enlaces internos, botones y controles: mano con el dedo índice. */
+a,
+button,
+summary,
+label[for],
+select,
+[role="button"],
+input:is([type="button"], [type="submit"], [type="reset"], [type="checkbox"], [type="radio"]) {
+  cursor: var(--cursor-seleccionar);
+}
+
+a:active,
+button:active,
+[role="button"]:active {
+  cursor: var(--cursor-pulsar);
+}
+
+/* Enlaces que salen del sitio o abren un archivo: flecha con cadena. */
+a[target="_blank"],
+a[download] {
+  cursor: var(--cursor-enlace);
+}
+
+/* Texto seleccionable: el cursor "I", salvo cuando está dentro de un enlace o botón. */
+:is(p, h1, h2, h3, h4, h5, h6, li, dt, dd, blockquote, pre, code, span, em, strong, small, figcaption):not(
+    :is(a, button, summary, [role="button"]) *
+  ) {
+  cursor: var(--cursor-texto);
+}
+
+input:not([type="button"], [type="submit"], [type="reset"], [type="checkbox"], [type="radio"], [type="range"], [type="file"]),
+textarea,
+[contenteditable="true"] {
+  cursor: var(--cursor-texto);
+}
+
+:disabled,
+[aria-disabled="true"] {
+  cursor: var(--cursor-bloqueado);
+}
+
+[aria-busy="true"] {
+  cursor: var(--cursor-cargando);
+}
+
+/* Estados bajo demanda: se activan con data-cursor="..." en cualquier elemento. */
+[data-cursor="info"] { cursor: var(--cursor-azul); }
+[data-cursor="agregar"] { cursor: var(--cursor-agregar); }
+[data-cursor="mover"] { cursor: var(--cursor-mover); }
+[data-cursor="redimensionar"] { cursor: var(--cursor-redimensionar); }
+[data-cursor="mano"] { cursor: var(--cursor-mano); }
+[data-cursor="mano"]:active { cursor: var(--cursor-agarrar); }
+[data-cursor="arrastrar"] { cursor: var(--cursor-arrastrar); }
+
+/* Sin barra de scroll visible: se sigue desplazando con rueda, teclado y táctil. */
+html {
+  scrollbar-width: none;
+}
+
+html::-webkit-scrollbar {
+  display: none;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  html {
+    scroll-behavior: smooth;
+  }
+}
+
+/* El azul del sistema se pierde sobre el fondo azul; el amarillo se ve en todas las superficies. */
+::selection {
+  background: #ffd60a;
+  color: #01203f;
 }
 
 body {

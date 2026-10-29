@@ -1,0 +1,48 @@
+/* Distribución propia de la página /contact (los colores base vienen de projects.module.css). */
+
+.grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: clamp(2rem, 5vw, 4rem);
+  align-items: start;
+}
+
+.lead {
+  max-width: 30rem;
+  margin: 0 0 1.75rem;
+  font-size: clamp(1.05rem, 1.7vw, 1.35rem);
+  line-height: 1.6;
+}
+
+.post {
+  display: block;
+  width: clamp(7rem, 14vw, 10rem);
+  height: auto;
+  margin: 1.75rem 0 0 auto;
+  rotate: 7deg;
+  user-select: none;
+  filter: drop-shadow(0 0.5rem 0.8rem rgb(1 32 63 / 0.25));
+}
+
+/* Tarjeta de papel para el formulario. */
+.formCard {
+  padding: clamp(1.25rem, 3vw, 2rem);
+  background: #fbfdfa;
+  border: 1px solid rgb(1 32 63 / 0.12);
+  box-shadow: 0 0.8rem 1.6rem rgb(1 32 63 / 0.15);
+}
+
+.formTitle {
+  margin: 0 0 1.25rem;
+  font-family: var(--font-bowlby-one), Impact, sans-serif;
+  font-size: calc(var(--title-size) * 0.5);
+  font-weight: 400;
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+@media (max-width: 48rem) {
+  .grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}

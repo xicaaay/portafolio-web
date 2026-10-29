@@ -1,0 +1,73 @@
+/* Usa las variables de color de la página que lo contiene (--paper, --ink, --blue). */
+
+.links {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+  /* El margen izquierdo negativo alinea el dibujo del primer icono con el borde del texto. */
+  margin: 0 0 0 -0.75rem;
+  padding: 0;
+  list-style: none;
+}
+
+.blue {
+  --fg: var(--paper);
+  --hover-bg: var(--paper);
+  --hover-fg: var(--blue);
+}
+
+.paper {
+  --fg: var(--ink);
+  --hover-bg: var(--ink);
+  --hover-fg: var(--paper);
+}
+
+.links a {
+  display: grid;
+  place-items: center;
+  width: clamp(2.75rem, 3vw, 3.25rem);
+  aspect-ratio: 1;
+  border-radius: 50%;
+  color: var(--fg);
+  font-size: clamp(1.1rem, 1.6vw, 1.4rem);
+  text-decoration: none;
+  transition: background-color 0.25s ease, color 0.25s ease, translate 0.25s var(--ease);
+}
+
+.links a:hover {
+  background: var(--hover-bg);
+  color: var(--hover-fg);
+  translate: 0 -0.2rem;
+}
+
+/* El correo va como texto: al pasar el cursor se resalta (sin botón ni movimiento). */
+.links .email {
+  display: inline-block;
+  width: auto;
+  aspect-ratio: auto;
+  margin-left: 0.25rem;
+  padding: 0.2em 0.4em;
+  border-radius: 0.15em;
+  font-family: var(--font-mono);
+  font-size: clamp(0.85rem, 1.3vw, 1rem);
+  letter-spacing: 0.02em;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.links .email:hover {
+  background: #ffd60a;
+  color: var(--ink);
+  translate: none;
+}
+
+.links a:focus-visible {
+  outline: 0.15rem solid var(--fg);
+  outline-offset: 0.2rem;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .links a {
+    transition: none;
+  }
+}

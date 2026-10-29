@@ -9,6 +9,15 @@
   --ease: cubic-bezier(0.22, 1, 0.36, 1);
 
   position: relative;
+  /* clip (y no hidden) evita el scroll horizontal sin crear un contenedor de scroll. */
+  overflow-x: clip;
+  background: var(--blue);
+  color: var(--paper);
+}
+
+/* Primer pantallazo: dos columnas, presentación y carteles. */
+.heroGrid {
+  position: relative;
   display: grid;
   grid-template-columns: minmax(0, min(36rem, 34vw)) minmax(0, min(34rem, 32vw));
   align-items: center;
@@ -16,9 +25,7 @@
   column-gap: clamp(2rem, 6vw, 8rem);
   min-height: 100svh;
   padding: clamp(2rem, 7vh, 5rem) clamp(1.5rem, 5vw, 6rem);
-  overflow: hidden;
-  background: var(--blue);
-  color: var(--paper);
+  /* Sin overflow: los elementos acoplados salen de este bloque al hacer scroll. */
 }
 
 .stage *,
@@ -38,20 +45,70 @@
   white-space: nowrap;
 }
 
-/* ---------- Fondo: trazos de brocha ---------- */
+/* ---------- Fondo: pinceladas ---------- */
 
-.brushWide,
-.brushTall {
+.brushes {
   position: absolute;
   z-index: 0;
   inset: 0;
-  width: 100%;
-  height: 100%;
+  overflow: hidden;
   pointer-events: none;
 }
 
-.brushTall {
-  display: none;
+.brushes img {
+  position: absolute;
+  height: auto;
+  user-select: none;
+  transform-origin: center;
+}
+
+/* Escritorio: acomodadas en esquinas y bordes, sin cruzar el texto. */
+.brush1 {
+  bottom: 4%;
+  left: -7%;
+  width: 46%;
+  rotate: -13deg;
+  opacity: 0.75;
+}
+
+.brush2 {
+  top: 3%;
+  left: 40%;
+  width: 30%;
+  rotate: -3deg;
+  opacity: 0.6;
+}
+
+.brush3 {
+  top: 36%;
+  right: -9%;
+  width: 28%;
+  rotate: -24deg;
+  opacity: 0.6;
+}
+
+.brush4 {
+  right: -8%;
+  bottom: 3%;
+  width: 42%;
+  rotate: -10deg;
+  opacity: 0.7;
+}
+
+.brush5 {
+  top: 9%;
+  left: -7%;
+  width: 22%;
+  rotate: -24deg;
+  opacity: 0.7;
+}
+
+.brush6 {
+  top: -2%;
+  right: -5%;
+  width: 26%;
+  rotate: 11deg;
+  opacity: 0.5;
 }
 
 /* ---------- Columna izquierda: presentación ---------- */
@@ -106,7 +163,8 @@
 .socials {
   display: flex;
   gap: 0.5rem;
-  margin: clamp(1.5rem, 4.6cqi, 2rem) 0 0;
+  /* El margen izquierdo negativo alinea el dibujo del primer icono con el borde del texto. */
+  margin: clamp(1.5rem, 4.6cqi, 2rem) 0 0 -0.75rem;
   padding: 0;
   list-style: none;
 }
@@ -123,10 +181,34 @@
   transition: background-color 0.25s ease, color 0.25s ease, translate 0.25s var(--ease);
 }
 
+.socials {
+  align-items: center;
+}
+
+/* El correo va como texto: al pasar el cursor se resalta (sin botón ni movimiento). */
+.socials .emailLink {
+  display: inline-block;
+  width: auto;
+  aspect-ratio: auto;
+  padding: 0.2em 0.4em;
+  margin-left: 0.25rem;
+  border-radius: 0.15em;
+  font-family: var(--font-mono);
+  font-size: clamp(0.8rem, 2.6cqi, 0.95rem);
+  letter-spacing: 0.02em;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
 .socials a:hover {
   background: var(--paper);
   color: var(--blue);
   translate: 0 -0.2rem;
+}
+
+.socials .emailLink:hover {
+  background: #ffd60a;
+  color: var(--ink);
+  translate: none;
 }
 
 .socials a:focus-visible {
@@ -150,8 +232,47 @@
 
 .stickerAx {
   top: 46%;
-  left: 2%;
+  left: 0;
   width: 30%;
+  /* Marcador vacío: reserva la proporción del logo (454 × 309). */
+  aspect-ratio: 454 / 309;
+}
+
+/* Capa que abarca toda la página para que el logo pueda quedarse fijo (sticky) al llegar arriba. */
+.logoRail {
+  position: absolute;
+  z-index: 25;
+  inset: 0;
+  pointer-events: none;
+}
+
+.logoSticky {
+  position: sticky;
+  top: 0.75rem;
+  pointer-events: auto;
+}
+
+.logoSticky a {
+  display: block;
+  transform-origin: top left;
+  transition: scale 0.3s var(--ease), opacity 0.3s ease;
+}
+
+/* Ya fijo arriba: más pequeño y translúcido para no tapar el contenido (se ajusta con estos dos valores). */
+.logoStuck a {
+  scale: 0.5;
+  opacity: 0.7;
+}
+
+.logoStuck a:hover,
+.logoStuck a:focus-visible {
+  opacity: 1;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .logoSticky a {
+    transition: none;
+  }
 }
 
 .stickerArrow {
@@ -202,7 +323,12 @@
 
 .routeItem {
   position: relative;
-  margin-top: -3cqi;
+  /* Separación entre carteles; al estar inclinados, un poco de aire evita que se tapen. */
+  margin-top: -1cqi;
+}
+
+/* El desplazamiento lateral va en el interior: el exterior lo mueve el scroll. */
+.routeShift {
   translate: calc(var(--shift) * 1cqi) 0;
 }
 
@@ -266,12 +392,795 @@
   color: var(--paper);
 }
 
+/* ---------- Proyectos destacados ---------- */
+
+.projects {
+  position: relative;
+  z-index: 2;
+  padding-block: clamp(4rem, 10vh, 6.5rem) clamp(4rem, 10vh, 7rem);
+  /* Mismo ancho que el primer pantallazo, centrado: los bordes izquierdo y derecho coinciden. */
+  padding-inline: max(var(--page-pad), calc((100% - var(--content-width)) / 2));
+  overflow: hidden;
+  scroll-margin-top: 0;
+}
+
+.projectBrushes {
+  position: absolute;
+  z-index: 0;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.projectBrushes img {
+  position: absolute;
+  height: auto;
+  user-select: none;
+}
+
+.projectBrush1 {
+  top: 24%;
+  right: -9%;
+  width: 28%;
+  rotate: -24deg;
+  opacity: 0.55;
+}
+
+.projectBrush2 {
+  bottom: 5%;
+  left: -10%;
+  width: 40%;
+  rotate: -12deg;
+  opacity: 0.6;
+}
+
+.projectBrush3 {
+  top: 44%;
+  left: -6%;
+  width: 20%;
+  rotate: -28deg;
+  opacity: 0.6;
+}
+
+.projectBrush4 {
+  top: 3%;
+  right: 4%;
+  width: 26%;
+  rotate: -6deg;
+  opacity: 0.45;
+}
+
+.projectsInner {
+  position: relative;
+  z-index: 1;
+}
+
+.projectsTitle {
+  margin: 0 0 clamp(1.75rem, 4vw, 3rem);
+  font-family: var(--font-bowlby-one), Impact, sans-serif;
+  font-size: var(--title-size);
+  font-weight: 400;
+  line-height: 1;
+  letter-spacing: -0.01em;
+  text-transform: uppercase;
+  color: var(--paper);
+}
+
+.projectGrid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.45fr) minmax(0, 1fr);
+  gap: clamp(1.25rem, 3vw, 2.5rem);
+  align-items: start;
+}
+
+.projectMainCol,
+.projectSideCol {
+  display: flex;
+  flex-direction: column;
+}
+
+.projectSideCol {
+  gap: clamp(1.25rem, 3vw, 2.5rem);
+}
+
+/* Cada tarjeta es una hoja de papel con una inclinación distinta. */
+.card {
+  container-type: inline-size;
+  position: relative;
+  rotate: var(--card-tilt, 0deg);
+  transition: rotate 0.4s var(--ease);
+}
+
+.cardMain,
+.cardSide {
+  min-width: 0;
+}
+
+/* La tarjeta principal lleva el nombre un poco más grande que las secundarias. */
+.cardMain .cardName {
+  font-size: calc(var(--title-size) * 0.62);
+}
+
+/* Inclinación leve: las tarjetas no se salen de la línea del contenido. */
+.card1 {
+  --card-tilt: -0.5deg;
+}
+
+.card2 {
+  --card-tilt: 0.6deg;
+}
+
+.card3 {
+  --card-tilt: -0.5deg;
+}
+
+.card:hover,
+.card:focus-within {
+  rotate: 0deg;
+}
+
+.cardInner {
+  position: relative;
+  padding: 3cqi;
+  background: var(--paper);
+  color: var(--ink);
+  box-shadow: 0 1.2rem 2.4rem rgb(1 32 63 / 0.35);
+}
+
+/* Cinta con el número del proyecto, pegada sobre la esquina de la imagen. */
+.cardTab {
+  position: absolute;
+  z-index: 2;
+  top: 1.2cqi;
+  left: 2.2cqi;
+  padding: 0.3em 0.8em;
+  background: rgb(168 195 255 / 0.88);
+  font-family: var(--font-mono);
+  font-size: clamp(0.7rem, 3cqi, 1rem);
+  font-weight: 500;
+  rotate: -3deg;
+}
+
+.cardMedia {
+  position: relative;
+  aspect-ratio: 16 / 7;
+  overflow: hidden;
+  background: #0a1a44;
+}
+
+.cardImage {
+  object-fit: cover;
+}
+
+.cardBody {
+  padding-top: 2.4cqi;
+}
+
+.cardHead {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 2cqi;
+}
+
+.cardName {
+  margin: 0;
+  font-family: var(--font-bowlby-one), Impact, sans-serif;
+  /* Siempre menor que el título de la sección. */
+  font-size: calc(var(--title-size) * 0.5);
+  font-weight: 400;
+  line-height: 1;
+  letter-spacing: -0.01em;
+  text-transform: uppercase;
+}
+
+.cardMeta {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15em;
+  margin: 0;
+  font-family: var(--font-mono);
+  font-size: clamp(0.6rem, 2.2cqi, 0.8rem);
+  letter-spacing: 0.08em;
+  text-align: right;
+  text-transform: uppercase;
+}
+
+.cardSummary {
+  margin: 2.4cqi 0 0;
+  padding-bottom: 2.6cqi;
+  border-bottom: 1px solid rgb(1 32 63 / 0.7);
+  font-family: var(--font-body);
+  font-size: clamp(0.75rem, 2.6cqi, 0.95rem);
+  line-height: 1.5;
+}
+
+.cardFoot {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 2.4cqi;
+  margin-top: 2.6cqi;
+}
+
+.pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.pills li {
+  padding: 0.35em 0.9em;
+  border-radius: 999px;
+  background: #c9d9ff;
+  font-family: var(--font-mono);
+  font-size: clamp(0.6rem, 2cqi, 0.75rem);
+}
+
+.cardLink {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  font-family: var(--font-mono);
+  font-size: clamp(0.7rem, 2.4cqi, 0.85rem);
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  text-decoration: underline;
+  text-decoration-thickness: 0.12em;
+  text-underline-offset: 0.3em;
+  text-transform: uppercase;
+  color: var(--ink);
+}
+
+.cardLink svg {
+  width: 1.4em;
+  height: 1.4em;
+  transition: translate 0.3s var(--ease);
+}
+
+.cardLink:hover svg {
+  translate: 0.3rem 0;
+}
+
+.cardLink:focus-visible {
+  outline: 0.2rem solid var(--blue);
+  outline-offset: 0.3rem;
+}
+
+/* El botón se monta sobre la esquina inferior de la tarjeta principal. */
+.allProjectsWrap {
+  position: relative;
+  z-index: 3;
+  align-self: flex-start;
+  /* Solo cubre el borde inferior del papel, sin tapar las etiquetas. */
+  margin-top: clamp(-1.6rem, -1.8vw, -0.9rem);
+  margin-left: clamp(0rem, 1vw, 0.75rem);
+}
+
+.allProjects {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.8rem;
+  padding: 1rem clamp(1.1rem, 2.4vw, 1.9rem);
+  background: var(--red);
+  color: var(--paper);
+  font-family: var(--font-bowlby-one), Impact, sans-serif;
+  font-size: clamp(0.85rem, 1.6vw, 1.2rem);
+  text-decoration: none;
+  text-transform: uppercase;
+  box-shadow: 0 0.8rem 1.6rem rgb(1 32 63 / 0.4);
+  rotate: -2deg;
+  transition: rotate 0.4s var(--ease), scale 0.4s var(--ease);
+}
+
+.allProjects svg {
+  width: 1.3em;
+  height: 1.3em;
+}
+
+.allProjects:hover,
+.allProjects:focus-visible {
+  rotate: 0deg;
+  scale: 1.04;
+}
+
+.allProjects:focus-visible {
+  outline: 0.2rem solid var(--paper);
+  outline-offset: 0.3rem;
+}
+
+/* ---------- Sobre mí ---------- */
+
+.about {
+  position: relative;
+  z-index: 2;
+  padding-block: clamp(4rem, 10vh, 6.5rem);
+  /* Mismo ancho de contenido que el resto del inicio. */
+  padding-inline: max(var(--page-pad), calc((100% - var(--content-width)) / 2));
+  overflow: hidden;
+  /* Sin fondo propio: se ve el mismo azul de toda la página. */
+  color: var(--paper);
+}
+
+.aboutBrushes {
+  position: absolute;
+  z-index: 0;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.aboutBrushes img {
+  position: absolute;
+  height: auto;
+  user-select: none;
+}
+
+.aboutBrush1 {
+  right: -10%;
+  bottom: 4%;
+  width: 34%;
+  rotate: -14deg;
+  opacity: 0.5;
+}
+
+.aboutBrush2 {
+  top: 6%;
+  right: 3%;
+  width: 24%;
+  rotate: -8deg;
+  opacity: 0.4;
+}
+
+.aboutInner {
+  position: relative;
+  z-index: 1;
+}
+
+.aboutTitle {
+  margin: 0 0 clamp(1.5rem, 3vw, 2.5rem);
+  font-family: var(--font-bowlby-one), Impact, sans-serif;
+  font-size: var(--title-size);
+  font-weight: 400;
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+.aboutGrid {
+  display: grid;
+  grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.4fr);
+  gap: clamp(2rem, 5vw, 4rem);
+  align-items: start;
+}
+
+.aboutSide {
+  display: flex;
+  flex-direction: column;
+  gap: 1.75rem;
+}
+
+/* Foto de perfil (si se carga en Payload): hoja de papel ligeramente inclinada. */
+.aboutPhoto {
+  position: relative;
+  max-width: 22rem;
+  margin: 0;
+  aspect-ratio: 4 / 5;
+  overflow: hidden;
+  background: var(--ink);
+  box-shadow: 0 1rem 2rem rgb(1 32 63 / 0.35);
+  rotate: -1.5deg;
+}
+
+.aboutPhotoImage {
+  object-fit: cover;
+}
+
+.facts {
+  margin: 0;
+}
+
+.facts > div {
+  padding: 0.9rem 0;
+  border-top: 1px solid rgb(238 244 237 / 0.45);
+}
+
+.facts > div:last-child {
+  border-bottom: 1px solid rgb(238 244 237 / 0.45);
+}
+
+.facts dt {
+  margin: 0 0 0.25rem;
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--blue-soft);
+}
+
+.facts dd {
+  margin: 0;
+  font-family: var(--font-heading);
+  font-size: 1.05rem;
+  font-weight: 500;
+}
+
+.aboutEmail {
+  margin-left: -0.25em;
+  padding: 0.1em 0.25em;
+  border-radius: 0.15em;
+  color: inherit;
+  text-decoration: underline;
+  text-underline-offset: 0.25em;
+  transition: background-color 0.2s ease;
+}
+
+.aboutEmail:hover {
+  background: #ffd60a;
+  color: var(--ink);
+}
+
+.aboutEmail:focus-visible {
+  outline: 0.15rem solid var(--paper);
+  outline-offset: 0.2rem;
+}
+
+.aboutText {
+  max-width: 42rem;
+  font-size: clamp(1.05rem, 1.7vw, 1.35rem);
+  line-height: 1.6;
+}
+
+.aboutText p {
+  margin: 0 0 1em;
+}
+
+.aboutText p:last-child {
+  margin-bottom: 0;
+}
+
+.aboutText .aboutLead {
+  font-family: var(--font-heading);
+  font-size: clamp(1.3rem, 2.4vw, 1.8rem);
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+/* Frase destacada con comillas sticker. El tamaño de las comillas va en «em», así acompaña a la frase. */
+.quoteWrap {
+  margin-top: clamp(2.5rem, 6vw, 4rem);
+}
+
+.quote {
+  width: fit-content;
+  max-width: 100%;
+  margin: 0;
+  font-size: clamp(1.3rem, 2.6vw, 2.1rem);
+  /* Espacio a la izquierda para la comilla de apertura. */
+  padding: 0.5em 0.4em 0.5em 2.15em;
+}
+
+.quote p {
+  position: relative;
+  max-width: 36rem;
+  margin: 0;
+  font-family: var(--font-heading);
+  font-size: 1em;
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+.quoteOpen,
+.quoteClose {
+  height: auto;
+  width: 1.55em;
+  user-select: none;
+  filter: drop-shadow(0 0.35rem 0.6rem rgb(1 32 63 / 0.35));
+}
+
+/* Apertura: a la izquierda de la primera línea, a la misma distancia que el cierre. */
+.quoteOpen {
+  position: absolute;
+  top: -0.35em;
+  left: -1.85em;
+  rotate: -6deg;
+}
+
+/* Cierre: justo después de la última palabra (van juntos en una sola unidad). */
+.quoteTail {
+  white-space: nowrap;
+}
+
+.quoteClose {
+  display: inline-block;
+  margin-left: 0.3em;
+  vertical-align: -0.55em;
+  rotate: 6deg;
+}
+
+/* ---------- Trayectoria ---------- */
+
+.trajectory {
+  position: relative;
+  z-index: 2;
+  padding-block: clamp(4rem, 10vh, 6.5rem);
+  /* Mismo ancho de contenido que el resto del inicio. */
+  padding-inline: max(var(--page-pad), calc((100% - var(--content-width)) / 2));
+  overflow: hidden;
+}
+
+.trajectoryBrushes {
+  position: absolute;
+  z-index: 0;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.trajectoryBrushes img {
+  position: absolute;
+  height: auto;
+  user-select: none;
+}
+
+.trajectoryBrush1 {
+  top: 8%;
+  right: -9%;
+  width: 28%;
+  rotate: -24deg;
+  opacity: 0.55;
+}
+
+.trajectoryBrush2 {
+  bottom: 4%;
+  left: -10%;
+  width: 38%;
+  rotate: -12deg;
+  opacity: 0.6;
+}
+
+.trajectoryInner {
+  position: relative;
+  z-index: 1;
+}
+
+.trajectoryTitle {
+  margin: 0 0 clamp(1.5rem, 3vw, 2.5rem);
+  font-family: var(--font-bowlby-one), Impact, sans-serif;
+  font-size: var(--title-size);
+  font-weight: 400;
+  line-height: 1;
+  text-transform: uppercase;
+  color: var(--paper);
+}
+
+.timeline {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* Cada experiencia: fechas a la izquierda y detalle a la derecha. */
+.timelineItem {
+  display: grid;
+  grid-template-columns: minmax(0, 12rem) minmax(0, 1fr);
+  gap: 1rem clamp(1.5rem, 4vw, 3rem);
+  padding-block: clamp(1.5rem, 3vw, 2.25rem);
+  border-top: 1px solid rgb(238 244 237 / 0.45);
+}
+
+.timeline > li:last-child .timelineItem {
+  border-bottom: 1px solid rgb(238 244 237 / 0.45);
+}
+
+.timelinePeriod {
+  margin: 0;
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.timelineType {
+  margin: 0.35rem 0 0;
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--blue-soft);
+}
+
+.timelineRole {
+  margin: 0;
+  font-family: var(--font-heading);
+  font-size: clamp(1.25rem, 2.2vw, 1.75rem);
+  font-weight: 600;
+  line-height: 1.15;
+}
+
+.timelineCompany {
+  margin: 0.3rem 0 0;
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  color: var(--blue-soft);
+}
+
+.timelineSummary {
+  max-width: 42rem;
+  margin: 1rem 0 0;
+  line-height: 1.6;
+  color: rgb(238 244 237 / 0.9);
+}
+
+.timelineList {
+  display: grid;
+  gap: 0.5rem;
+  max-width: 42rem;
+  margin: 1rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.timelineList li {
+  position: relative;
+  padding-left: 1.25rem;
+  font-size: 0.95rem;
+  line-height: 1.55;
+  color: rgb(238 244 237 / 0.9);
+}
+
+.timelineList li::before {
+  content: "—";
+  position: absolute;
+  left: 0;
+  color: var(--blue-soft);
+}
+
+.timelinePills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin: 1.1rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.timelinePills li {
+  padding: 0.3em 0.85em;
+  border-radius: 999px;
+  background: #c9d9ff;
+  color: var(--ink);
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+}
+
+/* ---------- Contacto y pie de página ---------- */
+
+.contact {
+  position: relative;
+  z-index: 2;
+  padding-top: clamp(4rem, 10vh, 6.5rem);
+  padding-bottom: clamp(1.5rem, 3vw, 2.25rem);
+  /* Mismo ancho de contenido que el resto del inicio. */
+  padding-inline: max(var(--page-pad), calc((100% - var(--content-width)) / 2));
+  overflow: hidden;
+  /* Sin fondo propio: se ve el mismo azul de toda la página. */
+  color: var(--paper);
+}
+
+.contactBrushes {
+  position: absolute;
+  z-index: 0;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.contactBrushes img {
+  position: absolute;
+  height: auto;
+  user-select: none;
+}
+
+.contactBrush1 {
+  top: 6%;
+  right: -9%;
+  width: 28%;
+  rotate: -24deg;
+  opacity: 0.5;
+}
+
+.contactBrush2 {
+  bottom: 14%;
+  left: -10%;
+  width: 36%;
+  rotate: -12deg;
+  opacity: 0.55;
+}
+
+.contactInner {
+  position: relative;
+  z-index: 1;
+}
+
+.contactGrid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: clamp(2rem, 5vw, 4rem);
+  align-items: start;
+}
+
+.contactTitle {
+  margin: 0 0 1rem;
+  font-family: var(--font-bowlby-one), Impact, sans-serif;
+  font-size: var(--title-size);
+  font-weight: 400;
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+.contactLead {
+  max-width: 30rem;
+  margin: 0 0 1.75rem;
+  font-size: clamp(1.05rem, 1.7vw, 1.35rem);
+  line-height: 1.6;
+  color: rgb(238 244 237 / 0.9);
+}
+
+.contactLeft {
+  position: relative;
+}
+
+/* Post pegado al final de la columna, a la derecha. */
+.contactPost {
+  display: block;
+  width: clamp(7rem, 12vw, 9.5rem);
+  height: auto;
+  margin: 1.5rem 0 0 auto;
+  rotate: 7deg;
+  user-select: none;
+  filter: drop-shadow(0 0.5rem 0.8rem rgb(1 32 63 / 0.35));
+}
+
+.contactFoot {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-top: clamp(3rem, 7vw, 5rem);
+  padding-top: 1.25rem;
+  border-top: 1px solid rgb(238 244 237 / 0.2);
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  letter-spacing: 0.06em;
+  color: rgb(238 244 237 / 0.7);
+}
+
+.contactFoot p {
+  margin: 0;
+}
+
+.contactFoot a {
+  color: inherit;
+  text-transform: uppercase;
+}
+
+.contactFoot a:hover {
+  color: var(--paper);
+}
+
 /* ---------- Movimiento reducido ---------- */
 
 @media (prefers-reduced-motion: reduce) {
   .route,
   .stickerImage,
-  .socials a {
+  .socials a,
+  .card,
+  .allProjects {
     transition: none;
   }
 }
@@ -279,11 +1188,92 @@
 /* ---------- Tablet y móvil: una sola columna ---------- */
 
 @media (max-width: 56rem) {
-  .stage {
+  .heroGrid {
     grid-template-columns: minmax(0, 34rem);
     align-content: start;
     row-gap: clamp(2.5rem, 9vw, 4rem);
     padding: clamp(2rem, 8vw, 3.5rem) clamp(1.25rem, 6vw, 2.5rem) clamp(2.5rem, 8vw, 4rem);
+  }
+
+  /* Una columna: las secciones usan los mismos márgenes laterales que el inicio. */
+  .projects,
+  .about,
+  .trajectory,
+  .contact {
+    padding-inline: var(--page-pad);
+  }
+
+  .contactGrid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .contactBrush1 {
+    display: none;
+  }
+
+  .contactBrush2 {
+    width: 70%;
+  }
+
+  .timelineItem {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .trajectoryBrush1 {
+    display: none;
+  }
+
+  .trajectoryBrush2 {
+    width: 70%;
+  }
+
+  .aboutGrid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .aboutBrush1 {
+    width: 70%;
+  }
+
+  .aboutBrush2 {
+    display: none;
+  }
+
+  /* Tarjeta principal, luego las demás y al final el botón. */
+  .projectGrid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .projectMainCol,
+  .projectSideCol {
+    display: contents;
+  }
+
+  .cardMain {
+    order: 1;
+  }
+
+  .cardSide {
+    order: 2;
+  }
+
+  .allProjectsWrap {
+    order: 3;
+    margin: 0;
+  }
+
+  .projectBrush1 {
+    top: 30%;
+    width: 55%;
+  }
+
+  .projectBrush2 {
+    width: 70%;
+  }
+
+  .projectBrush3,
+  .projectBrush4 {
+    display: none;
   }
 
   /* En una columna los stickers no necesitan todo el ancho disponible. */
@@ -293,13 +1283,44 @@
 
   .routes {
     width: min(100%, 26rem);
+    /* No se acoplan en móvil: pasan por debajo de la barra y del logo. */
+    z-index: 1;
   }
 
-  .brushWide {
-    display: none;
+  /* Con una sola columna las pinceladas se hacen más grandes y se pegan a los bordes. */
+  .brush1 {
+    bottom: 2%;
+    left: -22%;
+    width: 85%;
   }
 
-  .brushTall {
-    display: block;
+  .brush2 {
+    top: 2%;
+    left: 30%;
+    width: 70%;
+  }
+
+  .brush3 {
+    top: 48%;
+    right: -32%;
+    width: 65%;
+  }
+
+  .brush4 {
+    right: -24%;
+    bottom: 10%;
+    width: 80%;
+  }
+
+  .brush5 {
+    top: 24%;
+    left: -22%;
+    width: 50%;
+  }
+
+  .brush6 {
+    top: 0;
+    right: -18%;
+    width: 55%;
   }
 }

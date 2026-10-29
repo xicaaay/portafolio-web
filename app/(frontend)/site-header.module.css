@@ -1,0 +1,149 @@
+/* Usa las variables de color de la página que lo contiene (--ink, --blue...). */
+
+.header {
+  position: relative;
+  z-index: 5;
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: clamp(1rem, 3vw, 2.5rem);
+  /* Mismo ancho de contenido que el inicio y que el cuerpo de la página. */
+  width: min(100% - 2 * var(--page-pad), var(--content-width));
+  margin-inline: auto;
+  padding-block: clamp(1rem, 2.4vw, 1.75rem);
+}
+
+.logo {
+  display: block;
+  width: clamp(3.4rem, 6vw, 4.6rem);
+}
+
+.logo img {
+  display: block;
+  width: 100%;
+  height: auto;
+  transition: rotate 0.4s var(--ease);
+}
+
+.logo:hover img {
+  rotate: -6deg;
+}
+
+.nav {
+  display: flex;
+  justify-content: center;
+  gap: clamp(1rem, 3.4vw, 2.75rem);
+}
+
+.nav a {
+  padding: 0.5rem 0.1rem;
+  border-bottom: 0.15rem solid transparent;
+  font-family: var(--font-mono);
+  font-size: clamp(0.72rem, 1.1vw, 0.85rem);
+  letter-spacing: 0.1em;
+  text-decoration: none;
+  text-transform: uppercase;
+  color: inherit;
+  transition: border-color 0.25s ease;
+}
+
+.nav a:hover,
+.nav a[aria-current="page"] {
+  border-color: currentColor;
+}
+
+.tools {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.socials {
+  display: flex;
+  gap: 0.4rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.socials a {
+  display: grid;
+  place-items: center;
+  width: 2.75rem;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  font-size: 1.25rem;
+  color: inherit;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.socials a:hover {
+  background: var(--ink);
+  color: var(--paper);
+}
+
+.socials {
+  align-items: center;
+}
+
+/* El correo va como texto: al pasar el cursor se resalta (sin botón ni movimiento). */
+.socials .email {
+  display: inline-block;
+  width: auto;
+  aspect-ratio: auto;
+  padding: 0.2em 0.4em;
+  border-radius: 0.15em;
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  letter-spacing: 0.02em;
+}
+
+.socials .email:hover {
+  background: #ffd60a;
+  color: var(--ink);
+}
+
+.header a:focus-visible {
+  outline: 0.15rem solid var(--blue);
+  outline-offset: 0.2rem;
+}
+
+@media (max-width: 56rem) {
+  .header {
+    width: calc(100% - 2 * var(--page-pad));
+  }
+}
+
+@media (max-width: 48rem) {
+  .header {
+    grid-template-columns: auto 1fr;
+    row-gap: 0.25rem;
+  }
+
+  .tools {
+    justify-self: end;
+    gap: 0.4rem;
+  }
+
+  /* En pantallas angostas el correo no cabe junto al selector de idioma. */
+  .socials .email {
+    display: none;
+  }
+
+  /* La navegación pasa a su propia fila y se puede deslizar si no cabe. */
+  .nav {
+    grid-column: 1 / -1;
+    grid-row: 2;
+    justify-content: flex-start;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .logo img,
+  .nav a,
+  .socials a {
+    transition: none;
+  }
+}

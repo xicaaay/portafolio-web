@@ -13,17 +13,21 @@ export const Media: CollectionConfig = {
     delete: ({ req: { user } }) => Boolean(user),
   },
   upload: {
-    mimeTypes: ["image/*"],
+    /* Solo imágenes de mapa de bits: se convierten a WebP al subirlas (SVG y GIF se perderían al convertir). */
+    mimeTypes: ["image/png", "image/jpeg", "image/webp", "image/avif"],
+    formatOptions: { format: "webp", options: { quality: 85 } },
   },
   fields: [
     {
       name: "alt",
+      localized: true,
       type: "text",
       required: true,
       label: "Texto alternativo",
     },
     {
       name: "caption",
+      localized: true,
       type: "text",
       label: "Pie de imagen",
     },

@@ -1,0 +1,62 @@
+/* Usa las variables de color de la página que lo contiene (--paper, --ink, --blue). */
+
+.switch {
+  display: inline-flex;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  overflow: hidden;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  letter-spacing: 0.1em;
+}
+
+.switch a {
+  padding: 0.45rem 0.8rem;
+  color: inherit;
+  text-decoration: none;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.blue {
+  --line: rgb(238 244 237 / 0.6);
+  --active-bg: var(--paper);
+  --active-fg: var(--blue);
+  color: var(--paper);
+}
+
+.paper {
+  --line: rgb(1 32 63 / 0.6);
+  --active-bg: var(--ink);
+  --active-fg: var(--paper);
+  color: var(--ink);
+}
+
+.switch a[aria-current="true"] {
+  background: var(--active-bg);
+  color: var(--active-fg);
+}
+
+.switch a:not([aria-current="true"]):hover {
+  background: rgb(127 166 255 / 0.28);
+}
+
+.switch a:focus-visible {
+  outline: 0.15rem solid currentColor;
+  outline-offset: -0.2rem;
+}
+
+/* En el inicio no hay encabezado: el selector queda fijo arriba a la derecha. */
+.fixed {
+  position: fixed;
+  top: 1rem;
+  right: clamp(1rem, 3vw, 2rem);
+  z-index: 40;
+  background: rgb(3 68 220 / 0.75);
+  backdrop-filter: blur(6px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .switch a {
+    transition: none;
+  }
+}

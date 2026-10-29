@@ -5,6 +5,7 @@ import { fileURLToPath } from "node:url";
 import sharp from "sharp";
 import { buildConfig } from "payload";
 
+import { ContactMessages } from "./collections/ContactMessages";
 import { Projects } from "./collections/Projects";
 import { Experiences } from "./collections/Experiences";
 import { Media } from "./collections/Media";
@@ -22,11 +23,20 @@ export default buildConfig({
       baseDir: dirname,
     },
   },
-  collections: [Users, Media, Projects, Experiences, Posts],
+  collections: [Users, Media, Projects, Experiences, Posts, ContactMessages],
   globals: [Profile],
   db: mongooseAdapter({
     url: process.env.DATABASE_URL ?? "",
   }),
+  /* Contenido en español (principal) e inglés; si falta una traducción se muestra la española. */
+  localization: {
+    locales: [
+      { code: "es", label: "Español" },
+      { code: "en", label: "English" },
+    ],
+    defaultLocale: "es",
+    fallback: true,
+  },
   editor: lexicalEditor(),
   secret: process.env.PAYLOAD_SECRET ?? "",
   sharp,

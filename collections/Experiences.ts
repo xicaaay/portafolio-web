@@ -1,7 +1,31 @@
+import { revalidatePath } from "next/cache";
 import type { CollectionConfig } from "payload";
+
+/* Al guardar o borrar una experiencia se refresca el inicio (fuera de Next, p. ej. la seed, se ignora). */
+function refreshHome() {
+  try {
+    revalidatePath("/", "layout");
+  } catch {
+    /* sin contexto de Next: nada que refrescar */
+  }
+}
 
 export const Experiences: CollectionConfig = {
   slug: "experiences",
+  hooks: {
+    afterChange: [
+      ({ doc }) => {
+        refreshHome();
+        return doc;
+      },
+    ],
+    afterDelete: [
+      ({ doc }) => {
+        refreshHome();
+        return doc;
+      },
+    ],
+  },
   labels: {
     singular: "Experiencia profesional",
     plural: "Experiencia profesional",
@@ -18,9 +42,11 @@ export const Experiences: CollectionConfig = {
     delete: ({ req: { user } }) => Boolean(user),
   },
   fields: [
-    { name: "position", type: "text", required: true, label: "Puesto" },
+    { name: "position",
+      localized: true, type: "text", required: true, label: "Puesto" },
     { name: "company", type: "text", required: true, label: "Empresa" },
-    { name: "location", type: "text", label: "Ubicación" },
+    { name: "location",
+      localized: true, type: "text", label: "Ubicación" },
     {
       name: "employmentType",
       type: "select",
@@ -37,12 +63,14 @@ export const Experiences: CollectionConfig = {
     { name: "startDate", type: "date", required: true, label: "Fecha de inicio" },
     { name: "endDate", type: "date", label: "Fecha de término" },
     { name: "current", type: "checkbox", defaultValue: false, label: "Actualmente" },
-    { name: "summary", type: "textarea", label: "Descripción breve" },
+    { name: "summary",
+      localized: true, type: "textarea", label: "Descripción breve" },
     {
       name: "achievements",
       type: "array",
       label: "Responsabilidades y logros",
-      fields: [{ name: "description", type: "textarea", required: true }],
+      fields: [{ name: "description",
+      localized: true, type: "textarea", required: true }],
     },
     {
       name: "technologies",

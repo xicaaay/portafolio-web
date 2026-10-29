@@ -1,0 +1,141 @@
+/* Colores según el fondo donde se coloque: .light (sobre azul) o .dark (sobre papel). */
+
+.light {
+  --fg: var(--paper);
+  --muted: rgb(238 244 237 / 0.78);
+  --line: rgb(238 244 237 / 0.55);
+  --fill: rgb(255 255 255 / 0.08);
+  --focus: var(--paper);
+  --error: #ffd60a;
+  --focus-contrast: var(--blue);
+}
+
+.dark {
+  --fg: var(--ink);
+  --muted: rgb(1 32 63 / 0.7);
+  --line: rgb(1 32 63 / 0.6);
+  --fill: rgb(1 32 63 / 0.05);
+  --focus: var(--blue);
+  --error: #c40f00;
+  --focus-contrast: var(--paper);
+}
+
+.form {
+  display: grid;
+  gap: 0.9rem;
+  width: 100%;
+  color: var(--fg);
+}
+
+.field {
+  display: grid;
+  gap: 0.35rem;
+}
+
+.field label {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.input {
+  width: 100%;
+  padding: 0.7rem 0.85rem;
+  border: 1px solid var(--line);
+  border-radius: 0.15rem;
+  background: var(--fill);
+  color: var(--fg);
+  font-family: var(--font-body);
+  font-size: 1rem;
+  line-height: 1.4;
+}
+
+textarea.input {
+  min-height: 7rem;
+  resize: vertical;
+}
+
+.input:focus-visible {
+  outline: 0.15rem solid var(--focus);
+  outline-offset: 0.1rem;
+}
+
+.input[aria-invalid="true"] {
+  border-color: var(--error);
+}
+
+.fieldError,
+.formError {
+  margin: 0;
+  font-size: 0.85rem;
+  line-height: 1.4;
+  color: var(--error);
+}
+
+.formError {
+  padding: 0.6rem 0.8rem;
+  border: 1px solid var(--error);
+}
+
+/* Botón de envío. */
+.submit {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.7rem;
+  justify-self: start;
+  padding: 0.85rem 1.5rem;
+  border: 0;
+  background: var(--red);
+  color: var(--paper);
+  font-family: var(--font-bowlby-one), Impact, sans-serif;
+  font-size: 0.95rem;
+  text-transform: uppercase;
+  box-shadow: 0 0.6rem 1.2rem rgb(1 32 63 / 0.3);
+  rotate: -1.5deg;
+  transition: rotate 0.4s var(--ease);
+}
+
+.submit svg {
+  width: 1.2em;
+  height: 1.2em;
+}
+
+.submit:hover,
+.submit:focus-visible {
+  rotate: 0deg;
+}
+
+.submit:focus-visible {
+  outline: 0.2rem solid var(--focus);
+  outline-offset: 0.25rem;
+}
+
+/* Aviso tras abrir Gmail, con el enlace de respaldo. */
+.notice {
+  margin: 0;
+  padding: 0.9rem 1.1rem;
+  border: 1px solid var(--line);
+  background: var(--fill);
+  color: var(--fg);
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+
+.notice a {
+  color: inherit;
+  text-decoration: underline;
+  text-underline-offset: 0.25em;
+}
+
+.notice a:focus-visible {
+  outline: 0.15rem solid var(--focus);
+  outline-offset: 0.2rem;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .submit {
+    transition: none;
+  }
+}

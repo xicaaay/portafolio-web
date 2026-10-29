@@ -72,6 +72,7 @@ export interface Config {
     projects: Project;
     experiences: Experience;
     posts: Post;
+    'contact-messages': ContactMessage;
     'payload-kv': PayloadKv;
     'payload-locked-documents': PayloadLockedDocument;
     'payload-preferences': PayloadPreference;
@@ -84,6 +85,7 @@ export interface Config {
     projects: ProjectsSelect<false> | ProjectsSelect<true>;
     experiences: ExperiencesSelect<false> | ExperiencesSelect<true>;
     posts: PostsSelect<false> | PostsSelect<true>;
+    'contact-messages': ContactMessagesSelect<false> | ContactMessagesSelect<true>;
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
     'payload-preferences': PayloadPreferencesSelect<false> | PayloadPreferencesSelect<true>;
@@ -92,14 +94,14 @@ export interface Config {
   db: {
     defaultIDType: string;
   };
-  fallbackLocale: null;
+  fallbackLocale: ('false' | 'none' | 'null') | false | null | ('es' | 'en') | ('es' | 'en')[];
   globals: {
     profile: Profile;
   };
   globalsSelect: {
     profile: ProfileSelect<false> | ProfileSelect<true>;
   };
-  locale: null;
+  locale: 'es' | 'en';
   widgets: {
     collections: CollectionsWidget;
   };
@@ -190,7 +192,13 @@ export interface Project {
         id?: string | null;
       }[]
     | null;
+  /**
+   * Los proyectos destacados y publicados se muestran en el inicio (máximo 3, según su orden).
+   */
   featured?: boolean | null;
+  /**
+   * 1 aparece primero. Si se deja vacío, va al final.
+   */
   featuredOrder?: number | null;
   role?: string | null;
   year?: number | null;
@@ -361,6 +369,21 @@ export interface Post {
   createdAt: string;
 }
 /**
+ * Mensajes recibidos desde el formulario de contacto de la web.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "contact-messages".
+ */
+export interface ContactMessage {
+  id: string;
+  name: string;
+  email: string;
+  message: string;
+  read?: boolean | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "payload-kv".
  */
@@ -403,6 +426,10 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'posts';
         value: string | Post;
+      } | null)
+    | ({
+        relationTo: 'contact-messages';
+        value: string | ContactMessage;
       } | null);
   globalSlug?: string | null;
   user: {
@@ -601,6 +628,18 @@ export interface PostsSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "contact-messages_select".
+ */
+export interface ContactMessagesSelect<T extends boolean = true> {
+  name?: T;
+  email?: T;
+  message?: T;
+  read?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "payload-kv_select".
  */
 export interface PayloadKvSelect<T extends boolean = true> {
@@ -663,17 +702,13 @@ export interface Profile {
     };
     [k: string]: unknown;
   } | null;
+  /**
+   * Se muestra entre comillas en «Sobre mí». Si se deja vacío, la web usa la frase por defecto.
+   */
+  quote?: string | null;
   location?: string | null;
   contactEmail?: string | null;
   profileImage?: (string | null) | Media;
-  socialLinks?:
-    | {
-        platform: 'linkedin' | 'github' | 'x' | 'instagram' | 'youtube' | 'behance' | 'dribbble' | 'other';
-        label?: string | null;
-        url: string;
-        id?: string | null;
-      }[]
-    | null;
   updatedAt?: string | null;
   createdAt?: string | null;
 }
@@ -686,17 +721,10 @@ export interface ProfileSelect<T extends boolean = true> {
   professionalTitle?: T;
   headline?: T;
   about?: T;
+  quote?: T;
   location?: T;
   contactEmail?: T;
   profileImage?: T;
-  socialLinks?:
-    | T
-    | {
-        platform?: T;
-        label?: T;
-        url?: T;
-        id?: T;
-      };
   updatedAt?: T;
   createdAt?: T;
   globalType?: T;

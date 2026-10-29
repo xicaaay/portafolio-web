@@ -284,7 +284,7 @@ try {
     overrideAccess: true,
   });
 
-  if (existingProfile.name || existingProfile.professionalTitle || existingProfile.socialLinks?.length) {
+  if (existingProfile.name || existingProfile.professionalTitle) {
     console.info("El perfil ya contiene datos; se conservó sin sobrescribirlo.");
   } else {
     await payload.updateGlobal({
@@ -296,14 +296,10 @@ try {
         about: lexicalText(["Biografía ficticia para revisar el Global de perfil y sus campos."]),
         location: "Ciudad de México (dato ficticio)",
         contactEmail: "alex.rivera@example.com",
-        socialLinks: [
-          { platform: "linkedin", label: "LinkedIn demo", url: "https://www.linkedin.com/in/perfil-de-ejemplo" },
-          { platform: "github", label: "GitHub demo", url: "https://github.com/usuario-demo" },
-        ],
       },
       overrideAccess: true,
     });
-    console.info("Perfil ficticio y redes sociales de prueba creados.");
+    console.info("Perfil ficticio de prueba creado.");
   }
 
   console.info("Seed completada. Todos los registros creados están marcados como datos de demostración.");

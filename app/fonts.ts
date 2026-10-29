@@ -50,7 +50,7 @@ export const jetBrainsMono = localFont({
   display: "swap",
 });
 
-export const bowlbyOne = localFont({
+export const bowlbyOne =localFont({
   src: "./fonts/bowlby-one-regular.ttf",
   variable: "--font-bowlby-one",
   weight: "400",

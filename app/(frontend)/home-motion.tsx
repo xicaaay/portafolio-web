@@ -21,6 +21,8 @@ type RevealProps = {
   rotate?: number;
   /* Variable CSS opcional para el cartel (inclinación y desplazamiento). */
   style?: React.CSSProperties;
+  /* true: la entrada ocurre al llegar a la vista (secciones debajo del primer pantallazo). */
+  onView?: boolean;
 };
 
 /*
@@ -42,6 +44,7 @@ export function Reveal({
   className,
   delay = 0,
   kind = "rise",
+  onView = false,
   rotate = 0,
   style,
 }: RevealProps) {
@@ -63,11 +66,13 @@ export function Reveal({
 
   return (
     <Tag
-      animate={animate}
+      animate={onView ? undefined : animate}
       className={className}
       initial={initial}
       style={style}
       transition={{ duration: kind === "sticker" ? 0.6 : 0.7, delay, ease: SOFT_EASE }}
+      viewport={onView ? { once: true, amount: 0.2 } : undefined}
+      whileInView={onView ? animate : undefined}
     >
       {children}
     </Tag>
