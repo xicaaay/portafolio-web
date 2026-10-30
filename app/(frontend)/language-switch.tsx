@@ -1,7 +1,5 @@
 "use client";
 
-import Link from "next/link";
-import { usePathname } from "next/navigation";
 
 import { LOCALES, LOCALE_COOKIE, LOCALE_LABELS, type Locale } from "../../lib/i18n/config";
 import styles from "./language-switch.module.css";
@@ -21,9 +19,6 @@ type LanguageSwitchProps = {
  * cookie para la próxima visita.
  */
 export function LanguageSwitch({ current, fixed = false, label, tone }: LanguageSwitchProps) {
-  const pathname = usePathname();
-  /* «/es/projects» → «/projects»; «/es» → «». */
-  const rest = pathname.replace(/^\/(es|en)(?=\/|$)/, "");
 
   return (
     <nav
@@ -31,20 +26,20 @@ export function LanguageSwitch({ current, fixed = false, label, tone }: Language
       className={`${styles.switch} ${tone === "blue" ? styles.blue : styles.paper} ${fixed ? styles.fixed : ""}`}
     >
       {LOCALES.map((locale) => (
-        <Link
-          aria-current={locale === current ? "true" : undefined}
-          href={`/${locale}${rest}`}
-          hrefLang={locale}
+        <button
+          aria-pressed={locale === current}
+          type="button"
           key={locale}
           lang={locale}
           onClick={() => {
+            if (locale === current) return;
             document.cookie = `${LOCALE_COOKIE}=${locale}; path=/; max-age=31536000; samesite=lax`;
+            window.location.reload();
           }}
-          scroll={false}
           title={LOCALE_LABELS[locale].name}
         >
           {LOCALE_LABELS[locale].short}
-        </Link>
+        </button>
       ))}
     </nav>
   );

@@ -21,7 +21,7 @@ export function AboutSection({ dict, profile }: { dict: Dictionary; profile: Pro
   const title = profile?.title ?? "Full Stack Developer";
   const email = profile?.email ?? CONTACT_EMAIL;
   const quote = profile?.quote ?? dict.about.fallbackQuote;
-  const quoteWords = quote.trim().split(/s+/);
+  const quoteWords = quote.trim().split(/\s+/);
   const quoteEnd = quoteWords.pop() ?? "";
   const quoteStart = quoteWords.join(" ");
 

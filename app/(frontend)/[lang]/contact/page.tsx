@@ -25,7 +25,7 @@ export async function generateMetadata({ params }: PageParams): Promise<Metadata
   return {
     title: dict.meta.contactTitle,
     description: dict.meta.contactDescription,
-    alternates: { languages: { es: "/es/contact", en: "/en/contact" } },
+    alternates: { canonical: "/contact" },
   };
 }
 

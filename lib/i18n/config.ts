@@ -8,8 +8,8 @@ export const LOCALE_COOKIE = "lang";
 
 export const hasLocale = (value: string): value is Locale => (LOCALES as readonly string[]).includes(value);
 
-/* Ruta con idioma: localePath("en", "/projects") → "/en/projects"; localePath("es") → "/es". */
-export const localePath = (locale: Locale, path = "/") => `/${locale}${path === "/" ? "" : path}`;
+/* Las rutas públicas son iguales para ambos idiomas; el proxy elige la versión. */
+export const localePath = (_locale: Locale, path = "/") => path;
 
 /* Valor de `hreflang` / `<html lang>` y nombre para mostrar de cada idioma. */
 export const LOCALE_LABELS: Record<Locale, { short: string; name: string }> = {

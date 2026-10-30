@@ -33,7 +33,7 @@ export async function generateMetadata({ params }: { params: Promise<Params> }):
   return {
     title: `${detail.name} — Amilcar Xicay`,
     description: detail.project.summary,
-    alternates: { languages: { es: `/es/projects/${slug}`, en: `/en/projects/${slug}` } },
+    alternates: { canonical: `/projects/${slug}` },
   };
 }
 

@@ -15,7 +15,7 @@ import {
 
 type LayoutParams = { params: Promise<{ lang: string }> };
 
-/* Se generan las dos versiones: /es y /en. */
+/* Versiones internas usadas por las reescrituras del proxy. */
 export function generateStaticParams() {
   return LOCALES.map((lang) => ({ lang }));
 }
@@ -28,7 +28,7 @@ export async function generateMetadata({ params }: LayoutParams): Promise<Metada
   return {
     title: dict.meta.homeTitle,
     description: dict.meta.homeDescription,
-    alternates: { languages: { es: "/es", en: "/en" } },
+    alternates: { canonical: "/" },
   };
 }
 

@@ -15,15 +15,26 @@ function preferredLocale(request: NextRequest): Locale {
   return DEFAULT_LOCALE;
 }
 
-/* Las rutas sin idioma (/, /projects...) se redirigen a /es/... o /en/... */
+/* El prefijo existe solo internamente; los enlaces antiguos guardan el idioma y se normalizan. */
 export function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
-  const hasPrefix = LOCALES.some((locale) => pathname === `/${locale}` || pathname.startsWith(`/${locale}/`));
-  if (hasPrefix) return NextResponse.next();
+  const prefix = LOCALES.find((locale) => pathname === `/${locale}` || pathname.startsWith(`/${locale}/`));
 
   const url = request.nextUrl.clone();
+  if (prefix) {
+    if (request.headers.get("x-portfolio-rewrite") === "1") return NextResponse.next();
+    url.pathname = pathname.slice(prefix.length + 1) || "/";
+    const response = NextResponse.redirect(url);
+    response.cookies.set(LOCALE_COOKIE, prefix, { path: "/", maxAge: 31536000, sameSite: "lax" });
+    response.headers.set("Cache-Control", "private, no-store");
+    return response;
+  }
   url.pathname = `/${preferredLocale(request)}${pathname === "/" ? "" : pathname}`;
-  return NextResponse.redirect(url);
+  const headers = new Headers(request.headers);
+  headers.set("x-portfolio-rewrite", "1");
+  const response = NextResponse.rewrite(url, { request: { headers } });
+  response.headers.set("Cache-Control", "private, no-store");
+  return response;
 }
 
 export const config = {
